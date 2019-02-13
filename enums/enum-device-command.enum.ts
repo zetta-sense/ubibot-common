@@ -1,0 +1,15 @@
+export enum EnumDeviceCommand {
+    ReadProduct     = 'ReadProduct',
+    CheckSensors    = 'CheckSensors',
+    CheckModule     = 'CheckModule',
+    SetupProduct    = 'SetupProduct',
+    ScanNetwork     = 'ScanWifiList',
+    SetupWifi       = 'SetupWifi',
+    DeviceActivate  = 'DeviceActivate',
+    SetMetadata     = 'SetMetaData',
+    GetLastError    = 'GetLastError',
+    ClearData       = 'ClearData',
+    ReadWifi        = 'ReadWifi',
+    ReadMetaData    = 'ReadMetaData',
+    ReadData        = 'ReadData',
+}
