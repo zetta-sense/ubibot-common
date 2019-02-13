@@ -1,4 +1,4 @@
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import {APP_INITIALIZER, ModuleWithProviders, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {UbiLocalizeService} from './services/ubi-localize.service';
 import {HttpClientModule, HttpClient} from '@angular/common/http';
@@ -8,14 +8,18 @@ import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {AppConfigService} from './providers/app-config.service';
 import {UbiUserDisplayPipe} from './pipes/ubi-user-display.pipe';
 
+let i18nPath;
+
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
-    return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+    return new TranslateHttpLoader(http, i18nPath, '.json');
 }
 
 @NgModule({
-    declarations: [],
-    entryComponents: [],
+    declarations: [
+    ],
+    entryComponents: [
+    ],
     imports: [
         BrowserModule,
         HttpClientModule,
@@ -26,6 +30,8 @@ export function HttpLoaderFactory(http: HttpClient) {
                 deps: [HttpClient]
             }
         })
+    ],
+    exports: [
     ],
     providers: [
         AppConfigService,
@@ -52,4 +58,13 @@ export function HttpLoaderFactory(http: HttpClient) {
     bootstrap: []
 })
 export class UbibotCommonModule {
+    static forRoot(opts: any = {}): ModuleWithProviders {
+        i18nPath = opts.i18nPath || './assets/i18n/';
+
+        return {
+            ngModule: UbibotCommonModule,
+            providers: [
+            ]
+        };
+    }
 }
