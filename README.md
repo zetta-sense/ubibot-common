@@ -1,4 +1,4 @@
-# ubibot-common库
+# ubibot-common通用库
 
 仅支持ng 7
 
