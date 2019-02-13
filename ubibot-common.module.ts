@@ -1,4 +1,4 @@
-import {APP_INITIALIZER, ModuleWithProviders, NgModule} from '@angular/core';
+import {APP_INITIALIZER, InjectionToken, ModuleWithProviders, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {UbiLocalizeService} from './services/ubi-localize.service';
 import {HttpClientModule, HttpClient} from '@angular/common/http';
@@ -8,15 +8,16 @@ import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {AppConfigService} from './providers/app-config.service';
 import {UbiUserDisplayPipe} from './pipes/ubi-user-display.pipe';
 
-let i18nPath;
+export const UBIBOT_COMMON_CONFIGURATION = new InjectionToken<any>('UBIBOT_COMMON_CONFIGURATION');
 
 // AoT requires an exported function for factories
-export function HttpLoaderFactory(http: HttpClient) {
-    return new TranslateHttpLoader(http, i18nPath, '.json');
+export function HttpLoaderFactory(http: HttpClient, opts: any) {
+    return new TranslateHttpLoader(http, opts.i18nPath || './assets/i18n/', '.json');
 }
 
 @NgModule({
     declarations: [
+        UbiUserDisplayPipe, // 必须，否则会抛出module not determined错误
     ],
     entryComponents: [
     ],
@@ -27,7 +28,7 @@ export function HttpLoaderFactory(http: HttpClient) {
             loader: {
                 provide: TranslateLoader,
                 useFactory: (HttpLoaderFactory),
-                deps: [HttpClient]
+                deps: [HttpClient, UBIBOT_COMMON_CONFIGURATION]
             }
         })
     ],
@@ -58,12 +59,14 @@ export function HttpLoaderFactory(http: HttpClient) {
     bootstrap: []
 })
 export class UbibotCommonModule {
-    static forRoot(opts: any = {}): ModuleWithProviders {
-        i18nPath = opts.i18nPath || './assets/i18n/';
-
+    static forRoot(opts: any): ModuleWithProviders {
         return {
             ngModule: UbibotCommonModule,
+            // tag: 必须要这样传参，return前不能有任何动态处理，具体参考:
+            // https://github.com/angular/angular/issues/14707
+            // https://github.com/angular/angular/blob/4.3.3/packages/router/src/router_module.ts#L150
             providers: [
+                {provide: UBIBOT_COMMON_CONFIGURATION, useValue: opts || {}},
             ]
         };
     }
