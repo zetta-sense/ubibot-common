@@ -3,7 +3,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {UbiLocalizeService} from './services/ubi-localize.service';
 import {HttpClientModule, HttpClient} from '@angular/common/http';
 
-import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import {TranslateModule, TranslateLoader, TranslatePipe} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {AppConfigService} from './providers/app-config.service';
 import {UbiUserDisplayPipe} from './pipes/ubi-user-display.pipe';
@@ -33,10 +33,11 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
         })
     ],
     exports: [
+        UbiUserDisplayPipe, // 必须
+        TranslatePipe,
     ],
     providers: [
         AppConfigService,
-        UbiLocalizeService,
         // secondary
         UbiUserDisplayPipe,
         // init dep
@@ -50,7 +51,6 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
             // 启动时初始化一些必须的服务
             // ref: https://angular.io/guide/dependency-injection-providers
             deps: [
-                AppConfigService,
                 UbiLocalizeService,
             ],
             multi: true

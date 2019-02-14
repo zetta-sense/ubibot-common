@@ -3,6 +3,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
 import {AppConfigService} from '../providers/app-config.service';
 import {UbiUtilsService} from './ubi-utils.service';
+import * as _ from 'lodash';
 
 @Injectable({
     providedIn: 'root'
@@ -31,6 +32,10 @@ export class UbiLocalizeService implements OnDestroy {// tag: 特别注意servic
         this.translate.onDefaultLangChange.subscribe(() => {
             // this.updateAppTitle();
         });
+    }
+
+    public getAllLanguages() {
+        return _.concat([], this.EnumLanguages);
     }
 
     ngOnDestroy(): void {

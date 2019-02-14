@@ -26,7 +26,7 @@ export class UbiUtilsService {
     constructor(private appConfig: AppConfigService,
                 private ubiUserDisplayPipe: UbiUserDisplayPipe,
                 private translate: TranslateService) {
-        console.log('initializing db...');
+        console.log('initializing UbibotCommonModule - UbiUtilsService...');
 
         this.storageKeyLanguage = `appLanguage-${this.appConfig.DeployAgent}`;
         this.storageKeyProductProfileCache = `productProfileCache-${this.appConfig.DeployAgent}`;
