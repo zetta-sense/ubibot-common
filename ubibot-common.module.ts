@@ -8,6 +8,10 @@ import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {UbibotCommonConfigService} from './providers/ubibot-common-config.service';
 import {UbiUserDisplayPipe} from './pipes/ubi-user-display.pipe';
 
+// ref: https://github.com/highcharts/highcharts-angular
+import {HighchartsChartModule} from 'highcharts-angular';
+import {UbiDataChartComponent} from './components/ubi-data-chart/ubi-data-chart.component';
+
 export const UBIBOT_COMMON_CONFIGURATION = new InjectionToken<any>('UBIBOT_COMMON_CONFIGURATION');
 
 // AoT requires an exported function for factories
@@ -18,12 +22,15 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
 @NgModule({
     declarations: [
         UbiUserDisplayPipe, // 必须，否则会抛出module not determined错误
+        UbiDataChartComponent,
     ],
     entryComponents: [
+        UbiDataChartComponent
     ],
     imports: [
         BrowserModule,
         HttpClientModule,
+        HighchartsChartModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
@@ -35,6 +42,7 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
     exports: [
         UbiUserDisplayPipe, // 必须
         TranslatePipe,
+        UbiDataChartComponent
     ],
     providers: [
         UbibotCommonConfigService,

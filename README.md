@@ -18,3 +18,7 @@ src/modules/xxx固定不能变
 参考: https://stackoverflow.com/questions/11358082/empty-git-submodule-folder-when-repo-cloned
 
 
+#### deps
+ngx-translate, highcharts
+
+
