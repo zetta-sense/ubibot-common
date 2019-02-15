@@ -3,7 +3,7 @@ import {AppConfig} from '../../../environments/environment';
 import * as _ from 'lodash';
 
 @Injectable()
-export class AppConfigService {
+export class UbibotCommonConfigService {
 
     public DeployAgent = 'cn'; // cn,io,putfarm
     public NoSVGLogoAnimation = false;

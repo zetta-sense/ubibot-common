@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Title} from '@angular/platform-browser';
-import {AppConfigService} from '../providers/app-config.service';
+import {UbibotCommonConfigService} from '../providers/ubibot-common-config.service';
 import {UbiUtilsService} from './ubi-utils.service';
 import * as _ from 'lodash';
 
@@ -13,7 +13,7 @@ export class UbiLocalizeService implements OnDestroy {// tag: 特别注意servic
 
     constructor(private translate: TranslateService,
                 private titleService: Title,
-                private appConfig: AppConfigService,
+                private commonConfigService: UbibotCommonConfigService,
                 private ubiUtils: UbiUtilsService) {
 
         this.EnumLanguages = [
@@ -22,7 +22,7 @@ export class UbiLocalizeService implements OnDestroy {// tag: 特别注意servic
             {key: 'ja-JP', label: '日本語'}
         ];
 
-        const defaultLang = this.appConfig.DefaultLanguage;
+        const defaultLang = this.commonConfigService.DefaultLanguage;
         this.translate.setDefaultLang(defaultLang);
         console.log(`Setting default lang to ${defaultLang}`);
 

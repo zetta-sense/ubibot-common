@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
-import {AppConfigService} from '../providers/app-config.service';
+import {UbibotCommonConfigService} from '../providers/ubibot-common-config.service';
 import {EnumBasicProductId} from '../enums/enum-basic-product-id.enum';
 import {EnumAppError} from '../enums/enum-app-error.enum';
 import {TranslateService} from '@ngx-translate/core';
@@ -23,13 +23,13 @@ export class UbiUtilsService {
     storageKeyLanguage;
     storageKeyProductProfileCache;
 
-    constructor(private appConfig: AppConfigService,
+    constructor(private commonConfigService: UbibotCommonConfigService,
                 private ubiUserDisplayPipe: UbiUserDisplayPipe,
                 private translate: TranslateService) {
         console.log('initializing UbibotCommonModule - UbiUtilsService...');
 
-        this.storageKeyLanguage = `appLanguage-${this.appConfig.DeployAgent}`;
-        this.storageKeyProductProfileCache = `productProfileCache-${this.appConfig.DeployAgent}`;
+        this.storageKeyLanguage = `appLanguage-${this.commonConfigService.DeployAgent}`;
+        this.storageKeyProductProfileCache = `productProfileCache-${this.commonConfigService.DeployAgent}`;
     }
 
     // saveReportLocal(report: UbiReport) {
@@ -37,7 +37,7 @@ export class UbiUtilsService {
     // }
 
     resetLanguage() {
-        const lang = this.appConfig.PreferredLanguage;
+        const lang = this.commonConfigService.PreferredLanguage;
         this.translate.use(lang);
         this.saveLanguage();
     }
@@ -54,7 +54,7 @@ export class UbiUtilsService {
      * Get last set language. If null, return config's default.
      */
     getLanguage() {
-        return localStorage.getItem(this.storageKeyLanguage) || this.appConfig.PreferredLanguage;
+        return localStorage.getItem(this.storageKeyLanguage) || this.commonConfigService.PreferredLanguage;
     }
 
     saveProductProfileCache(item) {

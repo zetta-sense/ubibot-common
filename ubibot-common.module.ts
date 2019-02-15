@@ -5,7 +5,7 @@ import {HttpClientModule, HttpClient} from '@angular/common/http';
 
 import {TranslateModule, TranslateLoader, TranslatePipe} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {AppConfigService} from './providers/app-config.service';
+import {UbibotCommonConfigService} from './providers/ubibot-common-config.service';
 import {UbiUserDisplayPipe} from './pipes/ubi-user-display.pipe';
 
 export const UBIBOT_COMMON_CONFIGURATION = new InjectionToken<any>('UBIBOT_COMMON_CONFIGURATION');
@@ -37,7 +37,7 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
         TranslatePipe,
     ],
     providers: [
-        AppConfigService,
+        UbibotCommonConfigService,
         // secondary
         UbiUserDisplayPipe,
         // init dep
