@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {AppConfig} from '../../../environments/environment';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -107,6 +106,12 @@ export class UbibotCommonConfigService {
     };
 
     constructor() {
+    }
+
+    /**
+     * children should call this
+     */
+    init() {
         let ioAgentList = [
             'io',
             'putfarm'
