@@ -7,6 +7,7 @@ import * as _ from 'lodash';
 import * as Highcharts from 'highcharts/highstock';
 import * as HighchartsThemeDarkUnica from 'highcharts/themes/dark-unica';
 import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
+import {TranslateService} from '@ngx-translate/core';
 
 // ref: https://github.com/highcharts/highcharts-angular#theme
 HighchartsThemeDarkUnica(Highcharts);
@@ -58,6 +59,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         month: '%Y-%m', //%b \'%y',
         year: '%Y'
     };
+
     highchartsOptions = {
         chart: {
             type: 'line'
@@ -113,8 +115,12 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     readonly containerId: string;
 
     constructor(private ubiUtils: UbiUtilsService,
+                private translate: TranslateService,
                 private ngZone: NgZone) {
         this.containerId = ubiUtils.generateUuid();
+
+        // update i18n for highcharts options
+        this.highchartsOptions.lang.noData = this.translate.instant('APP.COMMON.NO-DATA');
 
         this.highchartsAfterInit$ = new Subject<Highcharts.Chart>();
         this.highchartsAfterInit$.subscribe((chart: Highcharts.Chart) => {
