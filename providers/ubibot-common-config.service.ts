@@ -24,8 +24,8 @@ export class UbibotCommonConfigService {
 
     public readonly ServerAccessTimout = 30 * 1000; // http请求timeout
 
-    public readonly UsbReadMaxRetry = 30; // 30s < 3s,稍微频发点读取加快响应时间
-    public readonly UsbReadInterval = 500;
+    public readonly UsbReadMaxRetry = 30; // 重试次数
+    public readonly UsbReadInterval = 500; // 30 * 0.5 s,稍微频发点读取加快响应时间
     public readonly UsbReadIntervalTimeout = 60 * 60 * 1000; // 每次on data的超时限制,一般只有read data时才需要限制,
                                                              // 当然这个值必须大于 2*read interval + UsbReadOKMinInterval
     public readonly UsbReadDelay = 100;
