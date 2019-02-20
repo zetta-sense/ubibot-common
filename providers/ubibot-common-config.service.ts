@@ -48,7 +48,7 @@ export class UbibotCommonConfigService {
     public readonly UsbCommandReadDataReadIntervalTimeout = 15 * 1000; // 当然这个值必须大于 2*read interval + UsbReadOKMinInterval
 
     public readonly UsbCommandSetupNetworkReadInterval = 2 * 1000; // *MaxRetry的次数应该大于timeout
-    public readonly UsbCommandSetupNetworkSendCommandTimeout = 30 * 1000; // setupWifi配置网络需要等待的最大时间
+    public readonly UsbCommandSetupNetworkSendCommandTimeout = 45 * 1000; // setupWifi配置网络需要等待的最大时间
 
     public readonly UsbCommandClearDataReadInterval = 5 * 1000; // *MaxRetry的次数应该大于timeout
     public readonly UsbCommandClearDataSendCommandTimeout = 90 * 1000; // clearData需要等待的最大时间
