@@ -110,13 +110,13 @@ export class UbibotCommonConfigService {
     };
 
     constructor() {
-        this.init();
+        this.update();
     }
 
     /**
-     * children should call this
+     * If DeployAgent is modified, it must call update() to update config.
      */
-    init() {
+    update() {
         let ioAgentList = [
             'io',
             'putfarm'
