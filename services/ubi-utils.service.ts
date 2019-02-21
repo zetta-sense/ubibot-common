@@ -22,6 +22,7 @@ export class UbiUtilsService {
 
     storageKeyLanguage;
     storageKeyProductProfileCache;
+    storageKeyLastLogin;
 
     constructor(private commonConfigService: UbibotCommonConfigService,
                 private ubiUserDisplayPipe: UbiUserDisplayPipe,
@@ -30,6 +31,7 @@ export class UbiUtilsService {
 
         this.storageKeyLanguage = `appLanguage-${this.commonConfigService.DeployAgent}`;
         this.storageKeyProductProfileCache = `productProfileCache-${this.commonConfigService.DeployAgent}`;
+        this.storageKeyLastLogin = `last_login_username-${this.commonConfigService.DeployAgent}`;
     }
 
     // saveReportLocal(report: UbiReport) {
@@ -71,6 +73,18 @@ export class UbiUtilsService {
         } catch (e) {
         }
         return ret;
+    }
+
+    saveLastLogin(saveKey?: string) {
+        if (saveKey) {
+            localStorage.setItem(this.storageKeyLastLogin, saveKey);
+        } else {
+            localStorage.removeItem(this.storageKeyLastLogin);
+        }
+    }
+
+    getLastLogin() {
+        return localStorage.getItem(this.storageKeyLastLogin) || '';
     }
 
 
