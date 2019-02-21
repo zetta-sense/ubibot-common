@@ -28,6 +28,7 @@ export class UbiLocalizeService implements OnDestroy {// tag: 特别注意servic
 
         let lang = this.ubiUtils.getLanguage();
         this.translate.use(lang);
+        console.log(`Setting current lang to ${lang}`);
 
         this.translate.onDefaultLangChange.subscribe(() => {
             // this.updateAppTitle();
