@@ -20,7 +20,7 @@ export class UbibotCommonConfigService {
     public readonly DefaultLanguage = 'en-GB'; // 基础语言模块文件,当其它文件无法找到匹配的value时使用此文件,正常情况下不需要修改此项
     public PreferredLanguage = 'en-GB'; // en-GB, zh-CN, ja-JP
 
-    // @deprecated
+    // @deprecated - this will be removed in future version
     public readonly LastLoginUsernameKey = 'last_login_username';
 
     public readonly ServerAccessTimout = 30 * 1000; // http请求timeout
