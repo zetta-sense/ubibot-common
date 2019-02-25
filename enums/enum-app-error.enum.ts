@@ -10,10 +10,10 @@ export enum EnumAppError {
     NETWORK_ERROR = '600', // network error
     INTERRUPTED_BY_USER = '801', // interrupted coz user aborted
     NO_USB_PORTS_FOUND = '903', // ERROR: No device USB ports were found
-    USB_TIMEOUT = '904', // ERROR: Usb communicate timeout
+    USB_TIMEOUT = '904', // ERROR: Usb communicate timeout, 与907区别这是一种静态timeout
     USB_MAX_RETRY = '905', // ERROR: Usb max retry
     USB_LIB_SERVICE_NOT_AVAILABLE = '906', // ERROR: Usb lib hang or serial port driver not available
-    USB_INTERVAL_TIMEOUT = '907', // ERROR: every on data event of read data timeout
+    USB_INTERVAL_TIMEOUT = '907', // ERROR: every on data event of read data timeout, 与904区别这是一种动态timeout,譬如接收了部分数据后长时间没有收到结束标志则会产生
 
     USER_CANCELED = '1000',
 
