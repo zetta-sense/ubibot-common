@@ -11,6 +11,11 @@ import {UbiUserDisplayPipe} from './pipes/ubi-user-display.pipe';
 // ref: https://github.com/highcharts/highcharts-angular
 import {HighchartsChartModule} from 'highcharts-angular';
 import {UbiDataChartComponent} from './components/ubi-data-chart/ubi-data-chart.component';
+import {UbiAuthGuard, UbiAuthGuardConfig, UBIBOT_AUTH_GUARD_CONFIGURATION} from './guards/ubi-auth.guard';
+import {RemoteAccountService} from './remote/remote-account.service';
+import {UbiAuthService} from './services/ubi-auth.service';
+import {Router} from '@angular/router';
+import {ResourceUrlPipe} from './pipes/resource-url.pipe';
 
 export const UBIBOT_COMMON_CONFIGURATION = new InjectionToken<any>('UBIBOT_COMMON_CONFIGURATION');
 
@@ -22,6 +27,7 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
 @NgModule({
     declarations: [
         UbiUserDisplayPipe, // 必须，否则会抛出module not determined错误
+        ResourceUrlPipe,
         UbiDataChartComponent,
     ],
     entryComponents: [
@@ -42,6 +48,7 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
     exports: [
         UbiUserDisplayPipe, // 必须
         TranslatePipe,
+        ResourceUrlPipe,
         TranslateDirective,
         UbiDataChartComponent
     ],
@@ -49,6 +56,9 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
         UbibotCommonConfigService,
         // secondary
         UbiUserDisplayPipe,
+        UbiAuthService,
+        UbiAuthGuard,
+        RemoteAccountService,
         // init dep
         {
             provide: APP_INITIALIZER,
@@ -68,7 +78,8 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
     bootstrap: []
 })
 export class UbibotCommonModule {
-    static forRoot(opts: any): ModuleWithProviders {
+    // opts: {i18nPath: './assets/i18n/', authPage: '/auth'}
+    static forRoot(opts: any = {}): ModuleWithProviders {
         return {
             ngModule: UbibotCommonModule,
             // tag: 必须要这样传参，return前不能有任何动态处理，具体参考:
@@ -76,6 +87,7 @@ export class UbibotCommonModule {
             // https://github.com/angular/angular/blob/4.3.3/packages/router/src/router_module.ts#L150
             providers: [
                 {provide: UBIBOT_COMMON_CONFIGURATION, useValue: opts || {}},
+                {provide: UBIBOT_AUTH_GUARD_CONFIGURATION, useValue: {authPage: opts.authPage}},
             ]
         };
     }
