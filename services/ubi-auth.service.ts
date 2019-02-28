@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {UbiUtilsService} from "./ubi-utils.service";
+import {UbiUtilsService} from './ubi-utils.service';
 import {Router} from '@angular/router';
-import {RemoteAccountService} from "../remote/remote-account.service";
+import {RemoteAccountService} from '../remote/remote-account.service';
 import {UbibotCommonConfigService} from '../providers/ubibot-common-config.service';
 
 @Injectable()
@@ -37,7 +37,7 @@ export class UbiAuthService {
     login(username: string, password: string): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             this.remoteAccount
-                .login(username, password)
+                .loginEncrypted(username, this.ubiUtils.sha256(password))
                 .then((resp) => {
                     localStorage.setItem(this.storageKey, JSON.stringify(resp));
                     resolve(resp);

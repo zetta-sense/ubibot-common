@@ -9,6 +9,8 @@ import {EnumAppConstant} from '../enums/enum-app-constant.enum';
 import * as _ from 'lodash';
 import {UbiUserDisplayPipe} from '../pipes/ubi-user-display.pipe';
 import * as uuid from 'uuid';
+import {SHA2_256} from '../misc/sha256';
+import {FromUTF8Array, ToUTF8Array} from '../misc/utf8arr';
 
 export interface UbiServerResponseError {
     desp?: string;
@@ -27,7 +29,7 @@ export class UbiUtilsService {
     constructor(private commonConfigService: UbibotCommonConfigService,
                 private ubiUserDisplayPipe: UbiUserDisplayPipe,
                 private translate: TranslateService) {
-        console.log('initializing UbibotCommonModule - UbiUtilsService...');
+        console.log('Initializing UbibotCommonModule - UbiUtilsService...');
 
         this.storageKeyLanguage = `appLanguage-${this.commonConfigService.DeployAgent}`;
         this.storageKeyProductProfileCache = `productProfileCache-${this.commonConfigService.DeployAgent}`;
@@ -142,6 +144,26 @@ export class UbiUtilsService {
         }
 
         return null;
+    }
+
+    /**
+     * SHA-256
+     * 直接加到ubibot的通用库,不用dep
+     * @param data
+     */
+    sha256(data): string {
+        // const uint8array = new TextEncoder().encode(data);
+        // var string = new TextDecoder().decode(uint8array);
+        let ret = SHA2_256(data);
+        return ret;
+    }
+
+    ToUTF8Array(str: string): Uint8Array {
+        return ToUTF8Array(str);
+    }
+
+    FromUTF8Array(resp): string {
+        return FromUTF8Array(resp);
     }
 
     async delay(ms: number) {

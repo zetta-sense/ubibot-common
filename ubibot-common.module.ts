@@ -47,9 +47,10 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
     ],
     exports: [
         UbiUserDisplayPipe, // 必须
-        TranslatePipe,
+        TranslateModule, //  see https://github.com/ngx-translate/core#sharedmodule
+        // TranslatePipe,
         ResourceUrlPipe,
-        TranslateDirective,
+        // TranslateDirective,
         UbiDataChartComponent
     ],
     providers: [

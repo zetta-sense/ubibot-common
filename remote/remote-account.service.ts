@@ -9,6 +9,18 @@ export class RemoteAccountService {
                 private ubibotCommonConfig: UbibotCommonConfigService) {
     }
 
+    loginEncrypted(username: string, passwordSha256: string): Promise<any> {
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/login`;
+
+        let params = new HttpParams();
+        params = params.set('username', username);
+        params = params.set('password', passwordSha256);
+        params = params.set('password_type', 'sha256');
+
+        return this.http.post(url, params).toPromise();
+    }
+
     login(username: string, password: string): Promise<any> {
 
         let url = `${this.ubibotCommonConfig.EndPoint}/accounts/login`;
@@ -16,7 +28,6 @@ export class RemoteAccountService {
         let params = new HttpParams();
         params = params.set('username', username);
         params = params.set('password', password);
-
 
         return this.http.post(url, params).toPromise();
     }

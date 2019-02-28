@@ -12,13 +12,13 @@ export class UbibotCommonConfigService {
     public readonly DatabaseVersion = 1;
     public readonly DatabaseName = 'UbiDatabase';
     public EndPoint = '';
-    public _EndPoint = 'https://api.ubibot.cn';//raw to copy and convert domain
+    public _EndPoint = 'https://api.ubibot.cn'; // raw to copy and convert domain
     public WebLinkAboutUs = '';
-    public _WebLinkAboutUs = 'https://www.ubibot.cn/aboutus/';//raw to copy and convert domain
+    public _WebLinkAboutUs = 'https://www.ubibot.cn/aboutus/'; // raw to copy and convert domain
     // public readonly DownloadDriverCH341SER = 'https://www.ubibot.io/setup/';
     public DownloadDriverCH341SER = 'http://www.wch.cn/downloads/file/65.html';
     public TermsLink = '';
-    public _TermsLink = 'https://www.ubibot.cn/service/';//raw to copy and convert domain
+    public _TermsLink = 'https://www.ubibot.cn/service/'; // raw to copy and convert domain
 
     public readonly DefaultLanguage = 'en-GB'; // 基础语言模块文件,当其它文件无法找到匹配的value时使用此文件,正常情况下不需要修改此项
     public PreferredLanguage = 'en-GB'; // en-GB, zh-CN, ja-JP
@@ -127,7 +127,7 @@ export class UbibotCommonConfigService {
             this.EndPoint = this._EndPoint.replace(/\.cn/, '.io');
             this.WebLinkAboutUs = this._WebLinkAboutUs.replace(/\.cn/, '.io');
             this.TermsLink = this._TermsLink.replace(/\.cn/, '.io');
-        }else{
+        } else {
             this.EndPoint = this._EndPoint;
             this.WebLinkAboutUs = this._WebLinkAboutUs;
             this.TermsLink = this._TermsLink;
