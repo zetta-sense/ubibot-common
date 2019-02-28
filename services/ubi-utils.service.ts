@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable, InjectionToken, Optional} from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UbibotCommonConfigService} from '../providers/ubibot-common-config.service';
 import {EnumBasicProductId} from '../enums/enum-basic-product-id.enum';
@@ -11,6 +11,21 @@ import {UbiUserDisplayPipe} from '../pipes/ubi-user-display.pipe';
 import * as uuid from 'uuid';
 import {SHA2_256} from '../misc/sha256';
 import {FromUTF8Array, ToUTF8Array} from '../misc/utf8arr';
+
+export const UBIBOT_UTILS_DIALOG_AGENT = new InjectionToken<UbibotUtilsDialogAgent>('UBIBOT_UTILS_DIALOG_AGENT');
+
+export declare type IFuncAlert = (msg: string) => Promise<any>;
+export declare type IFuncError = (msg: string) => Promise<any>;
+export declare type IFuncShowLoading = (msg: string) => Promise<any>;
+export declare type IFuncHideLoading = () => Promise<any>;
+
+export interface UbibotUtilsDialogAgent {
+    alert: IFuncAlert;
+    error: IFuncError;
+    showLoading: IFuncShowLoading;
+    hideLoading: IFuncHideLoading;
+}
+
 
 export interface UbiServerResponseError {
     desp?: string;
@@ -28,12 +43,34 @@ export class UbiUtilsService {
 
     constructor(private commonConfigService: UbibotCommonConfigService,
                 private ubiUserDisplayPipe: UbiUserDisplayPipe,
-                private translate: TranslateService) {
+                private translate: TranslateService,
+                @Optional() @Inject(UBIBOT_UTILS_DIALOG_AGENT) private utilsDialogAgent: UbibotUtilsDialogAgent) {
         console.log('Initializing UbibotCommonModule - UbiUtilsService...');
 
         this.storageKeyLanguage = `appLanguage-${this.commonConfigService.DeployAgent}`;
         this.storageKeyProductProfileCache = `productProfileCache-${this.commonConfigService.DeployAgent}`;
         this.storageKeyLastLogin = `last_login_username-${this.commonConfigService.DeployAgent}`;
+
+        if (!utilsDialogAgent) {
+            this.utilsDialogAgent = {
+                alert: (...args) => {
+                    console.log(args);
+                    return Promise.resolve();
+                },
+                error: (...args) => {
+                    console.warn(args);
+                    return Promise.resolve();
+                },
+                showLoading: () => {
+                    console.warn('IFuncShowLoading not implemented yet!');
+                    return Promise.resolve();
+                },
+                hideLoading: () => {
+                    console.warn('IFuncHideLoading not implemented yet!');
+                    return Promise.resolve();
+                },
+            };
+        }
     }
 
     // saveReportLocal(report: UbiReport) {
@@ -156,6 +193,53 @@ export class UbiUtilsService {
         // var string = new TextDecoder().decode(uint8array);
         let ret = SHA2_256(data);
         return ret;
+    }
+
+    showLoading(msg): Promise<any> {
+        return this.utilsDialogAgent.showLoading(msg);
+    }
+
+    hideLoading(): Promise<any> {
+        return this.utilsDialogAgent.hideLoading();
+    }
+
+    error(err, ...argsObj): void {
+        let errMsg = '';
+        let errInfo = '';
+
+        // console.log(err);
+        // (<any>window).a = err;
+
+        let msgShow;
+
+        if (err && err.name == 'HttpErrorResponse') {
+            // if(err.error.desp || err.error.errorCode) {
+            //     errMsg = `${(<any>err).error.desp}`;
+            //     errInfo = `${(<any>err).error.errorCode}`;
+            // }else{
+            //     errMsg = `${(<any>err).status}`;
+            //     errInfo = `${(<any>err).statusText}`;
+            // }
+            errInfo = `${this.parseError(err)}`;
+            msgShow = `Error: ${errInfo}`;
+        } else if (typeof err == 'string') {
+            msgShow = `${err}`;
+        } else if (err instanceof UbiError) {
+            errInfo = `${this.parseError(err, argsObj)}`;
+            msgShow = `Error: ${errInfo}`;
+        } else {
+            try {
+                errMsg = `Low-level exception`;
+                errInfo = `${err.message}`;
+            } catch (e) {
+                errMsg = 'Cannot parse error message. More info in console.';
+                console.error(e);
+            }
+
+            msgShow = `${errMsg}, ${errInfo}`;
+        }
+
+        this.utilsDialogAgent.error(msgShow).then(() => null);
     }
 
     ToUTF8Array(str: string): Uint8Array {

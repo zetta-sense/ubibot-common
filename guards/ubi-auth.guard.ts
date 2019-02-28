@@ -1,7 +1,7 @@
 import {Inject, Injectable, InjectionToken, Optional} from '@angular/core';
 import {CanActivate, CanActivateChild, ActivatedRouteSnapshot, RouterStateSnapshot, Router, NavigationExtras} from '@angular/router';
 import {Observable} from 'rxjs';
-import {UbiAuthService} from "../services/ubi-auth.service";
+import {UbiAuthService} from '../services/ubi-auth.service';
 
 export const UBIBOT_AUTH_GUARD_CONFIGURATION = new InjectionToken<UbiAuthGuardConfig>('UBIBOT_AUTH_GUARD_CONFIGURATION');
 export interface UbiAuthGuardConfig {
