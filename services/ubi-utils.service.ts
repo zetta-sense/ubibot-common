@@ -18,12 +18,18 @@ export declare type IFuncAlert = (msg: string) => Promise<any>;
 export declare type IFuncError = (msg: string) => Promise<any>;
 export declare type IFuncShowLoading = (msg: string) => Promise<any>;
 export declare type IFuncHideLoading = () => Promise<any>;
+export declare type IFuncSnack = (msg: string) => Promise<any>;
+export declare type IFuncPrompt = (msg: string) => Promise<any>;
+export declare type IFuncConfirm = (msg: string) => Promise<any>;
 
 export interface UbibotUtilsDialogAgent {
     alert: IFuncAlert;
     error: IFuncError;
     showLoading: IFuncShowLoading;
     hideLoading: IFuncHideLoading;
+    snack: IFuncSnack;
+    prompt: IFuncPrompt;
+    confirm: IFuncConfirm;
 }
 
 
@@ -69,6 +75,12 @@ export class UbiUtilsService {
                     console.warn('IFuncHideLoading not implemented yet!');
                     return Promise.resolve();
                 },
+                snack: (...args) => {
+                    console.log(args);
+                    return Promise.resolve();
+                },
+                confirm: (...args) => Promise.resolve(),
+                prompt: (...args) => Promise.resolve(),
             };
         }
     }
@@ -240,6 +252,18 @@ export class UbiUtilsService {
         }
 
         this.utilsDialogAgent.error(msgShow).then(() => null);
+    }
+
+    snack(msg: string): Promise<any> {
+        return this.utilsDialogAgent.snack(msg);
+    }
+
+    prompt(msg: string): Promise<any> {
+        return this.utilsDialogAgent.prompt(msg);
+    }
+
+    confirm(msg: string): Promise<any> {
+        return this.utilsDialogAgent.confirm(msg);
     }
 
     ToUTF8Array(str: string): Uint8Array {
