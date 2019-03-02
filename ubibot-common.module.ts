@@ -11,11 +11,10 @@ import {UbiUserDisplayPipe} from './pipes/ubi-user-display.pipe';
 // ref: https://github.com/highcharts/highcharts-angular
 import {HighchartsChartModule} from 'highcharts-angular';
 import {UbiDataChartComponent} from './components/ubi-data-chart/ubi-data-chart.component';
-import {UbiAuthGuard, UbiAuthGuardConfig, UBIBOT_AUTH_GUARD_CONFIGURATION} from './guards/ubi-auth.guard';
 import {RemoteAccountService} from './remote/remote-account.service';
-import {UbiAuthService} from './services/ubi-auth.service';
-import {Router} from '@angular/router';
+import {UbiAuthService, UBIBOT_AUTH_CONFIGURATION} from './services/ubi-auth.service';
 import {ResourceUrlPipe} from './pipes/resource-url.pipe';
+import {UbiAuthGuard} from './guards/ubi-auth.guard';
 
 export const UBIBOT_COMMON_CONFIGURATION = new InjectionToken<any>('UBIBOT_COMMON_CONFIGURATION');
 
@@ -86,7 +85,7 @@ export class UbibotCommonModule {
             // https://github.com/angular/angular/blob/4.3.3/packages/router/src/router_module.ts#L150
             providers: [
                 {provide: UBIBOT_COMMON_CONFIGURATION, useValue: opts || {}},
-                {provide: UBIBOT_AUTH_GUARD_CONFIGURATION, useValue: {authPage: opts.authPage}},
+                {provide: UBIBOT_AUTH_CONFIGURATION, useValue: {authPage: opts.authPage}},
             ]
         };
     }

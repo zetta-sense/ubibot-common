@@ -1,19 +1,14 @@
-import {Inject, Injectable, InjectionToken, Optional} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {CanActivate, CanActivateChild, ActivatedRouteSnapshot, RouterStateSnapshot, Router, NavigationExtras} from '@angular/router';
 import {Observable} from 'rxjs';
-import {UbiAuthService} from '../services/ubi-auth.service';
-
-export const UBIBOT_AUTH_GUARD_CONFIGURATION = new InjectionToken<UbiAuthGuardConfig>('UBIBOT_AUTH_GUARD_CONFIGURATION');
-export interface UbiAuthGuardConfig {
-    authPage: string;
-}
+import {UbiAuthConfig, UbiAuthService, UBIBOT_AUTH_CONFIGURATION} from '../services/ubi-auth.service';
 
 @Injectable()
 export class UbiAuthGuard implements CanActivate, CanActivateChild {
 
     constructor(private authService: UbiAuthService,
                 private router: Router,
-                @Inject(UBIBOT_AUTH_GUARD_CONFIGURATION) private guardConfig: UbiAuthGuardConfig) {
+                @Inject(UBIBOT_AUTH_CONFIGURATION) private authConfig: UbiAuthConfig) {
 
     }
 
@@ -50,7 +45,8 @@ export class UbiAuthGuard implements CanActivate, CanActivateChild {
         };
 
         // Navigate to the login page with extras
-        this.router.navigate([this.guardConfig.authPage], navigationExtras);
+        // tag: 虽然如果在ionic 4的时候，需要call navController.setDirection('root')会更正确，但实际上影响不大，为了不产生入侵式影响，所以这里忽略此操作
+        this.router.navigate([this.authConfig.authPage], navigationExtras);
         return false;
     }
 }

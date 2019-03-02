@@ -1,8 +1,13 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable, InjectionToken} from '@angular/core';
 import {UbiUtilsService} from './ubi-utils.service';
-import {Router} from '@angular/router';
 import {RemoteAccountService} from '../remote/remote-account.service';
 import {UbibotCommonConfigService} from '../providers/ubibot-common-config.service';
+import {Router} from '@angular/router';
+
+export const UBIBOT_AUTH_CONFIGURATION = new InjectionToken<UbiAuthConfig>('UBIBOT_AUTH_CONFIGURATION');
+export interface UbiAuthConfig {
+    authPage: string;
+}
 
 @Injectable()
 export class UbiAuthService {
@@ -13,8 +18,9 @@ export class UbiAuthService {
 
     constructor(private ubiUtils: UbiUtilsService,
                 private ubibotCommonConfig: UbibotCommonConfigService,
+                private remoteAccount: RemoteAccountService,
                 private router: Router,
-                private remoteAccount: RemoteAccountService) {
+                @Inject(UBIBOT_AUTH_CONFIGURATION) private authConfig: UbiAuthConfig) {
 
         this.storageKey = `me-${this.ubibotCommonConfig.DeployAgent}`;
     }
@@ -47,10 +53,11 @@ export class UbiAuthService {
     }
 
     me() {
-        try{
+        try {
             let resp = JSON.parse(localStorage.getItem(this.storageKey));
             return resp;
-        }catch(e){}
+        } catch (e) {
+        }
         return null;
     }
 
@@ -63,10 +70,10 @@ export class UbiAuthService {
     }
 
     token() {
-        try{
+        try {
             let resp = JSON.parse(localStorage.getItem(this.storageKey));
             return resp.token_id;
-        }catch(e){}
+        } catch (e) { }
 
         return null;
     }
@@ -76,7 +83,7 @@ export class UbiAuthService {
 
         this.ubiUtils.resetLanguage();
 
-        this.router.navigate(['/auth']);
+        this.router.navigate([this.authConfig.authPage]);
     }
 
     removeMe() {
