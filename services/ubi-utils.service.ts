@@ -14,13 +14,13 @@ import {FromUTF8Array, ToUTF8Array} from '../misc/utf8arr';
 
 export const UBIBOT_UTILS_DIALOG_AGENT = new InjectionToken<UbibotUtilsDialogAgent>('UBIBOT_UTILS_DIALOG_AGENT');
 
-export declare type IFuncAlert = (msg: string) => Promise<any>;
+export declare type IFuncAlert = (msg: string, opts: any) => Promise<any>;
 export declare type IFuncError = (msg: string) => Promise<any>;
 export declare type IFuncShowLoading = (msg: string) => Promise<any>;
 export declare type IFuncHideLoading = () => Promise<any>;
 export declare type IFuncSnack = (msg: string) => Promise<any>;
-export declare type IFuncPrompt = (msg: string) => Promise<any>;
-export declare type IFuncConfirm = (msg: string) => Promise<any>;
+export declare type IFuncPrompt = (msg: string, opts: any) => Promise<any>;
+export declare type IFuncConfirm = (msg: string, opts: any) => Promise<any>;
 
 export interface UbibotUtilsDialogAgent {
     alert: IFuncAlert;
@@ -164,7 +164,7 @@ export class UbiUtilsService {
 
         if (err instanceof UbiError) {
             ret = this.translate.instant(`ERROR.${err.message}`, err.params || argsObj);
-            ret = `${err.message}, ${ret}`;
+            ret = `${err.message} - ${ret}`;
         }
 
         return ret;
@@ -215,6 +215,10 @@ export class UbiUtilsService {
         return this.utilsDialogAgent.hideLoading();
     }
 
+    brewErrorString(errInfo: string, level: string): string {
+        return `${level}: ${errInfo}`;
+    }
+
     error(err, ...argsObj): void {
         let errMsg = '';
         let errInfo = '';
@@ -225,20 +229,15 @@ export class UbiUtilsService {
         let msgShow;
 
         if (err && err.name == 'HttpErrorResponse') {
-            // if(err.error.desp || err.error.errorCode) {
-            //     errMsg = `${(<any>err).error.desp}`;
-            //     errInfo = `${(<any>err).error.errorCode}`;
-            // }else{
-            //     errMsg = `${(<any>err).status}`;
-            //     errInfo = `${(<any>err).statusText}`;
-            // }
             errInfo = `${this.parseError(err)}`;
-            msgShow = `Error: ${errInfo}`;
+            // msgShow = `Error: ${errInfo}`;
+            msgShow = this.brewErrorString(errInfo, 'Error');
         } else if (typeof err == 'string') {
             msgShow = `${err}`;
         } else if (err instanceof UbiError) {
             errInfo = `${this.parseError(err, argsObj)}`;
-            msgShow = `Error: ${errInfo}`;
+            // msgShow = `Error: ${errInfo}`;
+            msgShow = this.brewErrorString(errInfo, 'Error');
         } else {
             try {
                 errMsg = `Low-level exception`;
@@ -248,22 +247,27 @@ export class UbiUtilsService {
                 console.error(e);
             }
 
-            msgShow = `${errMsg}, ${errInfo}`;
+            // msgShow = `${errMsg}, ${errInfo}`;
+            msgShow = this.brewErrorString(errInfo, errMsg);
         }
 
         this.utilsDialogAgent.error(msgShow).then(() => null);
+    }
+
+    alert(msg: string, opts: any = {}): Promise<any> {
+        return this.utilsDialogAgent.alert(msg, opts);
     }
 
     snack(msg: string): Promise<any> {
         return this.utilsDialogAgent.snack(msg);
     }
 
-    prompt(msg: string): Promise<any> {
-        return this.utilsDialogAgent.prompt(msg);
+    prompt(msg: string, opts: any = {}): Promise<any> {
+        return this.utilsDialogAgent.prompt(msg, opts);
     }
 
-    confirm(msg: string): Promise<any> {
-        return this.utilsDialogAgent.confirm(msg);
+    confirm(msg: string, opts: any = {}): Promise<any> {
+        return this.utilsDialogAgent.confirm(msg, opts);
     }
 
     ToUTF8Array(str: string): Uint8Array {

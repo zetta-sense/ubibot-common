@@ -40,4 +40,24 @@ export class RemoteAccountService {
         let url = `${this.ubibotCommonConfig.EndPoint}/accounts/view`;
         return this.http.get(url).toPromise();
     }
+
+    bindDeviceToken(token: string): Promise<any> {
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/push_service/bind`;
+
+        let params = new HttpParams();
+        params = params.set('push_key', token);
+
+        return this.http.post(url, params).toPromise();
+    }
+
+    unbindDeviceToken(token: string): Promise<any> {
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/push_service/unbind`;
+
+        let params = new HttpParams();
+        params = params.set('push_key', token);
+
+        return this.http.post(url, params).toPromise();
+    }
 }

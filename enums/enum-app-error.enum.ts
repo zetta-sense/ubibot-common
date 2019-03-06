@@ -22,6 +22,9 @@ export enum EnumAppError {
     USERNAME_OR_PASSWORD_ERROR = '1401',
     DEVICE_ATTACHED_BY_OTHERS = '1411',
 
+    FCM_NOT_UNSABLE = '8908',
+    FCM_NOT_SUPPORTED_BY_UBIBOT = '8909',
+
 
     // minus error means acceptable errors
     USB_NO_RECV_DATA_BUT_WOULD_WAIT_NEXT = '-500',

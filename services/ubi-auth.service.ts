@@ -3,6 +3,8 @@ import {UbiUtilsService} from './ubi-utils.service';
 import {RemoteAccountService} from '../remote/remote-account.service';
 import {UbibotCommonConfigService} from '../providers/ubibot-common-config.service';
 import {Router} from '@angular/router';
+import {BehaviorSubject} from 'rxjs';
+import {Platform} from '@ionic/angular';
 
 export const UBIBOT_AUTH_CONFIGURATION = new InjectionToken<UbiAuthConfig>('UBIBOT_AUTH_CONFIGURATION');
 export interface UbiAuthConfig {
@@ -12,6 +14,8 @@ export interface UbiAuthConfig {
 @Injectable()
 export class UbiAuthService {
 
+    authenticationState = new BehaviorSubject(false);
+
     redirectUrl: string;
 
     storageKey;
@@ -20,13 +24,19 @@ export class UbiAuthService {
                 private ubibotCommonConfig: UbibotCommonConfigService,
                 private remoteAccount: RemoteAccountService,
                 private router: Router,
+                private plt: Platform,
                 @Inject(UBIBOT_AUTH_CONFIGURATION) private authConfig: UbiAuthConfig) {
 
         this.storageKey = `me-${this.ubibotCommonConfig.DeployAgent}`;
+
+        this.plt.ready().then(() => {
+            this.checkToken();
+        });
     }
 
     isLoggedIn() {
-        return !!this.token();
+        // return !!this.token();
+        return this.authenticationState.value;
     }
 
     isLoggedInAysnc(): Promise<any> {
@@ -46,6 +56,7 @@ export class UbiAuthService {
                 .loginEncrypted(username, this.ubiUtils.sha256(password))
                 .then((resp) => {
                     localStorage.setItem(this.storageKey, JSON.stringify(resp));
+                    this.authenticationState.next(true);
                     resolve(resp);
                 })
                 .catch(reject);
@@ -78,15 +89,32 @@ export class UbiAuthService {
         return null;
     }
 
-    logout() {
+    logout(): Promise<any> {
         this.removeMe();
 
         this.ubiUtils.resetLanguage();
 
-        this.router.navigate([this.authConfig.authPage]);
+        // this.router.navigate([this.authConfig.authPage]);
+        this.authenticationState.next(false);
+
+        return Promise.resolve();
     }
 
-    removeMe() {
+    bindDeviceToken(token: string): Promise<any> {
+        return this.remoteAccount.bindDeviceToken(token);
+    }
+
+    unbindDeviceToken(token: string): Promise<any> {
+        return this.remoteAccount.unbindDeviceToken(token);
+    }
+
+    private checkToken() {
+        if(this.token()) {
+            this.authenticationState.next(true);
+        }
+    }
+
+    private removeMe() {
         localStorage.setItem(this.storageKey, null);
     }
 
