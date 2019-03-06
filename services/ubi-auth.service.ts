@@ -4,7 +4,6 @@ import {RemoteAccountService} from '../remote/remote-account.service';
 import {UbibotCommonConfigService} from '../providers/ubibot-common-config.service';
 import {Router} from '@angular/router';
 import {BehaviorSubject} from 'rxjs';
-import {Platform} from '@ionic/angular';
 
 export const UBIBOT_AUTH_CONFIGURATION = new InjectionToken<UbiAuthConfig>('UBIBOT_AUTH_CONFIGURATION');
 export interface UbiAuthConfig {
@@ -24,14 +23,13 @@ export class UbiAuthService {
                 private ubibotCommonConfig: UbibotCommonConfigService,
                 private remoteAccount: RemoteAccountService,
                 private router: Router,
-                private plt: Platform,
                 @Inject(UBIBOT_AUTH_CONFIGURATION) private authConfig: UbiAuthConfig) {
 
         this.storageKey = `me-${this.ubibotCommonConfig.DeployAgent}`;
+    }
 
-        this.plt.ready().then(() => {
-            this.checkToken();
-        });
+    init() {
+        this.checkToken();
     }
 
     isLoggedIn() {

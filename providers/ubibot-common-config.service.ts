@@ -7,6 +7,8 @@ export class UbibotCommonConfigService {
     public DeployAgent = 'cn'; // cn,io,putfarm
     public NoSVGLogoAnimation = false;
 
+    public EnableServiceFCM = true;
+
     public LogoFile = 'assets/logo.png';
 
     public readonly DatabaseVersion = 1;
@@ -110,6 +112,8 @@ export class UbibotCommonConfigService {
     };
 
     constructor() {
+        console.log('Constructing config file...');
+
         this.update();
     }
 
@@ -136,10 +140,16 @@ export class UbibotCommonConfigService {
         if (this.DeployAgent !== 'cn' && this.DeployAgent !== 'io') {
             this.LogoFile = `assets/images/agent-logo/${this.DeployAgent}/icon.png`;
             this.NoSVGLogoAnimation = true;
+        } else {
+            this.NoSVGLogoAnimation = false;
         }
 
         if (this.DeployAgent === 'cn') {
             this.PreferredLanguage = 'zh-CN';
+            this.EnableServiceFCM = false;
+        } else {
+            // tag: 一定要带有else，因为constructor的时候可能已经将它设置为false，后续更新为非cn时再将无法设为true
+            this.EnableServiceFCM = true;
         }
 
         if (this.DeployAgent === 'io') {

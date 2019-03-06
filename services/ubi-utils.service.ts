@@ -11,6 +11,7 @@ import {UbiUserDisplayPipe} from '../pipes/ubi-user-display.pipe';
 import * as uuid from 'uuid';
 import {SHA2_256} from '../misc/sha256';
 import {FromUTF8Array, ToUTF8Array} from '../misc/utf8arr';
+import {AppConfig} from '../../../environments/environment';
 
 export const UBIBOT_UTILS_DIALOG_AGENT = new InjectionToken<UbibotUtilsDialogAgent>('UBIBOT_UTILS_DIALOG_AGENT');
 
@@ -51,11 +52,8 @@ export class UbiUtilsService {
                 private ubiUserDisplayPipe: UbiUserDisplayPipe,
                 private translate: TranslateService,
                 @Optional() @Inject(UBIBOT_UTILS_DIALOG_AGENT) private utilsDialogAgent: UbibotUtilsDialogAgent) {
-        console.log('Initializing UbibotCommonModule - UbiUtilsService...');
 
-        this.storageKeyLanguage = `appLanguage-${this.commonConfigService.DeployAgent}`;
-        this.storageKeyProductProfileCache = `productProfileCache-${this.commonConfigService.DeployAgent}`;
-        this.storageKeyLastLogin = `last_login_username-${this.commonConfigService.DeployAgent}`;
+        this.update();
 
         if (!utilsDialogAgent) {
             this.utilsDialogAgent = {
@@ -83,6 +81,19 @@ export class UbiUtilsService {
                 prompt: (...args) => Promise.resolve(),
             };
         }
+    }
+
+    update(newAgent?: string) {
+        console.log('Initializing UbibotCommonModule - UbiUtilsService...');
+
+        if(newAgent) {
+            this.commonConfigService.DeployAgent = newAgent;
+        }
+        this.commonConfigService.update();
+
+        this.storageKeyLanguage = `appLanguage-${this.commonConfigService.DeployAgent}`;
+        this.storageKeyProductProfileCache = `productProfileCache-${this.commonConfigService.DeployAgent}`;
+        this.storageKeyLastLogin = `last_login_username-${this.commonConfigService.DeployAgent}`;
     }
 
     // saveReportLocal(report: UbiReport) {
