@@ -7,7 +7,8 @@ import {BehaviorSubject} from 'rxjs';
 
 export const UBIBOT_AUTH_CONFIGURATION = new InjectionToken<UbiAuthConfig>('UBIBOT_AUTH_CONFIGURATION');
 export interface UbiAuthConfig {
-    authPage: string;
+    // authPage: string;
+    [key: string]: any;
 }
 
 @Injectable()

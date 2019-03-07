@@ -85,7 +85,9 @@ export class UbibotCommonModule {
             // https://github.com/angular/angular/blob/4.3.3/packages/router/src/router_module.ts#L150
             providers: [
                 {provide: UBIBOT_COMMON_CONFIGURATION, useValue: opts || {}},
-                {provide: UBIBOT_AUTH_CONFIGURATION, useValue: {authPage: opts.authPage}},
+
+                // @deprecated
+                {provide: UBIBOT_AUTH_CONFIGURATION, useValue: {}},
             ]
         };
     }
