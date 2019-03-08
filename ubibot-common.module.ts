@@ -1,20 +1,21 @@
-import {APP_INITIALIZER, InjectionToken, ModuleWithProviders, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {UbiLocalizeService} from './services/ubi-localize.service';
-import {HttpClientModule, HttpClient} from '@angular/common/http';
+import { APP_INITIALIZER, InjectionToken, ModuleWithProviders, NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { UbiLocalizeService } from './services/ubi-localize.service';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 
-import {TranslateModule, TranslateLoader, TranslatePipe, TranslateDirective} from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {UbibotCommonConfigService} from './providers/ubibot-common-config.service';
-import {UbiUserDisplayPipe} from './pipes/ubi-user-display.pipe';
+import { TranslateModule, TranslateLoader, TranslatePipe, TranslateDirective } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { UbibotCommonConfigService } from './providers/ubibot-common-config.service';
+import { UbiUserDisplayPipe } from './pipes/ubi-user-display.pipe';
 
 // ref: https://github.com/highcharts/highcharts-angular
-import {HighchartsChartModule} from 'highcharts-angular';
-import {UbiDataChartComponent} from './components/ubi-data-chart/ubi-data-chart.component';
-import {RemoteAccountService} from './remote/remote-account.service';
-import {UbiAuthService, UBIBOT_AUTH_CONFIGURATION} from './services/ubi-auth.service';
-import {ResourceUrlPipe} from './pipes/resource-url.pipe';
-import {UbiAuthGuard} from './guards/ubi-auth.guard';
+import { HighchartsChartModule } from 'highcharts-angular';
+import { UbiDataChartComponent } from './components/ubi-data-chart/ubi-data-chart.component';
+import { RemoteAccountService } from './remote/remote-account.service';
+import { UbiAuthService, UBIBOT_AUTH_CONFIGURATION } from './services/ubi-auth.service';
+import { ResourceUrlPipe } from './pipes/resource-url.pipe';
+import { UbiAuthGuard } from './guards/ubi-auth.guard';
+import { RemoteChannelService } from './remote/remote-channel.service';
 
 export const UBIBOT_COMMON_CONFIGURATION = new InjectionToken<any>('UBIBOT_COMMON_CONFIGURATION');
 
@@ -57,6 +58,7 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
         UbiAuthService,
         UbiAuthGuard,
         RemoteAccountService,
+        RemoteChannelService,
         // init dep
         {
             provide: APP_INITIALIZER,
@@ -84,10 +86,10 @@ export class UbibotCommonModule {
             // https://github.com/angular/angular/issues/14707
             // https://github.com/angular/angular/blob/4.3.3/packages/router/src/router_module.ts#L150
             providers: [
-                {provide: UBIBOT_COMMON_CONFIGURATION, useValue: opts || {}},
+                { provide: UBIBOT_COMMON_CONFIGURATION, useValue: opts || {} },
 
                 // @deprecated
-                {provide: UBIBOT_AUTH_CONFIGURATION, useValue: {}},
+                { provide: UBIBOT_AUTH_CONFIGURATION, useValue: {} },
             ]
         };
     }
