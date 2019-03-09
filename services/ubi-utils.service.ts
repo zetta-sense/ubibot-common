@@ -51,7 +51,7 @@ export class UbiUtilsService {
     constructor(private commonConfigService: UbibotCommonConfigService,
                 private ubiUserDisplayPipe: UbiUserDisplayPipe,
                 private translate: TranslateService,
-                @Optional() @Inject(UBIBOT_UTILS_DIALOG_AGENT) private utilsDialogAgent: UbibotUtilsDialogAgent) {
+                @Inject(UBIBOT_UTILS_DIALOG_AGENT) private utilsDialogAgent: UbibotUtilsDialogAgent) {
 
         this.update();
 
@@ -84,7 +84,7 @@ export class UbiUtilsService {
     }
 
     update(newAgent?: string) {
-        console.log('Initializing UbibotCommonModule - UbiUtilsService...');
+        console.log('Updating with new config UCM - UbiUtilsService...');
 
         if(newAgent) {
             this.commonConfigService.DeployAgent = newAgent;

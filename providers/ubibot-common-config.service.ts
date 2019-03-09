@@ -28,7 +28,7 @@ export class UbibotCommonConfigService {
     // @deprecated - this will be removed in future version
     public readonly LastLoginUsernameKey = 'last_login_username';
 
-    public readonly ServerAccessTimout = 30 * 1000; // http请求timeout
+    public readonly ServerAccessTimout = 15 * 1000; // http请求timeout
 
     public readonly UsbReadMaxRetry = 30; // 重试次数
     public readonly UsbReadInterval = 500; // 30 * 0.5 s,稍微频发点读取加快响应时间
