@@ -16,6 +16,8 @@ import { HighchartsChartModule } from 'highcharts-angular';
     exports: [
         UbiMeAvatarComponent,
         UbiDataChartComponent,
+        UbiUserDisplayPipe,
+        ResourceUrlPipe,
     ],
     providers: [ // 用于DI
         UbiUserDisplayPipe,
