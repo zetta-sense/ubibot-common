@@ -26,7 +26,6 @@ export class UbiMeAvatarComponent implements OnInit {
 
 
     ngOnInit() {
-        console.log(this.rounded);
         // console.log('ngOnInit MeAvatarComponent');
         //
         // console.log(`logoForEmpty=${this.logoForEmpty}`);
