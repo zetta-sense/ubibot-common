@@ -16,6 +16,7 @@ import { UbiAuthService, UBIBOT_AUTH_CONFIGURATION } from './services/ubi-auth.s
 import { ResourceUrlPipe } from './pipes/resource-url.pipe';
 import { UbiAuthGuard } from './guards/ubi-auth.guard';
 import { RemoteChannelService } from './remote/remote-channel.service';
+import { UbiEventService } from './services/ubi-event.service';
 
 export const UBIBOT_COMMON_CONFIGURATION = new InjectionToken<any>('UBIBOT_COMMON_CONFIGURATION');
 
@@ -57,6 +58,7 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
         UbiUserDisplayPipe,
         UbiAuthService,
         UbiAuthGuard,
+        UbiEventService,
         RemoteAccountService,
         RemoteChannelService,
         // init dep
