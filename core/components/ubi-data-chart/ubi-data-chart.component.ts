@@ -1,5 +1,4 @@
 import {AfterViewInit, Component, Input, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
-import {UbiUtilsService} from '../../services/ubi-utils.service';
 import {Observable, Subject} from 'rxjs';
 import * as _ from 'lodash';
 
@@ -8,6 +7,7 @@ import * as Highcharts from 'highcharts/highstock';
 import * as HighchartsThemeDarkUnica from 'highcharts/themes/dark-unica';
 import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
 import {TranslateService} from '@ngx-translate/core';
+import { UbiUtilsService } from 'src/modules/ubibot-common/services/ubi-utils.service';
 
 // ref: https://github.com/highcharts/highcharts-angular#theme
 HighchartsThemeDarkUnica(Highcharts);

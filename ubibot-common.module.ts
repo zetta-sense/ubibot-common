@@ -8,8 +8,6 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { UbibotCommonConfigService } from './providers/ubibot-common-config.service';
 
 // ref: https://github.com/highcharts/highcharts-angular
-import { HighchartsChartModule } from 'highcharts-angular';
-import { UbiDataChartComponent } from './components/ubi-data-chart/ubi-data-chart.component';
 import { RemoteAccountService } from './remote/remote-account.service';
 import { UbiAuthService, UBIBOT_AUTH_CONFIGURATION } from './services/ubi-auth.service';
 import { UbiAuthGuard } from './guards/ubi-auth.guard';
@@ -26,15 +24,12 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
 
 @NgModule({
     declarations: [
-        UbiDataChartComponent,
     ],
     entryComponents: [
-        UbiDataChartComponent,
     ],
     imports: [
         BrowserModule,
         HttpClientModule,
-        HighchartsChartModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
@@ -46,7 +41,6 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
     ],
     exports: [
         TranslateModule, // see https://github.com/ngx-translate/core#sharedmodule
-        UbiDataChartComponent,
     ],
     providers: [
         UbibotCommonConfigService,
