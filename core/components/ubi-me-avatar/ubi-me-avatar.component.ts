@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import { UbiAuthService } from 'src/modules/ubibot-common/services/ubi-auth.service';
+import { UbiAuthService } from '../../../services/ubi-auth.service';
 
 /**
  * Generated class for the MeAvatarComponent component.
