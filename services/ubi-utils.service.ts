@@ -7,11 +7,11 @@ import {TranslateService} from '@ngx-translate/core';
 import {UbiError} from '../errors/UbiError';
 import {EnumAppConstant} from '../enums/enum-app-constant.enum';
 import * as _ from 'lodash';
-import {UbiUserDisplayPipe} from '../pipes/ubi-user-display.pipe';
 import * as uuid from 'uuid';
 import {SHA2_256} from '../misc/sha256';
 import {FromUTF8Array, ToUTF8Array} from '../misc/utf8arr';
 import {AppConfig} from '../../../environments/environment';
+import { UbiUserDisplayPipe } from '../core/pipes/ubi-user-display.pipe';
 
 export const UBIBOT_UTILS_DIALOG_AGENT = new InjectionToken<UbibotUtilsDialogAgent>('UBIBOT_UTILS_DIALOG_AGENT');
 

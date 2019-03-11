@@ -6,17 +6,16 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateLoader, TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { UbibotCommonConfigService } from './providers/ubibot-common-config.service';
-import { UbiUserDisplayPipe } from './pipes/ubi-user-display.pipe';
 
 // ref: https://github.com/highcharts/highcharts-angular
 import { HighchartsChartModule } from 'highcharts-angular';
 import { UbiDataChartComponent } from './components/ubi-data-chart/ubi-data-chart.component';
 import { RemoteAccountService } from './remote/remote-account.service';
 import { UbiAuthService, UBIBOT_AUTH_CONFIGURATION } from './services/ubi-auth.service';
-import { ResourceUrlPipe } from './pipes/resource-url.pipe';
 import { UbiAuthGuard } from './guards/ubi-auth.guard';
 import { RemoteChannelService } from './remote/remote-channel.service';
 import { UbiEventService } from './services/ubi-event.service';
+import { UbiCoreModule } from './core/core.module';
 
 export const UBIBOT_COMMON_CONFIGURATION = new InjectionToken<any>('UBIBOT_COMMON_CONFIGURATION');
 
@@ -27,12 +26,10 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
 
 @NgModule({
     declarations: [
-        UbiUserDisplayPipe, // 必须，否则会抛出module not determined错误
-        ResourceUrlPipe,
         UbiDataChartComponent,
     ],
     entryComponents: [
-        UbiDataChartComponent
+        UbiDataChartComponent,
     ],
     imports: [
         BrowserModule,
@@ -44,18 +41,16 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
                 useFactory: (HttpLoaderFactory),
                 deps: [HttpClient, UBIBOT_COMMON_CONFIGURATION]
             }
-        })
+        }),
+        UbiCoreModule
     ],
     exports: [
-        UbiUserDisplayPipe, // 必须
         TranslateModule, // see https://github.com/ngx-translate/core#sharedmodule
-        ResourceUrlPipe,
-        UbiDataChartComponent
+        UbiDataChartComponent,
     ],
     providers: [
         UbibotCommonConfigService,
         // secondary
-        UbiUserDisplayPipe,
         UbiAuthService,
         UbiAuthGuard,
         UbiEventService,

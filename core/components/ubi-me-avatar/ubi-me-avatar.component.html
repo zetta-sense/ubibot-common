@@ -1,0 +1,7 @@
+<!-- Generated template for the MeAvatarComponent component -->
+<span class="avatar-small"
+      [ngStyle]="{'width.px': size, 'height.px': size}">
+    <img class=""
+         [ngClass]="{'rounded': rounded}"
+         [src]="me?.account?.avatar_base | resourceUrl: size : logoForEmpty">
+</span>
