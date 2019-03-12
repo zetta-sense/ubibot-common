@@ -15,6 +15,7 @@ export interface UbiAuthConfig {
 export class UbiAuthService {
 
     authenticationState = new BehaviorSubject(null);
+    redirectUrl: string;
 
     storageKey;
 
@@ -107,6 +108,9 @@ export class UbiAuthService {
 
     private checkToken() {
         if(this.token()) {
+            const href = window.location.href;
+            const origin = window.location.origin;
+            this.redirectUrl = href.slice(origin.length);
             this.authenticationState.next(true);
         }else{
             this.authenticationState.next(false);
