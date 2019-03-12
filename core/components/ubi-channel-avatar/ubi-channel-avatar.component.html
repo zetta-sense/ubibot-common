@@ -3,5 +3,5 @@
       [ngStyle]="{'width.px': size, 'height.px': size}">
     <img class=""
          [ngClass]="{'rounded': rounded}"
-         [src]="avatarImage">
+         [attr.data-src]="avatarImage | resourceUrl: size : true">
 </span>

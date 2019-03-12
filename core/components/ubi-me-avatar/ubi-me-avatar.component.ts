@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { UbiAuthService } from '../../../services/ubi-auth.service';
 
 /**
@@ -14,9 +14,14 @@ import { UbiAuthService } from '../../../services/ubi-auth.service';
 })
 export class UbiMeAvatarComponent implements OnInit {
 
-    @Input() size = 32;
-    @Input() logoForEmpty = false;
-    @Input() rounded = false;
+    @Input()
+    size = 32;
+
+    @Input()
+    logoForEmpty = false;
+
+    @Input()
+    rounded = false;
 
     me: any;
 
