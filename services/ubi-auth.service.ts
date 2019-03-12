@@ -14,9 +14,7 @@ export interface UbiAuthConfig {
 @Injectable()
 export class UbiAuthService {
 
-    authenticationState = new BehaviorSubject(false);
-
-    redirectUrl: string;
+    authenticationState = new BehaviorSubject(null);
 
     storageKey;
 
@@ -110,6 +108,8 @@ export class UbiAuthService {
     private checkToken() {
         if(this.token()) {
             this.authenticationState.next(true);
+        }else{
+            this.authenticationState.next(false);
         }
     }
 

@@ -31,9 +31,6 @@ export class UbiAuthGuard implements CanActivate, CanActivateChild {
             return true;
         }
 
-        // Store the attempted URL for redirecting
-        this.authService.redirectUrl = url;
-
         // Create a dummy session id
         let sessionId = 123456789;
 
