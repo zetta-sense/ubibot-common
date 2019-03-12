@@ -3,5 +3,7 @@
       [ngStyle]="{'width.px': size, 'height.px': size}">
     <img class=""
          [ngClass]="{'rounded': rounded}"
-         [attr.data-src]="avatarImage | resourceUrl: size : true">
+         ubi-lazy-img
+         default-src="assets/img-empty.png"
+         [data-src]="avatarImage | resourceUrl: size : true">
 </span>
