@@ -5,6 +5,7 @@ import { ResourceUrlPipe } from './pipes/resource-url.pipe';
 import { UbiUserDisplayPipe } from './pipes/ubi-user-display.pipe';
 import { UbiDataChartComponent } from './components/ubi-data-chart/ubi-data-chart.component';
 import { HighchartsChartModule } from 'highcharts-angular';
+import { UbiProductAvatarComponent } from './components/ubi-product-avatar/ubi-product-avatar.component';
 
 @NgModule({
     declarations: [
@@ -12,10 +13,12 @@ import { HighchartsChartModule } from 'highcharts-angular';
         ResourceUrlPipe,
         UbiMeAvatarComponent,
         UbiDataChartComponent,
+        UbiProductAvatarComponent,
     ],
     exports: [
         UbiMeAvatarComponent,
         UbiDataChartComponent,
+        UbiProductAvatarComponent,
         UbiUserDisplayPipe,
         ResourceUrlPipe,
     ],
