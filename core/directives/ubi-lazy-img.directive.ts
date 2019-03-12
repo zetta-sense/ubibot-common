@@ -30,7 +30,7 @@ export class UbiLazyImgDirective implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
         this.canLazyLoad() ? this.lazyLoadImage() : this.loadImage();
-        console.log(this.srcAttr);
+        // console.log(this.srcAttr);
     }
 
     private canLazyLoad() {
