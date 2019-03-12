@@ -7,6 +7,7 @@ import { UbiDataChartComponent } from './components/ubi-data-chart/ubi-data-char
 import { HighchartsChartModule } from 'highcharts-angular';
 import { UbiProductAvatarComponent } from './components/ubi-product-avatar/ubi-product-avatar.component';
 import { UbiChannelAvatarComponent } from './components/ubi-channel-avatar/ubi-channel-avatar.component';
+import { UbiLazyImgDirective } from './directives/ubi-lazy-img.directive';
 
 @NgModule({
     declarations: [
@@ -16,6 +17,7 @@ import { UbiChannelAvatarComponent } from './components/ubi-channel-avatar/ubi-c
         UbiDataChartComponent,
         UbiProductAvatarComponent,
         UbiChannelAvatarComponent,
+        UbiLazyImgDirective,
     ],
     exports: [
         UbiMeAvatarComponent,
