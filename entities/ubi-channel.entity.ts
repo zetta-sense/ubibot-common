@@ -1,3 +1,6 @@
+import { UbiChannelFields } from "./ubi-channel-fields.entity";
+import { UbiChannelFieldDef } from "./ubi-channel-field-def.entity";
+
 export abstract class UbiChannel {
     channel_id?:      string;
     field1?:          string;
@@ -57,7 +60,14 @@ export abstract class UbiChannel {
 
 
 export class UbiChannelImpl extends UbiChannel {
-    constructor() {
+    constructor(channel: UbiChannel) {
         super();
+
+        Object.setPrototypeOf(this, UbiChannelImpl.prototype);
+        Object.assign(this, channel);
+    }
+
+    getFields(): UbiChannelFields<UbiChannelFieldDef> {
+        return UbiChannelFields.ConvertFromChannel(this);
     }
 }
