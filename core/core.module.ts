@@ -8,7 +8,15 @@ import { HighchartsChartModule } from 'highcharts-angular';
 import { UbiProductAvatarComponent } from './components/ubi-product-avatar/ubi-product-avatar.component';
 import { UbiChannelAvatarComponent } from './components/ubi-channel-avatar/ubi-channel-avatar.component';
 import { UbiLazyImgDirective } from './directives/ubi-lazy-img.directive';
+import { UbiSyncService } from './service/ubi-sync.service';
 
+/**
+ * Core module of common module.
+ * 这个模块作为Shared Module使用
+ *
+ * @export
+ * @class UbiCoreModule
+ */
 @NgModule({
     declarations: [
         UbiUserDisplayPipe, // 必须，否则会抛出module not determined错误
@@ -30,6 +38,7 @@ import { UbiLazyImgDirective } from './directives/ubi-lazy-img.directive';
     providers: [ // 用于DI
         UbiUserDisplayPipe,
         ResourceUrlPipe,
+        UbiSyncService,
     ],
     imports: [
         CommonModule,
