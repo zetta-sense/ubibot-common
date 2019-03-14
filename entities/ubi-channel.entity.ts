@@ -85,8 +85,20 @@ export class UbiChannelDAO extends UbiChannel {
 
         this.extra = {
             fields: this.__extractFields(),
-            lastValues: this.__extractLastValues()
+            lastValues: this.__extractLastValues(),
+            fieldDAOs: <UbiChannelFieldValueDAOsMap>{},
         };
+
+        // 构建每个field的DAO，用于关联field与value
+        this.getFields().forEach((field: UbiChannelFieldDef) => {
+            const fieldDef: UbiChannelFieldDef = _.find(this.extra.fields, { key: field.key });
+
+            if (fieldDef) {
+                const fieldValue = this.extra.lastValues[field.key];
+                const fieldDAO = new UbiChannelFieldValueDAO(fieldDef, fieldValue);
+                this.extra.fieldDAOs[field.key] = fieldDAO;
+            }
+        });
     }
 
     getFields(): UbiChannelFields<UbiChannelFieldDef> {
@@ -106,21 +118,18 @@ export class UbiChannelDAO extends UbiChannel {
     }
 
     getLastFieldValueDAO(fieldKey: string): UbiChannelFieldValueDAO {
-        const fieldDef: UbiChannelFieldDef = _.find(this.extra.fields, { key: fieldKey });
-
-        if (fieldDef) {
-            const fieldValue = this.extra.lastValues[fieldKey];
-            const fieldDAO = new UbiChannelFieldValueDAO(fieldDef, fieldValue);
-            return fieldDAO;
-        }
-
-        return null;
+        return this.extra.fieldDAOs[fieldKey];
     }
 }
 
 interface UbiChannelFeildExtra {
     fields: UbiChannelFields<UbiChannelFieldDef>;
     lastValues: UbiChannelLastValues<UbiChannelLastValuesItem>;
+    fieldDAOs: UbiChannelFieldValueDAOsMap;
+}
+
+interface UbiChannelFieldValueDAOsMap {
+    [key: string]: UbiChannelFieldValueDAO;
 }
 
 export class UbiChannelFieldValueDAO {

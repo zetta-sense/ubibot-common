@@ -61,6 +61,10 @@ export class UbiChannelFields<T extends UbiChannelFieldDef> extends Array<T> {
         });
 
         return ret;
+        // return <any>[{
+        //     key: 'test',
+        //     label: 'label',
+        // }];
     }
 
 
