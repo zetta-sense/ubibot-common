@@ -10,30 +10,18 @@ export enum VConfigItemHidden {
 }
 
 export class UbiChannelVConfig {
-    field1?: VConfigItem;
-    field2?: VConfigItem;
-    field3?: VConfigItem;
-    field4?: VConfigItem;
-    field5?: VConfigItem;
-    field6?: VConfigItem;
-    field7?: VConfigItem;
-    field8?: VConfigItem;
-    field9?: VConfigItem;
-    field10?: VConfigItem;
-    field11?: VConfigItem;
-    field12?: VConfigItem;
 
     [fieldX: string]: VConfigItem;;
 
-    static FromString(rawVConfigStr: string): UbiChannelVConfig {
+    static FromString(rawStr: string): UbiChannelVConfig {
 
         let ret = new UbiChannelVConfig();
 
         try {
-            const parsed = JSON.parse(rawVConfigStr);
+            const parsed = JSON.parse(rawStr);
             Object.assign(ret, parsed);
         } catch (e) {
-            console.warn('VConfig parsing error. Raw:', rawVConfigStr);
+            console.warn('VConfig parsing error.');
         }
 
         return ret;

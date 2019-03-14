@@ -1,4 +1,3 @@
-import { UbiChannel } from "./ubi-channel.entity";
 import { UbiChannelVConfig, VConfigItemHidden } from "./ubi-channel-vconfig.entity";
 
 export class UbiChannelFieldDef {
