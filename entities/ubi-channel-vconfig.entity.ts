@@ -21,7 +21,7 @@ export class UbiChannelVConfig {
             const parsed = JSON.parse(rawStr);
             Object.assign(ret, parsed);
         } catch (e) {
-            console.warn('VConfig parsing error.');
+            // console.warn('VConfig parsing error.');
         }
 
         return ret;

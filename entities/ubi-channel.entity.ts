@@ -76,10 +76,10 @@ export class UbiChannelDAO extends UbiChannel {
     constructor(channel: UbiChannel) {
         super();
 
-        this.update(channel);
+        this.merge(channel);
     }
 
-    update(channel: UbiChannel) {
+    merge(channel: UbiChannel) {
         Object.setPrototypeOf(this, UbiChannelDAO.prototype);
         Object.assign(this, channel);
 

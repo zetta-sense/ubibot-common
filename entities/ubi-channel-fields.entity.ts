@@ -42,7 +42,7 @@ export class UbiChannelFields<T extends UbiChannelFieldDef> extends Array<T> {
     static ConvertFromChannel(channel: UbiChannel): UbiChannelFields<UbiChannelFieldDef> {
         const ret: UbiChannelFields<UbiChannelFieldDef> = new UbiChannelFields();
 
-        console.log(`Converting channel ${channel.channel_id}...`);
+        // console.log(`Converting channel ${channel.channel_id}...`);
         const vconfig: UbiChannelVConfig = UbiChannelVConfig.FromString(channel.vconfig);
 
         Object.keys(channel).forEach((key) => {
