@@ -17,7 +17,7 @@ export class UbiSyncService implements OnDestroy {
     startSync(puller: Observable<any>,
         merger: OperatorFunction<{}, {}>,
         _delay: number = 500,
-        _interval: number = 30 * 1000,
+        _interval: number = 5 * 60 * 1000,
     ): Observable<any> {
 
         let subscription: Subscription;
@@ -70,7 +70,7 @@ export class UbiSyncService implements OnDestroy {
                 if (found) {
                     // merge
                     found.merge(channelData);
-                }else{
+                } else {
                     // create
                     const dao = new UbiChannelDAO(channelData);
                     src.push(dao); // 为什么不用unshift，因为如果再前面添加，容易造成抖动
