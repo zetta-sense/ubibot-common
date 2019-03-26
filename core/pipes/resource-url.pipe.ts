@@ -35,7 +35,6 @@ export class ResourceUrlPipe implements PipeTransform {
         try {
             if (input && input.length) {
                 let url = `${this.ubibotCommonConfig.EndPoint}/images/resize?url=${input}&w=${size}&h=${size}`;
-                // let url = "assets/imgs/img-empty.png";
                 return url;
             } else {
                 let { defaultEmptyFile, defaultLogoFile} = this.config;

@@ -2,16 +2,31 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { RemoteChannelService } from '../../remote/remote-channel.service';
 import { UbiChannel, UbiChannelDAO } from '../../entities/ubi-channel.entity';
 import { interval, Observable, EMPTY, timer, from, of, Subscription, OperatorFunction, Subject, BehaviorSubject } from 'rxjs';
-import { flatMap, catchError, timeout, delay, mergeMap, tap } from 'rxjs/operators';
+import { flatMap, catchError, timeout, delay, mergeMap, tap, finalize } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 @Injectable()
 export class UbiSyncService implements OnDestroy {
 
+    private static paused: boolean = false;
+
+    private firstRun: boolean = true;
+
     constructor(private remoteChannel: RemoteChannelService
     ) {
+        console.log('UbiSyncService creating instance...');
+    }
 
+    static pause() {
+        this.paused = true;
+    }
 
+    static resume() {
+        this.paused = false;
+    }
+
+    static isPaused() {
+        return this.paused;
     }
 
     startSync(puller: Observable<any>,
@@ -32,8 +47,14 @@ export class UbiSyncService implements OnDestroy {
                 mergeMap((t) => {
                     // console.log(`Making next request...`);
                     const ob = new Observable((observer) => {
-                        subscription = puller.subscribe(observer);
-                        return subscription;
+                        if (UbiSyncService.paused && !this.firstRun) {
+                            // tag: return null to make merger ignore this
+                            observer.next(null);
+                            return { unsubscribe() { } }; // unscubscribable
+                        } else {
+                            subscription = puller.subscribe(observer);
+                            return subscription;
+                        }
                     });
                     // setTimeout(() => {
                     //     subscription.unsubscribe();
@@ -45,6 +66,9 @@ export class UbiSyncService implements OnDestroy {
                 //     // console.log(`====>`, data);
                 //     return of(data);
                 // }),
+                tap(() => {
+                    this.firstRun = false;
+                })
             );
     }
 
@@ -53,6 +77,10 @@ export class UbiSyncService implements OnDestroy {
 
         const puller: Observable<UbiChannel> = this.remoteChannel.list().pipe(catchError(() => EMPTY));
         const merger: OperatorFunction<{}, {}> = mergeMap((data: UbiChannel[]) => {
+
+            if (!data) { // 如果data为null则忽略此次
+                return of(src);
+            }
 
             // 新数据中不存在的准备移除
             const channelsToRemove: UbiChannelDAO[] = [];
