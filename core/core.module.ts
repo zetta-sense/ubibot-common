@@ -9,6 +9,7 @@ import { UbiProductAvatarComponent } from './components/ubi-product-avatar/ubi-p
 import { UbiChannelAvatarComponent } from './components/ubi-channel-avatar/ubi-channel-avatar.component';
 import { UbiLazyImgDirective } from './directives/ubi-lazy-img.directive';
 import { UbiSyncService } from './service/ubi-sync.service';
+import { UbiChannelDaosFilterPipe } from './pipes/ubi-channel-daos-filter.pipe';
 
 /**
  * Core module of common module.
@@ -26,6 +27,7 @@ import { UbiSyncService } from './service/ubi-sync.service';
         UbiProductAvatarComponent,
         UbiChannelAvatarComponent,
         UbiLazyImgDirective,
+        UbiChannelDaosFilterPipe,
     ],
     exports: [
         UbiMeAvatarComponent,
@@ -34,11 +36,13 @@ import { UbiSyncService } from './service/ubi-sync.service';
         UbiChannelAvatarComponent,
         UbiUserDisplayPipe,
         ResourceUrlPipe,
+        UbiChannelDaosFilterPipe,
     ],
     providers: [ // 用于DI
         UbiUserDisplayPipe,
         ResourceUrlPipe,
         UbiSyncService,
+        UbiChannelDaosFilterPipe,
     ],
     imports: [
         CommonModule,
