@@ -4,6 +4,12 @@ import { UbiChannel, UbiChannelDAO } from '../../entities/ubi-channel.entity';
 import { interval, Observable, EMPTY, timer, from, of, Subscription, OperatorFunction, Subject, BehaviorSubject } from 'rxjs';
 import { flatMap, catchError, timeout, delay, mergeMap, tap, finalize } from 'rxjs/operators';
 import * as _ from 'lodash';
+import { UbiError } from '../../errors/UbiError';
+
+export interface UbiSyncReturn {
+    result: Observable<UbiChannelDAO[]>;
+    error: BehaviorSubject<UbiError>;
+}
 
 @Injectable()
 export class UbiSyncService implements OnDestroy {
@@ -52,6 +58,7 @@ export class UbiSyncService implements OnDestroy {
                             observer.next(null);
                             return { unsubscribe() { } }; // unscubscribable
                         } else {
+                            // console.log('dat2a=', t);
                             subscription = puller.subscribe(observer);
                             return subscription;
                         }
@@ -72,11 +79,25 @@ export class UbiSyncService implements OnDestroy {
             );
     }
 
-    startSyncMyChannels(src$: BehaviorSubject<UbiChannelDAO[]>, _delay?: number, _interval?: number): Observable<UbiChannelDAO[]> {
-        const src = src$.getValue();
+    startSyncMyChannels(src$: BehaviorSubject<UbiChannelDAO[]>, _delay?: number, _interval?: number): UbiSyncReturn {
+        const errorLogger = new BehaviorSubject<UbiError>(null); // a side kick error logger
+        let src = src$.getValue();
 
-        const puller: Observable<UbiChannel> = this.remoteChannel.list().pipe(catchError(() => EMPTY));
+        // tag: EMPTY会忽略执行下一个subscription，所以返回of(null)
+        const puller: Observable<UbiChannel> = this.remoteChannel.list().pipe(catchError((err) => {
+            //tag: log down error
+            errorLogger.next(err);
+            return of(null);
+        }));
+
         const merger: OperatorFunction<{}, {}> = mergeMap((data: UbiChannel[]) => {
+
+            // console.log('data=', data, src);
+
+            if (!src) {
+                src = [];
+                src$.next(src);
+            }
 
             if (!data) { // 如果data为null则忽略此次
                 return of(src);
@@ -105,6 +126,9 @@ export class UbiSyncService implements OnDestroy {
                 }
             });
 
+            //tag: log down error=null
+            errorLogger.next(null);
+
             return of(src);
         });
 
@@ -112,7 +136,10 @@ export class UbiSyncService implements OnDestroy {
         //     console.log('----> next: ', next);
         // });
 
-        return new Observable((observer) => this.startSync(puller, merger, _delay, _interval).subscribe(observer));
+        return {
+            result: new Observable((observer) => this.startSync(puller, merger, _delay, _interval).subscribe(observer)),
+            error: errorLogger,
+        };
     }
 
 

@@ -34,6 +34,7 @@ export class UbiTokenInterceptor implements HttpInterceptor {
 
         return next.handle(request)
             .pipe(
+                // timeout(10), // make error for debug
                 timeout(this.ubibotCommonConfig.ServerAccessTimout),
                 map((event: HttpEvent<any>) => {
                     if (event instanceof HttpResponse && ~~(event.status / 100) > 3) {
