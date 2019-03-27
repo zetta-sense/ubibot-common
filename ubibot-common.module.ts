@@ -14,6 +14,7 @@ import { UbiAuthGuard } from './guards/ubi-auth.guard';
 import { RemoteChannelService } from './remote/remote-channel.service';
 import { UbiEventService } from './services/ubi-event.service';
 import { UbiCoreModule } from './core/core.module';
+import { UbiConsoleService } from './services/ubi-console.service';
 
 export const UBIBOT_COMMON_CONFIGURATION = new InjectionToken<any>('UBIBOT_COMMON_CONFIGURATION');
 
@@ -62,6 +63,7 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
             // ref: https://angular.io/guide/dependency-injection-providers
             deps: [
                 UbiLocalizeService,
+                UbiConsoleService,
             ],
             multi: true
         }
