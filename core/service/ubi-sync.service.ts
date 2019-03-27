@@ -32,7 +32,7 @@ export class UbiSyncService implements OnDestroy {
     startSync(puller: Observable<any>,
         merger: OperatorFunction<{}, {}>,
         _delay: number = 500,
-        _interval: number = 10 * 60 * 1000,
+        _interval: number = 5 * 60 * 1000,
     ): Observable<any> {
 
         let subscription: Subscription;
