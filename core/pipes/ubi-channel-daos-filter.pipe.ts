@@ -24,7 +24,7 @@ export class UbiChannelDaosFilterPipe implements PipeTransform {
 
         const ret = items.filter((channelDao: UbiChannelDAO) => {
             const channelName = channelDao.name;
-            const channelSerial = channelDao.serial;
+            const channelSerial = channelDao.full_serial;
             const channelId = channelDao.channel_id;
 
             return tester.test(channelName) || tester.test(channelSerial) || tester.test(channelId);

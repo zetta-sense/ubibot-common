@@ -79,14 +79,26 @@ export class UbiChannelDAO extends UbiChannel {
         this.merge(channel);
     }
 
+    /**
+     * Merge new channel data instead of old.
+     *
+     * @param {UbiChannel} channel
+     * @memberof UbiChannelDAO
+     */
     merge(channel: UbiChannel) {
         Object.setPrototypeOf(this, UbiChannelDAO.prototype);
         Object.assign(this, channel);
 
+        // 记录上次的值
+        const oldValues = (this.extra && this.extra.lastValues) || {};
+
+        // 生成新的extra信息对象
         this.extra = {
             fields: this.__extractFields(),
             lastValues: this.__extractLastValues(),
             fieldDAOs: <UbiChannelFieldValueDAOsMap>{},
+
+            oldValues: oldValues,
         };
 
         // 构建每个field的DAO，用于关联field与value
@@ -95,7 +107,9 @@ export class UbiChannelDAO extends UbiChannel {
 
             if (fieldDef) {
                 const fieldValue = this.extra.lastValues[field.key];
-                const fieldDAO = new UbiChannelFieldValueDAO(fieldDef, fieldValue);
+                const oldFieldValue = this.extra.oldValues[field.key];
+
+                const fieldDAO = new UbiChannelFieldValueDAO(fieldDef, fieldValue, oldFieldValue);
                 this.extra.fieldDAOs[field.key] = fieldDAO;
             }
         });
@@ -109,6 +123,13 @@ export class UbiChannelDAO extends UbiChannel {
         return UbiChannelFields.ConvertFromChannel(this);
     }
 
+
+    /**
+     * 返回一个稳定的UbiChannelLastValues实例，仅当有新数据时(merge)，会产生新的实例
+     *
+     * @returns {UbiChannelLastValues<UbiChannelLastValuesItem>}
+     * @memberof UbiChannelDAO
+     */
     getLastValues(): UbiChannelLastValues<UbiChannelLastValuesItem> {
         return this.extra.lastValues;
     }
@@ -117,6 +138,14 @@ export class UbiChannelDAO extends UbiChannel {
         return UbiChannelLastValues.ConvertFromChannel(this);
     }
 
+
+    /**
+     * 返回一个稳定的UbiChannelFieldValueDAO实例，仅当有新数据时(merge)，会产生新的实例
+     *
+     * @param {string} fieldKey
+     * @returns {UbiChannelFieldValueDAO}
+     * @memberof UbiChannelDAO
+     */
     getLastFieldValueDAO(fieldKey: string): UbiChannelFieldValueDAO {
         return this.extra.fieldDAOs[fieldKey];
     }
@@ -126,6 +155,8 @@ interface UbiChannelFeildExtra {
     fields: UbiChannelFields<UbiChannelFieldDef>;
     lastValues: UbiChannelLastValues<UbiChannelLastValuesItem>;
     fieldDAOs: UbiChannelFieldValueDAOsMap;
+
+    oldValues?: UbiChannelLastValues<UbiChannelLastValuesItem>;
 }
 
 interface UbiChannelFieldValueDAOsMap {
@@ -140,7 +171,7 @@ export class UbiChannelFieldValueDAO {
      * @type {UbiChannelFieldDef}
      * @memberof UbiChannelFieldValueDAO
      */
-    fieldDef: UbiChannelFieldDef;
+    private fieldDef: UbiChannelFieldDef;
 
     /**
      * Represents the value item. Nullable.
@@ -148,7 +179,15 @@ export class UbiChannelFieldValueDAO {
      * @type {UbiChannelLastValuesItem}
      * @memberof UbiChannelFieldValueDAO
      */
-    valueItem: UbiChannelLastValuesItem;
+    private valueItem: UbiChannelLastValuesItem;
+
+    /**
+     * Represents the old value. Nullable.
+     *
+     * @type {UbiChannelLastValuesItem}
+     * @memberof UbiChannelFieldValueDAO
+     */
+    private oldValueItem: UbiChannelLastValuesItem;
 
     /**
      * Creates an instance of UbiChannelFieldValueDAO.
@@ -158,13 +197,22 @@ export class UbiChannelFieldValueDAO {
      * @param {UbiChannelLastValuesItem} [valueItem=<UbiChannelLastValuesItem>{}]
      * @memberof UbiChannelFieldValueDAO
      */
-    constructor(fieldDef: UbiChannelFieldDef, valueItem: UbiChannelLastValuesItem) {
+    constructor(fieldDef: UbiChannelFieldDef, valueItem: UbiChannelLastValuesItem, oldValueItem: UbiChannelLastValuesItem) {
         this.fieldDef = fieldDef;
         this.valueItem = valueItem;
+        this.oldValueItem = oldValueItem;
     }
 
     getValue(): number {
         return this.valueItem && this.valueItem.value;
+    }
+
+    getOldValue(): number {
+        return this.oldValueItem && this.oldValueItem.value;
+    }
+
+    getFieldDef(): UbiChannelFieldDef {
+        return this.fieldDef;
     }
 
     isOnline(): boolean {
