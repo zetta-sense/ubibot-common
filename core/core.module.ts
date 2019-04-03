@@ -9,6 +9,7 @@ import { UbiProductAvatarComponent } from './components/ubi-product-avatar/ubi-p
 import { UbiChannelAvatarComponent } from './components/ubi-channel-avatar/ubi-channel-avatar.component';
 import { UbiLazyImgDirective } from './directives/ubi-lazy-img.directive';
 import { UbiSyncService } from './service/ubi-sync.service';
+import { UbiExtraPreferenceResolver } from './resolvers/ubi-extra-preference.resolver';
 import { UbiChannelDaosFilterPipe } from './pipes/ubi-channel-daos-filter.pipe';
 
 /**
@@ -42,6 +43,7 @@ import { UbiChannelDaosFilterPipe } from './pipes/ubi-channel-daos-filter.pipe';
         UbiUserDisplayPipe,
         ResourceUrlPipe,
         UbiSyncService,
+        UbiExtraPreferenceResolver,
         UbiChannelDaosFilterPipe,
     ],
     imports: [

@@ -2,6 +2,7 @@ import { UbiChannelFields } from "./ubi-channel-fields.entity";
 import { UbiChannelFieldDef } from "./ubi-channel-field-def.entity";
 import { UbiChannelLastValues, UbiChannelLastValuesItem } from "./ubi-channel-last-values.entity";
 import * as _ from 'lodash';
+import { UbiExtraPreferenceTempScale } from "./ubi-extra-preference.entity";
 
 export abstract class UbiChannel {
     channel_id?: string;
@@ -206,8 +207,19 @@ export class UbiChannelFieldValueDAO {
         this.oldValueItem = oldValueItem;
     }
 
-    getValue(): number {
-        return this.valueItem && this.valueItem.value;
+    /**
+     * 获取该field的值，可以传入tempscale参数自动将温度field变换为相应温标下的值
+     *
+     * @param {UbiExtraPreferenceTempScale} [tempScale]
+     * @returns {number}
+     * @memberof UbiChannelFieldValueDAO
+     */
+    getValue(tempScale?: UbiExtraPreferenceTempScale): number {
+        let ret = this.valueItem && this.valueItem.value;
+        if (this.fieldDef.scaleType === '1' && tempScale === UbiExtraPreferenceTempScale.Fahrenheit && ret != null) {
+            ret = ret * 9 / 5 + 32;
+        }
+        return ret;
     }
 
     getOldValue(): number {

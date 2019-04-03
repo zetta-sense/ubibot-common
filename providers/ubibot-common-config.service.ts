@@ -25,6 +25,9 @@ export class UbibotCommonConfigService {
     public readonly DefaultLanguage = 'en-GB'; // 基础语言模块文件,当其它文件无法找到匹配的value时使用此文件,正常情况下不需要修改此项
     public PreferredLanguage = 'en-GB'; // en-GB, zh-CN, ja-JP
 
+    public DefaultDateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
+    public DefaultTempScale = 'celsius';
+
     // @deprecated - this will be removed in future version
     public readonly LastLoginUsernameKey = 'last_login_username';
 
@@ -147,9 +150,13 @@ export class UbibotCommonConfigService {
         if (this.DeployAgent === 'cn') {
             this.PreferredLanguage = 'zh-CN';
             this.EnableServiceFCM = false;
+            this.DefaultDateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
+            this.DefaultTempScale = 'celsius';
         } else {
             // tag: 一定要带有else，因为constructor的时候可能已经将它设置为false，后续更新为非cn时再将无法设为true
             this.EnableServiceFCM = true;
+            this.DefaultDateTimeFormat = 'MM/dd/yyyy HH:mm:ss';
+            this.DefaultTempScale = 'fahrenheit';
         }
 
         if (this.DeployAgent === 'io') {
