@@ -197,7 +197,10 @@ export class UbiChannelFieldValueDAO {
      * @param {UbiChannelLastValuesItem} [valueItem=<UbiChannelLastValuesItem>{}]
      * @memberof UbiChannelFieldValueDAO
      */
-    constructor(fieldDef: UbiChannelFieldDef, valueItem: UbiChannelLastValuesItem, oldValueItem: UbiChannelLastValuesItem) {
+    constructor(fieldDef: UbiChannelFieldDef,
+        valueItem: UbiChannelLastValuesItem,
+        oldValueItem: UbiChannelLastValuesItem
+    ) {
         this.fieldDef = fieldDef;
         this.valueItem = valueItem;
         this.oldValueItem = oldValueItem;

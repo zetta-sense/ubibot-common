@@ -56,6 +56,8 @@ export class UbiChannelFields<T extends UbiChannelFieldDef> extends Array<T> {
                     fieldDef.enabled = false;
                 }
 
+                fieldDef.scaleType = configItem.u;
+
                 ret.push(fieldDef);
             }
         });
