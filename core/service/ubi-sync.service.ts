@@ -35,7 +35,7 @@ export class UbiSyncService implements OnDestroy {
         return this.paused;
     }
 
-    startSync(puller: Observable<any>,
+    startSync(puller: Observable<UbiChannel[]>,
         merger: OperatorFunction<{}, {}>,
         _delay: number = 500,
         _interval: number = 5 * 60 * 1000,
@@ -84,7 +84,7 @@ export class UbiSyncService implements OnDestroy {
         let src = src$.getValue();
 
         // tag: EMPTY会忽略执行下一个subscription，所以返回of(null)
-        const puller: Observable<UbiChannel> = this.remoteChannel.list().pipe(catchError((err) => {
+        const puller: Observable<UbiChannel[]> = this.remoteChannel.list().pipe(catchError((err) => {
             //tag: log down error
             errorLogger.next(err);
             return of(null);
