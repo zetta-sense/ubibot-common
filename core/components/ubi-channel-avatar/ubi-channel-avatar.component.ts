@@ -38,6 +38,9 @@ export class UbiChannelAvatarComponent implements OnInit, OnChanges {
     updateAvatarImage() {
         if(this.channel) {
             this.avatarImage = this.channel.c_icon_base;
+        }else{
+            // 如果没有channel则重置
+            this.avatarImage = undefined;
         }
     }
 

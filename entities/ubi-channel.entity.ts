@@ -4,6 +4,14 @@ import { UbiChannelLastValues, UbiChannelLastValuesItem } from "./ubi-channel-la
 import * as _ from 'lodash';
 import { UbiExtraPreferenceTempScale } from "./ubi-extra-preference.entity";
 
+
+/**
+ * 用于接收到的channel raw数据
+ *
+ * @export
+ * @abstract
+ * @class UbiChannel
+ */
 export abstract class UbiChannel {
     channel_id?: string;
     field1?: string;
