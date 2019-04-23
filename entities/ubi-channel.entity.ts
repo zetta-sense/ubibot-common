@@ -67,6 +67,52 @@ export abstract class UbiChannel {
 
 
     [key: string]: any;
+
+    private getStaus(): any {
+        let ret = {};
+        try {
+            // eg.
+            // "{"ssid":"Baby Ting","status":"ssid=Baby Ting,usb=0","usb":"0"}"
+            ret = JSON.parse(this.status) || {};
+        } catch (e) { }
+
+        return ret;
+    }
+
+    // tag: 不需要复杂parse的getter直接放entity里
+
+    isUsbSupport(): boolean {
+        // 无论usb的值是什么，只要有这个key就认为support
+        return this.getStaus().usb !== undefined;
+    }
+
+    hasSSID(): boolean {
+        return this.getStaus().ssid !== undefined;
+    }
+
+    getSSID(): string {
+        return this.getStaus().ssid;
+    }
+
+    hasICCID(): boolean {
+        return this.getStaus().ICCID !== undefined;
+    }
+
+    getICCID(): string {
+        return this.getStaus().ICCID;
+    }
+
+
+    /**
+     * 根据net判断，仅当net="1"时为true，其它false
+     * net可能的值域 "-1", "0", "1"
+     *
+     * @returns {boolean}
+     * @memberof UbiChannelDAO
+     */
+    isOnline(): boolean {
+        return this.net === "1";
+    }
 }
 
 
@@ -158,8 +204,15 @@ export class UbiChannelDAO extends UbiChannel {
     getLastFieldValueDAO(fieldKey: string): UbiChannelFieldValueDAO {
         return this.extra.fieldDAOs[fieldKey];
     }
+
 }
 
+
+/**
+ * 用于转换每个field相关信息
+ *
+ * @interface UbiChannelFeildExtra
+ */
 interface UbiChannelFeildExtra {
     fields: UbiChannelFields<UbiChannelFieldDef>;
     lastValues: UbiChannelLastValues<UbiChannelLastValuesItem>;

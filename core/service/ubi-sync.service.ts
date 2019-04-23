@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { RemoteChannelService } from '../../remote/remote-channel.service';
 import { UbiChannel, UbiChannelDAO } from '../../entities/ubi-channel.entity';
 import { interval, Observable, EMPTY, timer, from, of, Subscription, OperatorFunction, Subject, BehaviorSubject } from 'rxjs';
-import { flatMap, catchError, timeout, delay, mergeMap, tap, finalize } from 'rxjs/operators';
+import { flatMap, catchError, timeout, delay, mergeMap, tap, finalize, map } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { UbiError } from '../../errors/UbiError';
 
@@ -69,6 +69,25 @@ export class UbiSyncService implements OnDestroy {
                     return ob;
                 }),
                 merger, // 如果cancel subscription，不会执行
+                // 排序
+                map((data: UbiChannel[]) => {
+                    // tag: 只在第一次时进行排序
+                    if(this.firstRun) {
+                        data.sort((a: UbiChannel, b: UbiChannel) => {
+                            const aio = a.isOnline();
+                            const bio = b.isOnline();
+
+                            if(aio && !bio) {
+                                return -1;
+                            }else if(!aio && bio) {
+                                return 1;
+                            }
+
+                            return 0;
+                        });
+                    }
+                    return data;
+                }),
                 // mergeMap((data) => { // 如果cancel，不会执行
                 //     // console.log(`====>`, data);
                 //     return of(data);

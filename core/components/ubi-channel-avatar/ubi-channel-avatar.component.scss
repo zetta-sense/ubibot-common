@@ -1,10 +1,12 @@
 :host(ubi-channel-avatar) {
     text-align: center;
+    position: relative;
 
     .avatar-small {
         vertical-align: text-bottom;
         display: inline-block;
         box-sizing: content-box;
+        position: relative;
 
         img {
             background-color: transparent;
@@ -16,5 +18,28 @@
             border-radius: 100%;
             vertical-align: bottom;
         }
+    }
+
+    .status-bar {
+        text-align: right;
+        white-space: nowrap;
+        position: absolute;
+        bottom: -4px;
+        right: 0;
+        background: rgba(255, 255, 255, 0.75);
+        width: 100%;
+    }
+
+    .status-icon {
+        font-size: 16px;
+        color: var(--ubi-icon-success);
+        vertical-align: middle;
+        text-shadow: 1px 1px 2px #ccc;
+    }
+
+    .grayscale {
+        -webkit-filter: grayscale(100%);
+        -moz-filter: grayscale(100%);
+        filter: grayscale(100%);
     }
 }

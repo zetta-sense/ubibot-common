@@ -1,9 +1,27 @@
 <!-- Generated template for the MeAvatarComponent component -->
 <span class="avatar-small"
+      [ngClass]="{'grayscale': !channel?.isOnline()}"
       [ngStyle]="{'width.px': size, 'height.px': size}">
+
     <img class=""
          [ngClass]="{'rounded': rounded}"
          ubi-lazy-img
          default-src="assets/img-empty.png"
          [data-src]="avatarImage | resourceUrl: size : true">
+
+    <div class="status-bar">
+        <i class="material-icons status-icon"
+           *ngIf="channel?.hasSSID()">
+            network_wifi
+        </i>
+        <i class="material-icons status-icon"
+           *ngIf="channel?.hasICCID()">
+            network_cell
+        </i>
+        <i class="material-icons status-icon"
+           *ngIf="channel?.isUsbSupport()">
+            usb
+        </i>
+    </div>
 </span>
+<!-- <span style="display: none;">{{avatarImage | resourceUrl: size : true}}</span> -->
