@@ -5,7 +5,7 @@ import { Observable, of, from, combineLatest } from 'rxjs';
 import { map, switchMap, mergeAll, combineAll, concatMap, tap, zipAll, withLatestFrom, take, takeLast } from 'rxjs/operators';
 import { UbiChannelDAO, UbiChannel } from '../entities/ubi-channel.entity';
 import { UbiError } from '../errors/UbiError';
-import { UbiRule } from '../entities/ubi-rule.entity';
+import { UbiRule, UbiRuleStatus } from '../entities/ubi-rule.entity';
 
 @Injectable()
 export class RemoteChannelService {
@@ -100,15 +100,41 @@ export class RemoteChannelService {
      *
      * @param {*} channelId
      * @param {*} ruleId
-     * @returns {Observable<UbiRule>}
+     * @returns {Observable<any>} Raw data, your should merge it into UbiRule yourself.
      * @memberof RemoteChannelService
      */
-    toggleRuleStatus(channelId, ruleId, status): Observable<any> {
+    toggleRuleStatus(channelId: string, ruleId: string, status: UbiRuleStatus): Observable<any> {
+        if (!channelId) throw new UbiError('Channel ID is required for this API!');
         if (!ruleId) throw new UbiError('Rule ID is required for this API!');
 
         let url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/rules/${ruleId}/rule_status`;
         return this.http.put(url, { 'rule_status': status }).pipe(
             map((x: any) => x.rule)
+        );
+    }
+
+
+    /**
+     * Delete a Channel Rule
+     *
+     * To delete a channel rule, send an HTTP DELETE to http://api.datadudu.com/channels/CHANNEL_ID/rules/RULE_ID
+     * replacing CHANNEL_ID with the ID of your channel, RULE_ID with the ID of the rule.
+     *
+     * Valid request parameters:
+     * api_key or token_id (string) – api_key is Read or Write key for this specific channel (no key required for public channels) or token_id for internal use, obtained through login API. (required)
+     *
+     * @param {*} channelId
+     * @param {*} ruleId
+     * @returns {Observable<any>} null, No result
+     * @memberof RemoteChannelService
+     */
+    deleteRule(channelId: string, ruleId: string): Observable<any> {
+        if (!channelId) throw new UbiError('Channel ID is required for this API!');
+        if (!ruleId) throw new UbiError('Rule ID is required for this API!');
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/rules/${ruleId}`;
+        return this.http.delete(url).pipe(
+            map((x: any) => null)
         );
     }
 }
