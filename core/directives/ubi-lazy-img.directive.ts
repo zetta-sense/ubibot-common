@@ -1,4 +1,4 @@
-import { Directive, Input, HostBinding, AfterViewInit, ElementRef, OnInit } from '@angular/core';
+import { Directive, Input, HostBinding, AfterViewInit, ElementRef, OnInit, OnChanges } from '@angular/core';
 
 
 /**
@@ -14,7 +14,7 @@ import { Directive, Input, HostBinding, AfterViewInit, ElementRef, OnInit } from
 @Directive({
     selector: '[ubi-lazy-img]'
 })
-export class UbiLazyImgDirective implements OnInit, AfterViewInit {
+export class UbiLazyImgDirective implements OnInit, AfterViewInit, OnChanges {
     @HostBinding('attr.src') srcAttr;
     @Input('data-src') src: string;
     @Input('default-src') defaultSrc: string;
@@ -29,7 +29,7 @@ export class UbiLazyImgDirective implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.canLazyLoad() ? this.lazyLoadImage() : this.loadImage();
+        // this.canLazyLoad() ? this.lazyLoadImage() : this.loadImage();
         // console.log(this.srcAttr);
     }
 
@@ -41,6 +41,10 @@ export class UbiLazyImgDirective implements OnInit, AfterViewInit {
         }
 
         return ret;
+    }
+
+    ngOnChanges() {
+        this.canLazyLoad() ? this.lazyLoadImage() : this.loadImage();
     }
 
     private lazyLoadImage() {
@@ -56,6 +60,7 @@ export class UbiLazyImgDirective implements OnInit, AfterViewInit {
     }
 
     private loadImage() {
+        // console.log('UbiLazyImgDirective load image...:', this.src);
         this.srcAttr = this.src;
     }
 }
