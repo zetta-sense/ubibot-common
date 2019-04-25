@@ -42,7 +42,6 @@ export class UbiAuthGuard implements CanActivate, CanActivateChild {
         };
 
         // Navigate to the login page with extras
-        // tag: 虽然如果在ionic 4的时候，需要call navController.setDirection('root')会更正确，但实际上影响不大，为了不产生入侵式影响，所以这里忽略此操作
         // this.router.navigate([this.authConfig.authPage], navigationExtras);
         return false;
     }
