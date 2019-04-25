@@ -7,6 +7,13 @@ import { UbiChannelDAO, UbiChannel } from '../entities/ubi-channel.entity';
 import { UbiError } from '../errors/UbiError';
 import { UbiRule, UbiRuleStatus } from '../entities/ubi-rule.entity';
 
+/**
+ * A client service for remote channel service.
+ *
+ * @export
+ * @class RemoteChannelService
+ * @author gorebill
+ */
 @Injectable()
 export class RemoteChannelService {
 
@@ -41,7 +48,7 @@ export class RemoteChannelService {
 
         let url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}`;
         return this.http.get(url).pipe(
-            map((resp: UbiChannel) => {
+            map((resp: any) => {
                 return new UbiChannelDAO(resp.channel);
             })
         );
@@ -84,6 +91,34 @@ export class RemoteChannelService {
         );
     }
 
+    /**
+     * View a Channel Rule
+     *
+     * To add a channel rule, send an HTTP GET to http://api.ubibot.cn/channels/CHANNEL_ID/rules/RULE_ID
+     * replacing CHANNEL_ID with the ID of your channel, and RULE_ID with ID of the rule.
+     *
+     * Valid request parameters:
+     * account_key or token_id (string) –account_key  or token_id for internal use, obtained through login API. (required)
+     *
+     * @param {string} channelId
+     * @param {string} ruleId
+     * @returns {Observable<UbiRule>}
+     * @memberof RemoteChannelService
+     */
+    getRule(channelId: string, ruleId: string): Observable<UbiRule> {
+        if (!channelId) throw new UbiError('Channel ID is required for this API!');
+        if (!ruleId) throw new UbiError('Rule ID is required for this API!');
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/rules/${ruleId}`;
+        return combineLatest(
+            this.http.get(url),
+            this.get(channelId),
+        ).pipe(
+            map(([resp, channel]: any[]) => {
+                return new UbiRule(resp.rule, channel);
+            })
+        );
+    }
 
     /**
      *
