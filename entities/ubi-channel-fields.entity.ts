@@ -25,6 +25,9 @@ export class UbiChannelFields<T extends UbiChannelFieldDef> extends Array<T> {
 
     /**
      * Get all enabled fields.
+     * 
+     * Important: 
+     * This method will generate new array every time. DO NOT use it in binding way.
      *
      * @returns {UbiChannelFieldDef[]}
      * @memberof UbiChannelFields
