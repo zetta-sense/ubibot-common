@@ -10,14 +10,21 @@ import { Directive, Input, ViewContainerRef, TemplateRef } from '@angular/core';
  * @class UbiVarDirective
  */
 @Directive({
-    selector: '[ubiVar]',
-    exportAs: 'ubiVar',
+    selector: '[ubiVar]'
 })
 export class UbiVarDirective {
     @Input()
-    ubiVar: any;
+    set ubiVar(context: any) {
+        this.context.$implicit = this.context.ubiVar = context;
+        this.updateView();
+    }
 
-    get value(): string {
-        return this.ubiVar;
-    } 
+    context: any = {};
+
+    constructor(private vcRef: ViewContainerRef, private templateRef: TemplateRef<any>) { }
+
+    updateView() {
+        this.vcRef.clear();
+        this.vcRef.createEmbeddedView(this.templateRef, this.context);
+    }
 }

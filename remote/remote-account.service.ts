@@ -48,8 +48,14 @@ export class RemoteAccountService {
 
         let url = `${this.ubibotCommonConfig.EndPoint}/accounts/push_service/bind`;
 
-        let params = new HttpParams();
-        params = params.set('push_key', token);
+        // ref: https://angular.io/guide/http
+        // let params = new HttpParams();
+        // const params = new FormData();
+        // params.set('push_key', token);
+
+        const params = {
+            push_key: token
+        };
 
         return this.http.post(url, params).toPromise();
     }
@@ -58,8 +64,9 @@ export class RemoteAccountService {
 
         let url = `${this.ubibotCommonConfig.EndPoint}/accounts/push_service/unbind`;
 
-        let params = new HttpParams();
-        params = params.set('push_key', token);
+        const params = {
+            push_key: token
+        };
 
         return this.http.post(url, params).toPromise();
     }
