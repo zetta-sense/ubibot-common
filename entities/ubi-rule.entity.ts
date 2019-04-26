@@ -15,8 +15,22 @@ export enum UbiRuleStatus {
     DISABELD = 'disabled',
 }
 
+export enum UbiRuleActionFrequency {
+    CHANGE_ONLY = 'change_only',
+    ALWAYS = 'always'
+}
+
+export enum UbiRuleCriteria {
+    EQ = "==",
+    GE = ">=",
+    GT = ">",
+    LT = "<",
+    LE = "<=",
+    NE = "!=",
+}
+
 export class UbiRule {
-    action_frequency?: any;
+    action_frequency?: UbiRuleActionFrequency;
     action_sub_value?: any;
     action_sub_value2?: any;
     action_sub_value3?: any;
@@ -35,7 +49,7 @@ export class UbiRule {
     batch_id?: any;
     channel_id?: any;
     created_at?: any;
-    criteria?: any;
+    criteria?: UbiRuleCriteria;
     field?: any;
     field_name?: any;
     frequency?: any;
