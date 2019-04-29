@@ -34,7 +34,7 @@ export class RemoteFinanceService {
      */
     getPriceSMS(areaCode: string): Observable<number> {
         // 如果不是加号开头则追加，因为服务器返回的区号key带加号
-        if (areaCode && /^[+]/i.test(areaCode)) {
+        if (areaCode && !/^[+]/i.test(areaCode)) {
             areaCode = `+${areaCode}`;
         }
 
@@ -46,7 +46,11 @@ export class RemoteFinanceService {
         } else { // IO国际
             let url = `${this.ubibotCommonConfig.EndPoint}/finance/sms_pricing`;
             return this.http.get(url).pipe(
-                map((resp: any) => resp.sms_pricing[areaCode])
+                map((resp: any) => {
+                    const item = resp.sms_pricing[areaCode];
+                    // console.log(item, areaCode, resp);
+                    return item ? item[2] : null;
+                })
             );
         }
     }
@@ -63,7 +67,7 @@ export class RemoteFinanceService {
      */
     getPriceVoice(areaCode: string, phoneNumber: string): Observable<number> {
         // 如果不是加号开头则追加，因为服务器返回的区号key带加号
-        if (areaCode && /^[+]/i.test(areaCode)) {
+        if (areaCode && !/^[+]/i.test(areaCode)) {
             areaCode = `+${areaCode}`;
         }
 
@@ -76,11 +80,11 @@ export class RemoteFinanceService {
             let url = `${this.ubibotCommonConfig.EndPoint}/finance/international_voice_pricing`;
             let combined = `${areaCode}${phoneNumber}`;
 
-            const params = new HttpParams();
-            params.set('number', combined);
-            params.set('platform', 'io');
+            const params = new HttpParams()
+                .set('number', combined)
+                .set('platform', 'io');
             return this.http.get(url, { params: params }).pipe(
-                map((resp: any) => resp.sms_pricing[areaCode])
+                map((resp: any) => resp.price)
             );
         }
     }

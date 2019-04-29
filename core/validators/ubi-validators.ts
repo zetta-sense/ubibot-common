@@ -11,4 +11,14 @@ export const UbiValidators: { [key: string]: ValidatorFn } = {
         const passed = pattern.test(control.value);
         return passed ? null : { 'invalidUsername': { value: control.value } };
     },
+    phoneCN: (control: AbstractControl): { [key: string]: any } | null => {
+        const pattern = /^1\d{10}$/i;
+        const passed = pattern.test(control.value);
+        return passed ? null : { 'invalidUsername': { value: control.value } };
+    },
+    phoneIO: (control: AbstractControl): { [key: string]: any } | null => {
+        const pattern = /^[+]\d{6,}$/i;
+        const passed = pattern.test(control.value);
+        return passed ? null : { 'invalidUsername': { value: control.value } };
+    },
 };
