@@ -15,6 +15,7 @@ import { RemoteChannelService } from './remote/remote-channel.service';
 import { UbiEventService } from './services/ubi-event.service';
 import { UbiCoreModule } from './core/core.module';
 import { UbiConsoleService } from './services/ubi-console.service';
+import { RemoteFinanceService } from './remote/remote-finance.service';
 
 export const UBIBOT_COMMON_CONFIGURATION = new InjectionToken<any>('UBIBOT_COMMON_CONFIGURATION');
 
@@ -51,6 +52,7 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
         UbiEventService,
         RemoteAccountService,
         RemoteChannelService,
+        RemoteFinanceService,
         // init dep
         {
             provide: APP_INITIALIZER,

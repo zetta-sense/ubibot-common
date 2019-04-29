@@ -3,7 +3,7 @@ import {UbiUtilsService} from './ubi-utils.service';
 import {RemoteAccountService} from '../remote/remote-account.service';
 import {UbibotCommonConfigService} from '../providers/ubibot-common-config.service';
 import {Router} from '@angular/router';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable, from} from 'rxjs';
 
 export const UBIBOT_AUTH_CONFIGURATION = new InjectionToken<UbiAuthConfig>('UBIBOT_AUTH_CONFIGURATION');
 export interface UbiAuthConfig {
@@ -61,6 +61,13 @@ export class UbiAuthService {
         });
     }
 
+
+    /**
+     * 通过本地缓存读取当前用户信息
+     *
+     * @returns
+     * @memberof UbiAuthService
+     */
     me() {
         try {
             let resp = JSON.parse(localStorage.getItem(this.storageKey));
@@ -68,6 +75,16 @@ export class UbiAuthService {
         } catch (e) {
         }
         return null;
+    }
+
+    /**
+     * 不通过本地缓存，立即访问服务器读取当前用户信息
+     *
+     * @returns {Observable<any>}
+     * @memberof UbiAuthService
+     */
+    meAsync(): Observable<any> {
+        return from(this.remoteAccount.me());
     }
 
     username() {

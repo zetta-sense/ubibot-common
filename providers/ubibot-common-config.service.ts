@@ -170,5 +170,8 @@ export class UbibotCommonConfigService {
         // console.log('-------> ', this.DeployAgent, this.PreferredLanguage);
     }
 
+    isServcieCN() {
+        return this.DeployAgent === 'cn';
+    }
 
 }
