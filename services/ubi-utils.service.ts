@@ -33,6 +33,7 @@ export interface UbibotUtilsDialogAgent {
     confirm: IFuncConfirm;
 
     promptPhone?: IFuncPrompt;
+    promptOption?: IFuncPrompt;
 }
 
 
@@ -281,6 +282,10 @@ export class UbiUtilsService {
 
     promptPhone(msg: string, opts: any = {}): Promise<any> {
         return this.utilsDialogAgent.promptPhone(msg, opts);
+    }
+
+    promptOption(msg: string, opts: any = {}): Promise<any> {
+        return this.utilsDialogAgent.promptOption(msg, opts);
     }
 
     confirm(msg: string, opts: any = {}): Promise<any> {

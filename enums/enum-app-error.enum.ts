@@ -23,6 +23,9 @@ export enum EnumAppError {
     DEVICE_ATTACHED_BY_OTHERS = '1411',
 
     SERVICE_NOT_AVAILABLE = '2000', // 一般内部使用，不需要翻译
+    UNKNOWN_TYPE = '2001', // 一般内部使用，不需要翻译
+
+    EXCEED_MIN_MAX_RULE_LIMIT = '3001',
 
     FCM_NOT_UNUSABLE = '8908',
     FCM_NOT_SUPPORTED_BY_UBIBOT = '8909',

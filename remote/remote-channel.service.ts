@@ -120,6 +120,75 @@ export class RemoteChannelService {
         );
     }
 
+
+    /**
+     * 创建/更新一个rule对象
+     *
+     * @param {string} channelId
+     * @param {string} ruleId
+     * @param {*} data
+     * @returns {Observable<any>} 只返回raw数据，由caller自行merge
+     * @memberof RemoteChannelService
+     */
+    saveRule(channelId: string, ruleId: string, data: any): Observable<any> {
+        if (!channelId) throw new UbiError('Channel ID is required for this API!');
+        if (!data) throw new UbiError('Data to persist is required!');
+
+        if (ruleId) { // update
+            /*
+             * Update a Channel Rule
+
+            To add a channel rule, send an HTTP PUT to http://api.datadudu.com/channels/CHANNEL_ID/rules/RULE_ID
+            replacing CHANNEL_ID with the ID of your channel, and RULE_ID with ID of the rule.
+
+            Valid request parameters:
+            api_key or token_id (string) – api_key is Read or Write key for this specific channel (no key required for public channels) or token_id for internal use, obtained through login API. (required)
+            type  (string) – choose between [numeric, string, no_data_check] (required)
+            field (string) – choose between [field1, field2, field3, field4, field5, field6, field7, field8, status] (required)
+            action_frequency (string)- choose between [change_only, always] (required)
+            criteria (string) –
+            <>ofor type is “numeric”, choose between [>,>=,<,<=,==,!=]
+            <>ofor type is “string”, choose between [contains, starts_with, ends_with, equal, not_equal, equal_ignore_case]
+            <>ofor type is “no_data_check”, WILL ADD LATER
+            <>·condition (string) – value for the criteria
+            */
+            const url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/rules/${ruleId}`;
+            return combineLatest(
+                this.http.put(url, data),
+            ).pipe(
+                map((resp: any) => {
+                    return resp.rule;
+                })
+            );
+        } else { // new
+            /*
+             * Add a Channel Rule
+
+            To add a channel rule, send an HTTP POST to http://api.datadudu.com/channels/CHANNEL_ID/rules
+            replacing CHANNEL_ID with the ID of your channel
+
+            Valid request parameters:
+            api_key or token_id (string) – api_key is Read or Write key for this specific channel (no key required for public channels) or token_id for internal use, obtained through login API. (required)
+            type  (string) – choose between [numeric, string, no_data_check] (required)
+            field (string) – choose between [field1, field2, field3, field4, field5, field6, field7, field8, status] (required)
+            action_frequency (string)- choose between [change_only, always] (required)
+            criteria (string) –
+            <>ofor type is “numeric”, choose between [>,>=,<,<=,==,!=]
+            <>ofor type is “string”, choose between [contains, starts_with, ends_with, equal, not_equal, equal_ignore_case]
+            <>ofor type is “no_data_check”, WILL ADD LATER
+            <>·condition (string) – value for the criteria
+            */
+            const url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/rules`;
+            return combineLatest(
+                this.http.post(url, data),
+            ).pipe(
+                map((resp: any) => {
+                    return resp.rule;
+                })
+            );
+        }
+    }
+
     /**
      *
      * Update a Rule Status (enable or disable rule)

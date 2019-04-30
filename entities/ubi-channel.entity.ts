@@ -3,6 +3,7 @@ import { UbiChannelFieldDef } from "./ubi-channel-field-def.entity";
 import { UbiChannelLastValues, UbiChannelLastValuesItem } from "./ubi-channel-last-values.entity";
 import * as _ from 'lodash';
 import { UbiExtraPreferenceTempScale } from "./ubi-extra-preference.entity";
+import { EnumBasicProductId } from "../enums/enum-basic-product-id.enum";
 
 
 /**
@@ -81,6 +82,13 @@ export abstract class UbiChannel {
 
     // tag: 不需要复杂parse的getter直接放entity里
 
+
+    /**
+     * 是否提供USB供电
+     *
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
     isUsbSupport(): boolean {
         // 无论usb的值是什么，只要有这个key就认为support
         return this.getStaus().usb !== undefined;
@@ -102,7 +110,6 @@ export abstract class UbiChannel {
         return this.getStaus().ICCID;
     }
 
-
     /**
      * 根据net判断，仅当net="1"时为true，其它false
      * net可能的值域 "-1", "0", "1"
@@ -113,6 +120,18 @@ export abstract class UbiChannel {
     isOnline(): boolean {
         return this.net === "1";
     }
+
+    /**
+     * 是否支持设备报警
+     *
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    isSupportRuleCommand(): boolean {
+        const pattern = new RegExp(_.escapeRegExp(EnumBasicProductId.WS1P), 'i');
+        return pattern.test(this.product_id);
+    }
+
 }
 
 
