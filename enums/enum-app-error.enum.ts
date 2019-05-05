@@ -24,6 +24,7 @@ export enum EnumAppError {
 
     SERVICE_NOT_AVAILABLE = '2000', // 一般内部使用，不需要翻译
     UNKNOWN_TYPE = '2001', // 一般内部使用，不需要翻译
+    EXCEED_MAX_STACK_DEPTH = '2002',  // 一般内部使用，不需要翻译
 
     EXCEED_MIN_MAX_RULE_LIMIT = '3001',
 
