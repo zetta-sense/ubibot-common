@@ -20,7 +20,7 @@
         }
     }
 
-    .status-bar {
+    .status-bar.horizontal {
         text-align: right;
         white-space: nowrap;
         position: absolute;
@@ -28,6 +28,17 @@
         right: 0;
         background: rgba(255, 255, 255, 0.75);
         width: 100%;
+    }
+
+    .status-bar.vertical {
+        white-space: nowrap;
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.75);
+        height: 100%;
+        display: flex;
+        flex-flow: column;
     }
 
     .status-icon {
