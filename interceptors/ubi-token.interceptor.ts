@@ -44,9 +44,10 @@ export class UbiTokenInterceptor implements HttpInterceptor {
                 }),
                 catchError((err: any, caught) => {
                     if (err instanceof HttpErrorResponse) {
+                        // HttpErrorResponse的格式为{ "error": ..., "headers": ..., ... }
                         if (err.status === 401
-                            && (<any>err).data
-                            && (<any>err).data.errorCode == 'permission_denied_force_log_off') {
+                            && (<any>err).error
+                            && (<any>err).error.errorCode == 'permission_denied_force_log_off') {
 
                             this.authService.logout();
                             return throwError(new UbiError(EnumAppError.SERVER_FORCED_LOGOUT));
