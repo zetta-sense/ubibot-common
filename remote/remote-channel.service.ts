@@ -17,8 +17,10 @@ import { UbiRule, UbiRuleStatus } from '../entities/ubi-rule.entity';
 @Injectable()
 export class RemoteChannelService {
 
-    constructor(private http: HttpClient,
-        private ubibotCommonConfig: UbibotCommonConfigService) {
+    constructor(
+        private http: HttpClient,
+        private ubibotCommonConfig: UbibotCommonConfigService
+    ) {
     }
 
     /**

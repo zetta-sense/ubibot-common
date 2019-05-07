@@ -1,16 +1,16 @@
-import {Inject, Injectable, InjectionToken, Optional} from '@angular/core';
-import {HttpErrorResponse} from '@angular/common/http';
-import {UbibotCommonConfigService} from '../providers/ubibot-common-config.service';
-import {EnumBasicProductId} from '../enums/enum-basic-product-id.enum';
-import {EnumAppError} from '../enums/enum-app-error.enum';
-import {TranslateService} from '@ngx-translate/core';
-import {UbiError} from '../errors/UbiError';
-import {EnumAppConstant} from '../enums/enum-app-constant.enum';
+import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
+import { EnumBasicProductId } from '../enums/enum-basic-product-id.enum';
+import { EnumAppError } from '../enums/enum-app-error.enum';
+import { TranslateService } from '@ngx-translate/core';
+import { UbiError } from '../errors/UbiError';
+import { EnumAppConstant } from '../enums/enum-app-constant.enum';
 import * as _ from 'lodash';
 import * as uuid from 'uuid';
-import {SHA2_256} from '../misc/sha256';
-import {FromUTF8Array, ToUTF8Array} from '../misc/utf8arr';
-import {AppConfig} from '../../../environments/environment';
+import { SHA2_256 } from '../misc/sha256';
+import { FromUTF8Array, ToUTF8Array } from '../misc/utf8arr';
+import { AppConfig } from '../../../environments/environment';
 import { UbiUserDisplayPipe } from '../core/pipes/ubi-user-display.pipe';
 
 export const UBIBOT_UTILS_DIALOG_AGENT = new InjectionToken<UbibotUtilsDialogAgent>('UBIBOT_UTILS_DIALOG_AGENT');
@@ -36,6 +36,11 @@ export interface UbibotUtilsDialogAgent {
     promptOption?: IFuncPrompt;
 }
 
+export interface UbiQRCodeResult {
+    serial: string,
+    productId: string,
+}
+
 
 export interface UbiServerResponseError {
     desp?: string;
@@ -53,9 +58,9 @@ export class UbiUtilsService {
     storageKeyCurrentAgent;
 
     constructor(private commonConfigService: UbibotCommonConfigService,
-                private ubiUserDisplayPipe: UbiUserDisplayPipe,
-                private translate: TranslateService,
-                @Optional() @Inject(UBIBOT_UTILS_DIALOG_AGENT) private utilsDialogAgent: UbibotUtilsDialogAgent) {
+        private ubiUserDisplayPipe: UbiUserDisplayPipe,
+        private translate: TranslateService,
+        @Optional() @Inject(UBIBOT_UTILS_DIALOG_AGENT) private utilsDialogAgent: UbibotUtilsDialogAgent) {
 
         this.update();
 
@@ -90,7 +95,7 @@ export class UbiUtilsService {
     update(newAgent?: string) {
         console.log('Updating with new config UCM - UbiUtilsService...');
 
-        if(newAgent) {
+        if (newAgent) {
             this.commonConfigService.DeployAgent = newAgent;
         }
         this.commonConfigService.update();
@@ -163,6 +168,31 @@ export class UbiUtilsService {
         return localStorage.getItem(this.storageKeyLastLogin) || '';
     }
 
+    parseQRCode(input: string): UbiQRCodeResult {
+        let serial;
+        let productId;
+
+        if (input) {
+            const segs = _.compact(input.split(' '));
+            if (segs.length > 1) {
+                serial = segs[0];
+                productId = segs[1];
+            } else if (segs.length === 1) {
+                serial = segs[0];
+
+                if(this.commonConfigService.isServcieCN()) {
+                    productId = EnumBasicProductId.WS1_CN;
+                }else{
+                    productId = EnumBasicProductId.WS1;
+                }
+            }
+        }
+
+        return {
+            serial: serial,
+            productId: productId,
+        };
+    }
 
     parseError(err: Error, argsObj?: any): string {
         let ret = 'Unknown Error';
@@ -178,8 +208,10 @@ export class UbiUtilsService {
                 } else if (ubiServerError.errorCode == 'device_attached_by_other_user') {
                     let owner = (<any>ubiServerError).owner;
                     ret = `${this.parseError(new UbiError(EnumAppError.DEVICE_ATTACHED_BY_OTHERS,
-                        {account: this.ubiUserDisplayPipe.transform(owner)}))}`;
-                } else {
+                        { account: this.ubiUserDisplayPipe.transform(owner) }))}`;
+                } else if (ubiServerError.errorCode == 'invalid_activation_code') {
+                    ret = `${this.parseError(new UbiError(EnumAppError.INVALID_ACTIVATION_CODE))}`;
+                }else {
                     ret = `server: ${ubiServerError.desp}`;
                 }
             } else {

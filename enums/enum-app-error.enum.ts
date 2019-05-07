@@ -21,6 +21,7 @@ export enum EnumAppError {
     SERVER_ACCESS_TIMEOUT = '1480',
     USERNAME_OR_PASSWORD_ERROR = '1401',
     DEVICE_ATTACHED_BY_OTHERS = '1411',
+    INVALID_ACTIVATION_CODE = '1412',
 
     SERVICE_NOT_AVAILABLE = '2000', // 一般内部使用，不需要翻译
     UNKNOWN_TYPE = '2001', // 一般内部使用，不需要翻译
