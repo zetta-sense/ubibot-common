@@ -28,12 +28,12 @@ export class UbiLocalizeService implements OnDestroy {// tag: 特别注意servic
         });
     }
 
-    resetLanguages() {
+    resetLanguages(preferred?: string) {
         const defaultLang = this.commonConfigService.DefaultLanguage;
         this.translate.setDefaultLang(defaultLang);
         console.log(`Setting default lang to ${defaultLang}`);
 
-        let lang = this.ubiUtils.getLanguage();
+        let lang = preferred || this.ubiUtils.getLanguage();
         this.translate.use(lang);
         console.log(`Setting current lang to ${lang}`);
     }
