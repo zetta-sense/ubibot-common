@@ -21,10 +21,15 @@ export class UbiLocalizeService implements OnDestroy {// tag: 特别注意servic
         private commonConfigService: UbibotCommonConfigService,
         private ubiUtils: UbiUtilsService
     ) {
-        this.resetLanguages();
+        // 默认情况下使用用户上次使用的语言
+        this.resetLanguages(this.ubiUtils.getLanguage());
 
         this.translate.onDefaultLangChange.subscribe(() => {
             // this.updateAppTitle();
+        });
+
+        this.translate.onLangChange.subscribe((data) => {
+            this.ubiUtils.saveLanguage(data.lang);
         });
     }
 
@@ -33,7 +38,15 @@ export class UbiLocalizeService implements OnDestroy {// tag: 特别注意servic
         this.translate.setDefaultLang(defaultLang);
         console.log(`Setting default lang to ${defaultLang}`);
 
-        let lang = preferred || this.ubiUtils.getLanguage();
+        // TODO: 以后有支持更多语言后会switch细分
+        const browserLang = window.navigator.language === 'zh-CN' ? 'zh-CN' : 'en-GB';
+
+        // 如果是第一次开启app，一般不会有preferred，这时取browserLang
+        let lang = preferred || browserLang || this.ubiUtils.getLanguage();
+        this.useLang(lang);
+    }
+
+    useLang(lang: string) {
         this.translate.use(lang);
         console.log(`Setting current lang to ${lang}`);
     }

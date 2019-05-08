@@ -94,6 +94,17 @@ export abstract class UbiChannel {
         return this.getStaus().usb !== undefined;
     }
 
+    static IsSimSupported(productId: string): boolean {
+        if (productId === EnumBasicProductId.WS1P) {
+            return true;
+        }
+        return false;
+    }
+
+    isSimSupported() {
+        return UbiChannel.IsSimSupported(this.product_id);
+    }
+
     hasSSID(): boolean {
         return this.getStaus().ssid !== undefined;
     }
