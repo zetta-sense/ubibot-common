@@ -38,7 +38,7 @@ export class RemoteFinanceService {
             areaCode = `+${areaCode}`;
         }
 
-        if (this.ubibotCommonConfig.isServcieCN()) { // CN
+        if (this.ubibotCommonConfig.isServeCN()) { // CN
             let url = `${this.ubibotCommonConfig.EndPoint}/finance/china_sms_voice_pricing`;
             return this.http.get(url).pipe(
                 map((resp: any) => resp.sms)
@@ -71,7 +71,7 @@ export class RemoteFinanceService {
             areaCode = `+${areaCode}`;
         }
 
-        if (this.ubibotCommonConfig.isServcieCN()) { //  CN
+        if (this.ubibotCommonConfig.isServeCN()) { //  CN
             let url = `${this.ubibotCommonConfig.EndPoint}/finance/china_sms_voice_pricing`;
             return this.http.get(url).pipe(
                 map((resp: any) => resp.voice)

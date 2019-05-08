@@ -52,11 +52,6 @@ export interface UbiServerResponseError {
 })
 export class UbiUtilsService {
 
-    storageKeyLanguage;
-    storageKeyProductProfileCache;
-    storageKeyLastLogin;
-    storageKeyCurrentAgent;
-
     constructor(private commonConfigService: UbibotCommonConfigService,
         private ubiUserDisplayPipe: UbiUserDisplayPipe,
         private translate: TranslateService,
@@ -99,47 +94,94 @@ export class UbiUtilsService {
             this.commonConfigService.DeployAgent = newAgent;
         }
         this.commonConfigService.update();
+    }
 
-        this.storageKeyLanguage = `appLanguage-${this.commonConfigService.DeployAgent}`;
-        this.storageKeyProductProfileCache = `productProfileCache-${this.commonConfigService.DeployAgent}`;
-        this.storageKeyLastLogin = `last_login_username-${this.commonConfigService.DeployAgent}`;
-        this.storageKeyCurrentAgent = `currentAgent`;
+    // 因为会update agent，必须使用动态获取
+    private getStorageKeyLanguage() {
+        return `appLanguage-${this.commonConfigService.DeployAgent}`;
+    }
+
+    // 因为会update agent，必须使用动态获取
+    private getStorageKeyProductProfileCache() {
+        return `productProfileCache-${this.commonConfigService.DeployAgent}`;
+    }
+
+    // 因为会update agent，必须使用动态获取
+    private getStorageKeyLastLogin() {
+        return `last_login_username-${this.commonConfigService.DeployAgent}`;
+    }
+
+    // 因为会update agent，必须使用动态获取
+    private getStorageKeyCurrentAgent() {
+        return `currentAgent`;
     }
 
     // saveReportLocal(report: UbiReport) {
     //
     // }
 
-    resetLanguage() {
-        const lang = this.commonConfigService.PreferredLanguage;
+    resetLanguage(preferred?: string) {
+        // const lang = this.commonConfigService.PreferredLanguage;
+        // this.translate.use(lang);
+        // this.saveLanguage();
+
+        const defaultLang = this.commonConfigService.DefaultLanguage;
+        this.translate.setDefaultLang(defaultLang);
+        console.log(`Setting default lang to ${defaultLang}`);
+
+        // TODO: 以后有支持更多语言后会switch细分
+        const browserLang = window.navigator.language === 'zh-CN' ? 'zh-CN' : 'en-GB';
+
+        // 如果是第一次开启app，一般不会有preferred，这时取browserLang
+        let lang = preferred || browserLang || this.getLanguage();
+        this.useLang(lang);
+    }
+
+    useLang(lang: string) {
         this.translate.use(lang);
-        this.saveLanguage();
+         // 不使用translate的subsribe，因为存在一种情况是agent改变了但language没有改变，
+         // 而lang的key是跟agent挂钩的，这样lang没改变会导致没法触发translate的lange change subscribe
+         // 从而没有将lang保存到对应的storage key上
+        this.saveLanguage(lang);
+        console.log(`Setting current lang to ${lang}`);
     }
 
     saveLanguage(langKey?: string) {
         if (langKey) {
-            localStorage.setItem(this.storageKeyLanguage, langKey);
+            localStorage.setItem(this.getStorageKeyLanguage(), langKey);
         } else {
-            localStorage.removeItem(this.storageKeyLanguage);
+            localStorage.removeItem(this.getStorageKeyLanguage());
         }
+    }
+
+    setKeyValue(key: string, value: string) {
+        localStorage.setItem(key, value);
+    }
+
+    getKeyValue(key: string): string {
+        return localStorage.getItem(key);
+    }
+
+    clearLocalStorage(): void {
+        localStorage.clear();
     }
 
     /**
      * Get last set language. If null, return config's default.
      */
     getLanguage() {
-        return localStorage.getItem(this.storageKeyLanguage) || this.commonConfigService.PreferredLanguage;
+        return localStorage.getItem(this.getStorageKeyLanguage()) || this.commonConfigService.PreferredLanguage;
     }
 
     saveProductProfileCache(item) {
         if (typeof item == 'object') {
-            localStorage.setItem(this.storageKeyProductProfileCache, JSON.stringify(item));
+            localStorage.setItem(this.getStorageKeyProductProfileCache(), JSON.stringify(item));
         }
     }
 
     getProductProfileCache() {
         let ret = {};
-        let tmp = localStorage.getItem(this.storageKeyProductProfileCache);
+        let tmp = localStorage.getItem(this.getStorageKeyProductProfileCache());
         try {
             ret = JSON.parse(tmp);
         } catch (e) {
@@ -149,23 +191,23 @@ export class UbiUtilsService {
 
     saveLastLogin(saveKey?: string) {
         if (saveKey) {
-            localStorage.setItem(this.storageKeyLastLogin, saveKey);
+            localStorage.setItem(this.getStorageKeyLastLogin(), saveKey);
         } else {
-            localStorage.removeItem(this.storageKeyLastLogin);
+            localStorage.removeItem(this.getStorageKeyLastLogin());
         }
     }
 
     saveCurrentAgent() {
         const agent = this.commonConfigService.DeployAgent;
-        localStorage.setItem(this.storageKeyCurrentAgent, agent);
+        localStorage.setItem(this.getStorageKeyCurrentAgent(), agent);
     }
 
     getLastAgent(): string {
-        return localStorage.getItem(this.storageKeyCurrentAgent);
+        return localStorage.getItem(this.getStorageKeyCurrentAgent());
     }
 
     getLastLogin() {
-        return localStorage.getItem(this.storageKeyLastLogin) || '';
+        return localStorage.getItem(this.getStorageKeyLastLogin()) || '';
     }
 
     parseQRCode(input: string): UbiQRCodeResult {
@@ -180,7 +222,7 @@ export class UbiUtilsService {
             } else if (segs.length === 1) {
                 serial = segs[0];
 
-                if(this.commonConfigService.isServcieCN()) {
+                if (this.commonConfigService.isServeCN()) {
                     productId = EnumBasicProductId.WS1_CN;
                 }else{
                     productId = EnumBasicProductId.WS1;

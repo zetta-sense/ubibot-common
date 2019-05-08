@@ -83,7 +83,7 @@ export class UbiTree<T> {
      * @memberof UbiTree
      */
     private findNodeByKey(key: string, node: UbiTreeNode<T>, depth: number = 0): UbiTreeNode<T> {
-        console.log(`Matching ${key} with ${node.key}: ${key === node.key}...`);
+        // console.log(`Matching ${key} with ${node.key}: ${key === node.key}...`);
 
         if (key === node.key) return node;
 
