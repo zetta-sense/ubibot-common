@@ -139,9 +139,9 @@ export class UbiUtilsService {
 
     useLang(lang: string) {
         this.translate.use(lang);
-         // 不使用translate的subsribe，因为存在一种情况是agent改变了但language没有改变，
-         // 而lang的key是跟agent挂钩的，这样lang没改变会导致没法触发translate的lange change subscribe
-         // 从而没有将lang保存到对应的storage key上
+        // 不使用translate的subsribe，因为存在一种情况是agent改变了但language没有改变，
+        // 而lang的key是跟agent挂钩的，这样lang没改变会导致没法触发translate的lange change subscribe
+        // 从而没有将lang保存到对应的storage key上
         this.saveLanguage(lang);
         console.log(`Setting current lang to ${lang}`);
     }
@@ -224,7 +224,7 @@ export class UbiUtilsService {
 
                 if (this.commonConfigService.isServeCN()) {
                     productId = EnumBasicProductId.WS1_CN;
-                }else{
+                } else {
                     productId = EnumBasicProductId.WS1;
                 }
             }
@@ -253,7 +253,7 @@ export class UbiUtilsService {
                         { account: this.ubiUserDisplayPipe.transform(owner) }))}`;
                 } else if (ubiServerError.errorCode == 'invalid_activation_code') {
                     ret = `${this.parseError(new UbiError(EnumAppError.INVALID_ACTIVATION_CODE))}`;
-                }else {
+                } else {
                     ret = `server: ${ubiServerError.desp}`;
                 }
             } else {
@@ -391,5 +391,33 @@ export class UbiUtilsService {
 
     generateUuid(): string {
         return `ubi-${uuid.v4()}`;
+    }
+
+    private toUbibotSSID(serial: string): string {
+        try {
+            const end = Math.min(serial.length, 5);
+            const code = (serial.slice(0, end) || '').toUpperCase();
+            return `Ubibot-${code}`;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    private toDuduSSID(serial: string): string {
+        try {
+            const end = Math.min(serial.length, 4);
+            const code = (serial.slice(0, end) || '').toUpperCase();
+            return `DuDu-${code}`;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    predictDeviceSSID(serial: string): string {
+        if (/^cctv/i.test(serial)) {
+            return this.toDuduSSID(serial);
+        } else {
+            return this.toUbibotSSID(serial);
+        }
     }
 }
