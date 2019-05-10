@@ -7,6 +7,22 @@ import { UbiChannelDAO, UbiChannel } from '../entities/ubi-channel.entity';
 import { UbiError } from '../errors/UbiError';
 import { UbiRule, UbiRuleStatus } from '../entities/ubi-rule.entity';
 
+export interface UbiCheckDeviceReponse {
+    device: {
+        activated_at: string;
+        activated_status: '0' | '1';
+        attached_at: string;
+        channel_id: string;
+        created_at: string;
+        note: string;
+        product_id: string;
+        serial: string;
+        updated_at: string;
+    };
+
+    result: string;
+}
+
 /**
  * A client service for remote channel service.
  *
@@ -48,7 +64,7 @@ export class RemoteChannelService {
     get(channelId: string): Observable<UbiChannel> {
         if (!channelId) throw new UbiError('Channel ID is required for this API!');
 
-        let url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}`;
+        const url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}`;
         return this.http.get(url).pipe(
             map((resp: any) => {
                 return new UbiChannelDAO(resp.channel);
@@ -56,6 +72,22 @@ export class RemoteChannelService {
         );
     }
 
+
+    /**
+     * 用于校验服务器最近是否收到设备数据
+     *
+     * @param {string} channelId
+     * @returns {Observable<UbiCheckDeviceReponse>}
+     * @memberof RemoteChannelService
+     */
+    getDeviceStatus(channelId: string): Observable<UbiCheckDeviceReponse> {
+        if (!channelId) throw new UbiError('Channel ID is required for this API!');
+
+        const url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/device_status`;
+        return this.http.get(url).pipe(
+            map((resp: UbiCheckDeviceReponse) => resp)
+        );
+    }
 
     /**
      * 列出该channel的所有rules并attach相应的channel到extra信息

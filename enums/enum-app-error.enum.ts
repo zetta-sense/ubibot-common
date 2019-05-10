@@ -1,4 +1,6 @@
 export enum EnumAppError {
+    UNDEFINED_ERROR = '-1',
+
     DEVICE_COMMUNICATE_EXCEPTION = '100', // communicate error
     DEVICE_RESPONSE_PARSING_ERROR = '101', // response parsing error
     MALFORMED_JSON = '501', // malformed JSON
@@ -7,6 +9,10 @@ export enum EnumAppError {
     WRITE_FILE_FAILED = '504', // write to file failed
     DEVICE_RETURN_ERROR = '505', // device return error
     DEVICE_RETURN_ERROR_INVAILD_WIFI = '506', // device return error - invalid wifi
+    DEVICE_NETWORK_TIMEOUT = '507', // 一般为链接设备ap后发送命令超时导致
+    DEVICE_NETWORK_READ_TIMEOUT = '508',
+    DEVICE_NETWORK_WRITE_TIMEOUT = '509',
+    DEVICE_FIRST_CONTACT_TIMEOUT = '510',
     NETWORK_ERROR = '600', // network error
     INTERRUPTED_BY_USER = '801', // interrupted coz user aborted
     NO_USB_PORTS_FOUND = '903', // ERROR: No device USB ports were found
@@ -37,4 +43,5 @@ export enum EnumAppError {
 
     // minus error means acceptable errors
     USB_NO_RECV_DATA_BUT_WOULD_WAIT_NEXT = '-500',
+    SERVER_NO_RECV_DATA_BUT_WOULD_WAIT_NEXT = '-501',
 }

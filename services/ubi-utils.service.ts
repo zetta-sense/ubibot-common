@@ -413,6 +413,10 @@ export class UbiUtilsService {
         }
     }
 
+    containsSpaceOrLineBreak(str: string): boolean {
+        return /[\s\n\r]/.test(str);
+    }
+
     predictDeviceSSID(serial: string): string {
         if (/^cctv/i.test(serial)) {
             return this.toDuduSSID(serial);

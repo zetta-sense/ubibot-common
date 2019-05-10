@@ -21,4 +21,13 @@ export const UbiValidators: { [key: string]: ValidatorFn } = {
         const passed = pattern.test(control.value);
         return passed ? null : { 'invalidUsername': { value: control.value } };
     },
+    ascii: (control: AbstractControl): { [key: string]: any } | null => {
+        const passed = /^[\x00-\x7F]*$/.test(control.value);
+        return passed ? null : { 'requireASCII': { value: control.value } };
+    },
+    // ASCII 拓展
+    asciiEx: (control: AbstractControl): { [key: string]: any } | null => {
+        const passed = /^[\x00-\xFF]*$/.test(control.value);
+        return passed ? null : { 'requireASCIIEx': { value: control.value } };
+    },
 };
