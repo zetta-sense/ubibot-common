@@ -46,7 +46,7 @@ export class UbiTree<T> {
     }
 
     /**
-     * Find by key, self inclusive.
+     * Find by first matched key, self inclusive.
      *
      * @param {string} key
      * @returns {UbiTreeNode<T>}
@@ -55,6 +55,27 @@ export class UbiTree<T> {
     findByKey(key: string): UbiTreeNode<T> {
         return this.findNodeByKey(key, this.root);
     }
+
+    findByPredicate(predicate: (node: UbiTreeNode<T>) => boolean): UbiTreeNode<T> {
+        return this.findNodeByPredicate(predicate, this.root);
+    }
+
+    private findNodeByPredicate(predicate: (node: UbiTreeNode<T>) => boolean, node: UbiTreeNode<T>, depth: number = 0): UbiTreeNode<T> {
+        if (predicate(node)) return node;
+
+        if (depth > MAX_DEPTH) throw new UbiError(EnumAppError.EXCEED_MAX_STACK_DEPTH);
+
+        for (let i = 0; i < node.children.length; i++) {
+            const child = node.children[i];
+            const found = this.findNodeByPredicate(predicate, child, depth + 1);
+            if (found) {
+                return found;
+            }
+        }
+
+        return null;
+    }
+
 
     getRoot(): UbiTreeNode<T> {
         return this.root;
@@ -74,7 +95,7 @@ export class UbiTree<T> {
 
 
     /**
-     * 根据key深度优先
+     * 根据key深度优先 first matched
      *
      * @private
      * @param {string} key
