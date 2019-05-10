@@ -202,6 +202,13 @@ export class UbiUtilsService {
         localStorage.setItem(this.getStorageKeyCurrentAgent(), agent);
     }
 
+
+    /**
+     * 如果没有会返回null
+     *
+     * @returns {string}
+     * @memberof UbiUtilsService
+     */
     getLastAgent(): string {
         return localStorage.getItem(this.getStorageKeyCurrentAgent());
     }
