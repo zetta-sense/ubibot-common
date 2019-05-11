@@ -98,6 +98,10 @@ export class UbiSyncService implements OnDestroy {
             );
     }
 
+    // startSyncMyChannels2(): Observable<any> {
+
+    // }
+
     startSyncMyChannels(src$: BehaviorSubject<UbiChannelDAO[]>, _delay?: number, _interval?: number): UbiSyncReturn {
         const errorLogger = new BehaviorSubject<UbiError>(null); // a side kick error logger
         let src = src$.getValue();
@@ -145,7 +149,7 @@ export class UbiSyncService implements OnDestroy {
                 }
             });
 
-            //tag: log down error=null
+            // tag: log down error=null
             errorLogger.next(null);
 
             return of(src);
