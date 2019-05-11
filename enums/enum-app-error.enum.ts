@@ -32,8 +32,9 @@ export enum EnumAppError {
     SERVICE_NOT_AVAILABLE = '2000', // 一般内部使用，不需要翻译
     UNKNOWN_TYPE = '2001', // 一般内部使用，不需要翻译
     EXCEED_MAX_STACK_DEPTH = '2002',  // 一般内部使用，不需要翻译
-    UNDEFINED_ACTION = '2003', // 一般内部使用，不需要翻译，一般未无法决定流的下一步
+    UNDEFINED_ACTION = '2003', // 一般内部使用，不需要翻译，一般为无法决定流的下一步
     UNDEFINED_ACTION_FLOW = '2004', // 一般为不能获取对应的操作流，通常是新的产品在未更新的app上使用时产生
+    CANNOT_DETERMINE_CURRENT_STEP = '2005', // 一般内部使用，不需要翻译，一般为无法决定流的当前步
 
     EXCEED_MIN_MAX_RULE_LIMIT = '3001',
 
