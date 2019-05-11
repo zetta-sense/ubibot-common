@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { RemoteChannelService } from '../../remote/remote-channel.service';
 import { UbiChannel, UbiChannelDAO } from '../../entities/ubi-channel.entity';
-import { interval, Observable, EMPTY, timer, from, of, Subscription, OperatorFunction, Subject, BehaviorSubject } from 'rxjs';
+import { interval, Observable, EMPTY, timer, from, of, Subscription, OperatorFunction, Subject, BehaviorSubject, race, merge } from 'rxjs';
 import { flatMap, catchError, timeout, delay, mergeMap, tap, finalize, map } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { UbiError } from '../../errors/UbiError';
@@ -17,6 +17,8 @@ export class UbiSyncService implements OnDestroy {
     private static paused: boolean = false;
 
     private firstRun: boolean = true;
+
+    private refresh$ = new Subject<number>();
 
     constructor(private remoteChannel: RemoteChannelService
     ) {
@@ -35,6 +37,16 @@ export class UbiSyncService implements OnDestroy {
         return this.paused;
     }
 
+
+    /**
+     * Force a refresh.
+     *
+     * @memberof UbiSyncService
+     */
+    refresh() {
+        this.refresh$.next(-1);
+    }
+
     startSync(puller: Observable<UbiChannel[]>,
         merger: OperatorFunction<{}, {}>,
         _delay: number = 500,
@@ -43,7 +55,13 @@ export class UbiSyncService implements OnDestroy {
 
         let subscription: Subscription;
 
-        return timer(_delay, _interval)
+        return merge(
+            timer(_delay, _interval),
+            this.refresh$.pipe(
+                tap(() => console.log('Forced a sync.')),
+            ),
+        )
+            // return timer(_delay, _interval)
             .pipe(
                 mergeMap((t) => {
                     // console.log(`Unsubscribing the previous one...`);
@@ -72,14 +90,14 @@ export class UbiSyncService implements OnDestroy {
                 // 排序
                 map((data: UbiChannel[]) => {
                     // tag: 只在第一次时进行排序
-                    if(this.firstRun) {
+                    if (this.firstRun) {
                         data.sort((a: UbiChannel, b: UbiChannel) => {
                             const aio = a.isOnline();
                             const bio = b.isOnline();
 
-                            if(aio && !bio) {
+                            if (aio && !bio) {
                                 return -1;
-                            }else if(!aio && bio) {
+                            } else if (!aio && bio) {
                                 return 1;
                             }
 
@@ -98,8 +116,15 @@ export class UbiSyncService implements OnDestroy {
             );
     }
 
-    // startSyncMyChannels2(): Observable<any> {
+    // startSyncMyChannels2(): Observable<any[]> {
+    //     const errorLogger = new Observable<UbiError>(); // a side kick error logger
 
+    //     // tag: EMPTY会忽略执行下一个subscription，所以返回of(null)
+    //     const puller: Observable<UbiChannel[]> = this.remoteChannel.list().pipe(catchError((err) => {
+    //         //tag: log down error
+    //         errorLogger.next(err);
+    //         return of(null);
+    //     }));
     // }
 
     startSyncMyChannels(src$: BehaviorSubject<UbiChannelDAO[]>, _delay?: number, _interval?: number): UbiSyncReturn {
