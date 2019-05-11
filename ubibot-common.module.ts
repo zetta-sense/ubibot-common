@@ -18,6 +18,7 @@ import { UbiConsoleService } from './services/ubi-console.service';
 import { RemoteFinanceService } from './remote/remote-finance.service';
 import { RemoteUtilitiesService } from './remote/remote-utilities.service';
 import { RemoteProductService } from './remote/remote-product.service';
+import { RemoteMiscInfoService } from './remote/remote-misc-info.service';
 
 export const UBIBOT_COMMON_CONFIGURATION = new InjectionToken<any>('UBIBOT_COMMON_CONFIGURATION');
 
@@ -57,6 +58,7 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
         RemoteFinanceService,
         RemoteUtilitiesService,
         RemoteProductService,
+        RemoteMiscInfoService,
         // init dep
         {
             provide: APP_INITIALIZER,
