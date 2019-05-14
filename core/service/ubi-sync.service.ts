@@ -159,7 +159,8 @@ export class UbiSyncService implements OnDestroy {
                     channelsToRemove.push(channelDAO);
                 }
             });
-            _.pull(src, channelsToRemove);
+            _.pullAll(src, channelsToRemove);
+            // console.log('正在移除:', channelsToRemove, src);
 
             // 合并新数据
             data.forEach((channelData: UbiChannel) => {

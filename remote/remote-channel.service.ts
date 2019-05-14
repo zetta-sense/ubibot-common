@@ -6,6 +6,7 @@ import { map, switchMap, mergeAll, combineAll, concatMap, tap, zipAll, withLates
 import { UbiChannelDAO, UbiChannel } from '../entities/ubi-channel.entity';
 import { UbiError } from '../errors/UbiError';
 import { UbiRule, UbiRuleStatus } from '../entities/ubi-rule.entity';
+import * as _ from 'lodash';
 
 export interface UbiCheckDeviceReponse {
     device: {
@@ -74,6 +75,51 @@ export class RemoteChannelService {
 
 
     /**
+     *  Clear channel
+     *
+     * id: CHANNEL_ID
+     * account_key or token_id (string) - account_key  is User's account key; token_id  is obtained through login API (required).
+     *
+     * @param {string} channelId
+     * @returns {Observable<any>}
+     * @memberof RemoteChannelService
+     */
+    clear(channelId: string): Observable<any> {
+        if (!channelId) throw new UbiError('Channel ID is required for this API!');
+
+        const url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/feeds`;
+        return this.http.delete(url).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
+
+
+    /**
+     * Delete a Channel and Associated Device (若channel和device有关联，必须用这个删除)
+     *
+     * To delete a channel and clear all feed data from a channel, send an HTTP DELETE to http://api.ubibot.cn/channels/ CHANNEL_ID/device, replacing CHANNEL_ID with the ID of your channel
+     * Valid request parameters:
+     * account_key or token_id (string) - account_key  is User's account key; token_id  is obtained through login API (required).
+     *
+     * @param {string} channelId
+     * @returns {Observable<any>}
+     * @memberof RemoteChannelService
+     */
+    remove(channelId: string): Observable<any> {
+        if (!channelId) throw new UbiError('Channel ID is required for this API!');
+
+        const url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/device`;
+        return this.http.delete(url).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
+
+
+    /**
      * 用于校验服务器最近是否收到设备数据
      *
      * @param {string} channelId
@@ -112,16 +158,16 @@ export class RemoteChannelService {
             this.get(channelId),
         ).pipe(
             switchMap(([resp, channel]: any[]) => {
-                // console.log(resp);
-                return from(resp.rules).pipe(
-                    map<UbiRule, any>(raw => {
-                        return of(new UbiRule(raw, channel));
-                    }),
-                );
+                const ret = _.map(resp.rules, (raw) => {
+                    return new UbiRule(raw, channel);
+                });
+                return of(ret);
             }),
             // 根据文档, zipAll的source必须是一个observable of observables / ..., 所以map的时候必须通过of返回
             // ref: https://github.com/ReactiveX/rxjs/issues/1677
-            zipAll<UbiRule>(),
+            // zipAll<UbiRule>(),
+            // tap((x) => console.log(x)),
+            // mergeAll(),
         );
     }
 
