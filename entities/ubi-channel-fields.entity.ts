@@ -25,8 +25,8 @@ export class UbiChannelFields<T extends UbiChannelFieldDef> extends Array<T> {
 
     /**
      * Get all enabled fields.
-     * 
-     * Important: 
+     *
+     * Important:
      * This method will generate new array every time. DO NOT use it in binding way.
      *
      * @returns {UbiChannelFieldDef[]}
@@ -40,6 +40,16 @@ export class UbiChannelFields<T extends UbiChannelFieldDef> extends Array<T> {
             }
         });
         return ret;
+    }
+
+    getField(fieldKey: string): T {
+        for (let i = 0; i < this.length; i++) {
+            const field = this[i];
+            if(field.key === fieldKey) {
+                return field;
+            }
+        }
+        return null;
     }
 
     static ConvertFromChannel(channel: UbiChannel): UbiChannelFields<UbiChannelFieldDef> {

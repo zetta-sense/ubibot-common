@@ -13,6 +13,8 @@ import { UbiExtraPreferenceResolver } from './resolvers/ubi-extra-preference.res
 import { UbiChannelDaosFilterPipe } from './pipes/ubi-channel-daos-filter.pipe';
 import { BytesPipe } from './pipes/bytes.pipe';
 import { UbiVarDirective } from './directives/ubi-var.directive';
+import { UbiFieldValueDirective } from './directives/ubi-field-value.directive';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 /**
  * Core module of common module.
@@ -33,6 +35,7 @@ import { UbiVarDirective } from './directives/ubi-var.directive';
         UbiChannelDaosFilterPipe,
         BytesPipe,
         UbiVarDirective,
+        UbiFieldValueDirective,
     ],
     exports: [
         UbiMeAvatarComponent,
@@ -45,6 +48,7 @@ import { UbiVarDirective } from './directives/ubi-var.directive';
         BytesPipe,
         UbiVarDirective,
         UbiLazyImgDirective,
+        UbiFieldValueDirective,
     ],
     providers: [ // 用于DI
         UbiUserDisplayPipe,
@@ -55,6 +59,8 @@ import { UbiVarDirective } from './directives/ubi-var.directive';
     ],
     imports: [
         CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
         HighchartsChartModule,
     ]
 })

@@ -28,8 +28,7 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
 }
 
 @NgModule({
-    declarations: [
-    ],
+    declarations: [],
     entryComponents: [
     ],
     imports: [

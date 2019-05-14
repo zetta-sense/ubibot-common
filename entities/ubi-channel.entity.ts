@@ -5,6 +5,9 @@ import * as _ from 'lodash';
 import { UbiExtraPreferenceTempScale } from "./ubi-extra-preference.entity";
 import { EnumBasicProductId } from "../enums/enum-basic-product-id.enum";
 
+export interface UbiValueOptions {
+    tempScale?: UbiExtraPreferenceTempScale,
+}
 
 /**
  * 用于接收到的channel raw数据
@@ -301,14 +304,14 @@ export class UbiChannelFieldValueDAO {
     /**
      * 获取该field的值，可以传入tempscale参数自动将温度field变换为相应温标下的值
      *
-     * @param {UbiExtraPreferenceTempScale} [tempScale]
+     * @param {UbiValueOptions} eg. {tempScale: 'celsius'}
      * @returns {number}
      * @memberof UbiChannelFieldValueDAO
      */
-    getValue(tempScale?: UbiExtraPreferenceTempScale): number {
+    getValue(opts?: UbiValueOptions): number {
         let ret = this.valueItem && this.valueItem.value;
-        if (this.fieldDef.scaleType === '1' && tempScale === UbiExtraPreferenceTempScale.Fahrenheit && ret != null) {
-            ret = ret * 9 / 5 + 32;
+        if (ret != null) {
+            ret = ConvertValue(ret, this.fieldDef, opts);
         }
         return ret;
     }
@@ -328,7 +331,55 @@ export class UbiChannelFieldValueDAO {
     isOffline(): boolean {
         return !this.isOnline();
     }
-
-
 }
 
+
+/**
+ * 用于统一判断应使用的单位，特别是保留于没有明确指定温标的情况
+ *
+ * @export
+ * @param {UbiExtraPreferenceTempScale} tempScale
+ * @returns {boolean}
+ */
+export function UseCelsius(tempScale: UbiExtraPreferenceTempScale): boolean {
+    return !(tempScale === UbiExtraPreferenceTempScale.Fahrenheit);
+}
+
+
+/**
+ * 用于统一自动转换对应field的值
+ * 由 数据库值 -> view值
+ *
+ * @export
+ * @param {number} value
+ * @param {UbiChannelFieldDef} fieldDef
+ * @param {UbiValueOptions} [opts] 用户偏好的选项，一般从UbiUserPrefference获得
+ * @returns
+ */
+export function ConvertValue(value: number, fieldDef: UbiChannelFieldDef, opts: UbiValueOptions = {}) {
+    // 仅当为温度时，且偏好非celsius则转换值
+    if (fieldDef.scaleType === '1' && !UseCelsius(opts.tempScale) && value != null) {
+        value = value * 9 / 5 + 32;
+        value = parseFloat(value.toFixed(5));
+    }
+    return value;
+}
+
+/**
+ * 用于统一自动转换对应field的值
+ * 由 view值 -> 数据库值
+ *
+ * @export
+ * @param {number} value
+ * @param {UbiChannelFieldDef} fieldDef
+ * @param {UbiValueOptions} [opts={}]
+ * @returns
+ */
+export function ConvertValueReverse(value: number, fieldDef: UbiChannelFieldDef, opts: UbiValueOptions = {}) {
+    // 仅当为温度时，且偏好非celsius则转换值
+    if (fieldDef.scaleType === '1' && !UseCelsius(opts.tempScale) && value != null) {
+        value = (value - 32) * 5 / 9;
+        value = parseFloat(value.toFixed(5));
+    }
+    return value;
+}
