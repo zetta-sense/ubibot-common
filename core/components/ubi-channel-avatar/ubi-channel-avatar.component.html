@@ -3,11 +3,17 @@
       [ngClass]="{'grayscale': !channel?.isOnline()}"
       [ngStyle]="{'width.px': size, 'height.px': size}">
 
-    <img class=""
+    <!-- <img class=""
          [ngClass]="{'rounded': rounded}"
          ubi-lazy-img
          default-src="assets/img-empty.png"
-         [data-src]="avatarImage | resourceUrl: size : true">
+         [data-src]="avatarImage | resourceUrl: size : true"> -->
+
+    <!-- tag: 既然目前使用了virtualScroll，也就没必要使用ubi-lazy-img，因此comment掉来提高performance -->
+    <img class=""
+         [ngClass]="{'rounded': rounded}"
+         src="assets/img-empty.png"
+         [src]="avatarImage | resourceUrl: size : true">
 
     <div class="status-bar vertical">
         <i class="material-icons status-icon"
