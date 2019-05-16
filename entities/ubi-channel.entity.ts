@@ -164,6 +164,8 @@ export class UbiChannelDAO extends UbiChannel {
     constructor(channel: UbiChannel) {
         super();
 
+        Object.setPrototypeOf(this, UbiChannelDAO.prototype);
+
         this.merge(channel);
     }
 
@@ -174,11 +176,10 @@ export class UbiChannelDAO extends UbiChannel {
      * @memberof UbiChannelDAO
      */
     merge(channel: UbiChannel) {
-        Object.setPrototypeOf(this, UbiChannelDAO.prototype);
-        Object.assign(this, channel);
-
         // 记录上次的值
         const oldValues = (this.extra && this.extra.lastValues) || {};
+
+        Object.assign(this, channel);
 
         // 生成新的extra信息对象
         this.extra = {
@@ -187,6 +188,7 @@ export class UbiChannelDAO extends UbiChannel {
             fieldDAOs: <UbiChannelFieldValueDAOsMap>{},
 
             oldValues: oldValues,
+            // oldValues: {field1: { value: 23, created_at: '2019-05-16T18:10:27Z', net: '1'}}
         };
 
         // 构建每个field的DAO，用于关联field与value

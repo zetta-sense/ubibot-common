@@ -15,6 +15,7 @@ import { BytesPipe } from './pipes/bytes.pipe';
 import { UbiVarDirective } from './directives/ubi-var.directive';
 import { UbiFieldValueDirective } from './directives/ubi-field-value.directive';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UbiSyncV2Service } from './service/ubi-sync-v2.service';
 
 /**
  * Core module of common module.
@@ -54,6 +55,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
         UbiUserDisplayPipe,
         ResourceUrlPipe,
         UbiSyncService,
+        UbiSyncV2Service,
         UbiExtraPreferenceResolver,
         UbiChannelDaosFilterPipe,
     ],
