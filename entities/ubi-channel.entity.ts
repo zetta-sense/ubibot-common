@@ -240,6 +240,9 @@ export class UbiChannelDAO extends UbiChannel {
         return this.extra.fieldDAOs[fieldKey];
     }
 
+    clone(): UbiChannelDAO {
+        return _.clone(this);
+    }
 }
 
 
@@ -294,9 +297,10 @@ export class UbiChannelFieldValueDAO {
      * @param {UbiChannelLastValuesItem} [valueItem=<UbiChannelLastValuesItem>{}]
      * @memberof UbiChannelFieldValueDAO
      */
-    constructor(fieldDef: UbiChannelFieldDef,
+    constructor(
+        fieldDef: UbiChannelFieldDef,
         valueItem: UbiChannelLastValuesItem,
-        oldValueItem: UbiChannelLastValuesItem
+        oldValueItem: UbiChannelLastValuesItem,
     ) {
         this.fieldDef = fieldDef;
         this.valueItem = valueItem;
@@ -332,6 +336,10 @@ export class UbiChannelFieldValueDAO {
 
     isOffline(): boolean {
         return !this.isOnline();
+    }
+
+    clone(): UbiChannelFieldValueDAO  {
+        return _.clone(this);
     }
 }
 
