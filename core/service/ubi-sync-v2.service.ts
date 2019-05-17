@@ -43,7 +43,7 @@ export class UbiSyncV2Service implements OnDestroy {
         syncMixer: UbiSyncV2Mixer<T>,
         syncDelay: number = 500,
         syncInterval: number = 10 * 60 * 1000,
-        syncNoErrors: boolean = true,
+        syncNoErrors: boolean = false,
     ): Observable<T> {
         return merge(
             // 按时pull的信号，如果pause了则不产生
@@ -65,7 +65,7 @@ export class UbiSyncV2Service implements OnDestroy {
             }),
             // 如果syncNoErrors = true则忽略错误
             catchError((err) => {
-                this.ubiUtils.snack('Error occurs while sync.');
+                // this.ubiUtils.snack('Error occurs while sync.');
                 return syncNoErrors ? empty() : throwError(err);
             }),
         );

@@ -11,6 +11,10 @@ export interface UbiSyncReturn {
     error: BehaviorSubject<UbiError>;
 }
 
+
+/**
+ * @deprecated
+ */
 @Injectable()
 export class UbiSyncService implements OnDestroy {
 
