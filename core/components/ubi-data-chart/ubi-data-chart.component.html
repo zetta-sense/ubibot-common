@@ -1,10 +1,10 @@
-
 <!--<div [id]="containerId" chartContainer [ngStyle]="{'width.px': width, 'height.px': height}"></div>-->
 
 
 <!--<div [id]="containerId" chartContainer [ngStyle]="{'width.px': width, 'height.px': height}" [chart]="chart"></div>-->
 
-<div [id]="containerId" [ngStyle]="{'width.px': width, 'height.px': height}" chartContainer>
+<!-- [ngStyle]="{'width.px': width, 'height.px': height}" -->
+<!-- <div [id]="containerId" chartContainer>
     <highcharts-chart
         [Highcharts]="highcharts"
         [options]="highchartsOptions"
@@ -12,6 +12,10 @@
         [(update)]="highchartsUpdateFlag"
         style="width: 100%; height: 100%; display: block;"
     ></highcharts-chart>
-</div>
+</div> -->
 
-
+<highcharts-chart [Highcharts]="highcharts"
+                  [options]="highchartsOptions"
+                  (chartInstance)="highchartsAfterInit($event)"
+                  [(update)]="highchartsUpdateFlag"
+                  style="width: 100%; height: 100%; display: block;"></highcharts-chart>

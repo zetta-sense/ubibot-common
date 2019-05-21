@@ -12,6 +12,10 @@ import { SHA2_256 } from '../misc/sha256';
 import { FromUTF8Array, ToUTF8Array } from '../misc/utf8arr';
 import { AppConfig } from '../../../environments/environment';
 import { UbiUserDisplayPipe } from '../core/pipes/ubi-user-display.pipe';
+import { UbiDataChartSerie, UbiDataChartPoint } from '../core/components/ubi-data-chart/ubi-data-chart.component';
+import { UbiFeedsResponse } from '../remote/remote-channel.service';
+import { UbiChannelDAO, ConvertValue, UbiValueOptions } from '../entities/ubi-channel.entity';
+import { UbiChannelFieldDef } from '../entities/ubi-channel-field-def.entity';
 
 export const UBIBOT_UTILS_DIALOG_AGENT = new InjectionToken<UbibotUtilsDialogAgent>('UBIBOT_UTILS_DIALOG_AGENT');
 
@@ -46,6 +50,15 @@ export interface UbiServerResponseError {
     desp?: string;
     errorCode?: string;
 }
+
+
+export interface UbiFeedPack {
+    key: string, // field1, ...
+    title: string,
+    field: UbiChannelFieldDef,
+    series: UbiDataChartSerie[],
+}
+
 
 @Injectable({
     providedIn: 'root'
@@ -430,5 +443,90 @@ export class UbiUtilsService {
         } else {
             return this.toUbibotSSID(serial);
         }
+    }
+
+
+    /**
+     * 单serie解包
+     *
+     * @param {UbiFeedsResponse} resp
+     * @returns {UbiFeedPack[]}
+     * @memberof UbiUtilsService
+     */
+    extractFeeds(resp: UbiFeedsResponse, opts?: UbiValueOptions): UbiFeedPack[] {
+        const channel: UbiChannelDAO = new UbiChannelDAO(resp.channel);
+        const fields: UbiChannelFieldDef[] = channel.getFields().getEnabledFieldDefs()
+
+        const map: { [key: string]: UbiFeedPack } = {};
+
+        // 构建每个field的pack
+        for (let i = 0; i < fields.length; i++) {
+            const field: UbiChannelFieldDef = fields[i];
+            const fieldKey = field.key;
+            const filedName = field.label;
+
+            const data: UbiDataChartPoint[] = [];
+
+            // fake data to debug
+            // const data: UbiDataChartPoint[] = [
+            //     { x: 1558409528774, y: 1 },
+            //     { x: 1558410001000, y: 2.1 },
+            //     { x: 1558410101000, y: 1.4 },
+            //     { x: 1558410201000, y: 1.8 },
+            // ];
+
+            const serie_1: UbiDataChartSerie = {
+                name: fieldKey,
+                data: data,
+            };
+
+            map[fieldKey] = {
+                key: fieldKey,
+                field: field,
+                title: filedName,
+                series: [serie_1],
+            };
+        }
+
+        // 归纳数据
+        for (let i = 0; i < resp.feeds.length; i++) {
+            const feed = resp.feeds[i];
+            const keys: string[] = _.keys(feed);
+
+            const createdAt: string = feed.created_at;
+            keys.forEach((k) => {
+                const pack: UbiFeedPack = map[k];
+
+                // 不使用正则尽量提高performance
+                if (pack && 'created_at' !== k) {
+                    const value = ConvertValue(feed[k], pack.field, opts);
+                    const point: UbiDataChartPoint = { x: createdAt, y: value };
+                    pack.series[0].data.push(point);
+                }
+            });
+        }
+
+        // 排序
+        const ret: UbiFeedPack[] = _.values(map);
+        for (let i = 0; i < ret.length; i++) {
+            const data = ret[i].series[0].data;
+
+            // asc sort
+            _.sortBy(data, (o: UbiDataChartPoint) => o.x);
+
+            // 追加头尾两端的端点
+            const start: string = resp.start;
+            const end: string = resp.end;
+
+            if (start && _.find(data, { x: start }) && data.length && data[0].x > start) {
+                data.unshift({ x: start, y: null });
+            }
+
+            if (end && _.find(data, { x: end }) && data.length && data[data.length - 1].x < end) {
+                data.push({ x: end, y: null });
+            }
+        }
+
+        return ret;
     }
 }

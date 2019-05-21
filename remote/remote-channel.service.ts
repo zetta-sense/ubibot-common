@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
-import { Observable, of, from, combineLatest } from 'rxjs';
+import { Observable, of, from, combineLatest, race } from 'rxjs';
 import { map, switchMap, mergeAll, combineAll, concatMap, tap, zipAll, withLatestFrom, take, takeLast } from 'rxjs/operators';
 import { UbiChannelDAO, UbiChannel } from '../entities/ubi-channel.entity';
 import { UbiError } from '../errors/UbiError';
@@ -22,6 +22,36 @@ export interface UbiCheckDeviceReponse {
     };
 
     result: string;
+}
+
+export interface UbiFeedsResponse {
+    channel: UbiChannel,
+
+    feeds: UbiFeedsItem[];
+
+    start: string;
+    end: string;
+    timezone: string;
+    is_truncated: boolean;
+    num_records: number;
+    results: number;
+}
+
+export interface UbiFeedsItem {
+    created_at: string;
+
+    field1?: number;
+    field2?: number;
+    field3?: number;
+    field4?: number;
+    field5?: number;
+    field6?: number;
+    field7?: number;
+    field8?: number;
+    field9?: number;
+    field10?: number;
+    field11?: number;
+    field12?: number;
 }
 
 /**
@@ -56,7 +86,6 @@ export class RemoteChannelService {
 
     /**
      * Get a channel.
-     * 任何时候remote service都只返回实体，不返回dao，由于要保证dao的稳定单一，dao应该交由resolver或其它处理器创建
      *
      * @param {string} channelId
      * @returns {Observable<UbiChannel>}
@@ -319,6 +348,47 @@ export class RemoteChannelService {
         let url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/rules/${ruleId}`;
         return this.http.delete(url).pipe(
             map((x: any) => null)
+        );
+    }
+
+
+    /**
+     * Fetch feesd.
+     *
+     * http://api.datadudu.com/channels/CHANNEL_ID/feeds
+     *
+     * api_key or token_id (string) – api_key is Read or Write key for this specific channel (no key required for public channels) or token_id for internal use, obtained through login API.
+     * results (integer) Number of entries to retrieve, 8000 max (optional)
+     * start (datetime) Start date in format YYYY-MM-DD%20HH:NN:SS (optional)
+     * end (datetime) End date in format YYYY-MM-DD%20HH:NN:SS (optional)
+     * status (true/false) Include status updates in feed by setting "status=true" (optional)
+     * timezone (string) Identifier from Time Zones Reference for this request (optional)
+     * min (decimal) Minimum value to include in response (optional)
+     * max (decimal) Maximum value to include in response (optional)
+     * sum (integer or string) Get sum of this many minutes, valid values: 10, 15, 20, 30, 60, 240, 720, 1440, "daily" (optional)
+     * round (integer) Round to this many decimal places (optional)
+     * average (integer or string) Get average of this many minutes, valid values: 10, 15, 20, 30, 60, 240, 720, 1440, "daily" (optional)
+     * callback (string) Function name to be used for JSONP cross-domain requests (optional)
+     *
+     * @param {string} channelId
+     * @returns {Observable<UbiFeedsResponse>}
+     * @memberof RemoteChannelService
+     */
+    fetchFeeds(channelId: string): Observable<UbiFeedsResponse> {
+        if (!channelId) throw new UbiError('Channel ID is required for this API!');
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/feeds`;
+
+        return combineLatest(
+            this.get(channelId),
+            this.http.get(url),
+        ).pipe(
+            switchMap(([channel, resp]) => {
+                const ret: UbiFeedsResponse = Object.assign({}, resp) as UbiFeedsResponse;
+                ret.channel = channel;
+
+                return of(ret);
+            }),
         );
     }
 }

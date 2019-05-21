@@ -1,16 +1,16 @@
-import {AfterViewInit, Component, Input, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
+import { AfterViewInit, Component, Input, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import * as _ from 'lodash';
 
 // highcharts lib
 import * as Highcharts from 'highcharts/highstock';
 import * as HighchartsThemeDarkUnica from 'highcharts/themes/dark-unica';
 import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
-import {TranslateService} from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { UbiUtilsService } from '../../../services/ubi-utils.service';
+import { take } from 'rxjs/operators';
 
 // ref: https://github.com/highcharts/highcharts-angular#theme
-HighchartsThemeDarkUnica(Highcharts);
 NoDataToDisplay(Highcharts);
 
 export interface UbiDataChartPoint {
@@ -18,12 +18,15 @@ export interface UbiDataChartPoint {
     y: any;
 }
 
+/**
+ * Use name to map existed serie.
+ *
+ * @export
+ * @interface UbiDataChartSerie
+ */
 export interface UbiDataChartSerie {
     name: string;
     data: UbiDataChartPoint[],
-
-    // other options
-    [key: string]: any;
 }
 
 type UbiHighchartsPoint = any[2];
@@ -49,7 +52,7 @@ type UbiHighchartsPoint = any[2];
 export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
 
     highcharts: typeof Highcharts = Highcharts; // required
-    highchartsDateTimeLabelFormats = {
+    highchartsDateTimeLabelFormats: {} = {
         millisecond: '%H:%M:%S',//'%H:%M:%S.%L',
         second: '%H:%M:%S',
         minute: '%H:%M',
@@ -60,12 +63,12 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         year: '%Y'
     };
 
-    highchartsOptions = {
+    highchartsOptions: Highcharts.Options = {
         chart: {
             type: 'line'
         },
         title: {
-            text: 'UbiBot'
+            text: null
         },
         credits: {
             enabled: false
@@ -76,6 +79,9 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             gridLineWidth: 1,
             dateTimeLabelFormats: this.highchartsDateTimeLabelFormats
         },
+        time: {
+            timezoneOffset: new Date().getTimezoneOffset(),
+        },
         yAxis: {
             crosshair: true,
             gridLineWidth: 1,
@@ -84,7 +90,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             }
         },
         lang: {
-            noData: "No data"
+            noData: "",
         },
         noData: {
             style: {
@@ -104,23 +110,50 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     highchartsUpdateFlag = false;
     highchartsAfterInit$: Subject<Highcharts.Chart>;
 
+
+    /**
+     * 要变更，必须传入新的ref
+     *
+     * @type {UbiDataChartSerie[]}
+     * @memberof UbiDataChartComponent
+     */
     @Input() data: UbiDataChartSerie[];
+
+
+    /**
+     * Send new ref to make effect.
+     *
+     * @type {string}
+     * @memberof UbiDataChartComponent
+     */
     @Input() title: string;
 
-    @Input() width = 480;
-    @Input() height = 288;
+    /**
+     * Unit to append.
+     *
+     * @type {string}
+     * @memberof UbiDataChartComponent
+     */
+    @Input() unit: string;
+
+    // @Input() width = 480;
+    // @Input() height = 288;
 
     protected chart: Highcharts.Chart;// tag: highcharts instance
 
-    readonly containerId: string;
+    readonly containerId: string = this.ubiUtils.generateUuid();
 
-    constructor(private ubiUtils: UbiUtilsService,
-                private translate: TranslateService,
-                private ngZone: NgZone) {
-        this.containerId = ubiUtils.generateUuid();
+    constructor(
+        private ubiUtils: UbiUtilsService,
+        private translate: TranslateService,
+        private ngZone: NgZone,
+    ) {
+        // tag: 只能放在这个阶段，不能在初始化后
+        this.updateTheme();
 
         // update i18n for highcharts options
         this.highchartsOptions.lang.noData = this.translate.instant('APP.COMMON.NO-DATA');
+        // this.chart.set
 
         this.highchartsAfterInit$ = new Subject<Highcharts.Chart>();
         this.highchartsAfterInit$.subscribe((chart: Highcharts.Chart) => {
@@ -128,18 +161,26 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
             this.updateData();
             this.updateTitle();
+            // this.chart.update
+
+            (<any>window).a = chart;
         });
+
     }
 
     ngOnInit() {
     }
 
     ngAfterViewInit(): void {
+        // setTimeout(() => {
+        //     this.chart.reflow();
+        // }, 2000);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        // console.log(changes);
         if (this.chart) {
-            if (changes.title) {
+            if (changes.title || changes.unit) {
                 this.updateTitle();
             }
 
@@ -151,23 +192,38 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         // console.log('data changed', changes);
     }
 
-    updateTitle() {
+    private updateTheme() {
+        HighchartsThemeDarkUnica(Highcharts);
+    }
+
+    private updateTitle() {
         if (this.chart) {
             // tag: 避免changed after check
-            setTimeout(() => {
+            this.ngZone.onStable.pipe(take(1)).subscribe(() => {
                 // console.log('update title to:', this.title);
-                this.chart.setTitle({
-                    text: this.title || ''
-                }, {}, false);
+                let title = 'UbiBot';
+                if (this.title && this.unit) {
+                    title = `${this.title} ${this.unit}`;
+                } else if (this.title) {
+                    title = `${this.title}`;
+                }
+
+                this.highchartsOptions.title.text = title;
+
+                // 不能用Highcharts原生的api，会被ngx highcharts覆盖
+                // this.chart.setTitle({
+                //     text: this.title || ''
+                // }, undefined, undefined);
+
                 this.highchartsUpdateFlag = true;
             });
         }
     }
-h
+
     private convertUbiDataToHighchartsData(rawData: UbiDataChartPoint[]): UbiHighchartsPoint[] {
         let ret: UbiHighchartsPoint[] = [];
         rawData.forEach((ubiPoint: UbiDataChartPoint) => {
-            let xTime = new Date(ubiPoint.x).getTime();
+            const xTime = new Date(ubiPoint.x).getTime();
             ret.push([xTime, ubiPoint.y]);
         });
 
@@ -179,15 +235,15 @@ h
         return ret;
     }
 
-    updateData() {
-        if (this.chart) {
+    private updateData() {
+        if (this.chart && this.data) {
             // tag: 避免changed after check
-            setTimeout(() => {
+            this.ngZone.onStable.pipe(take(1)).subscribe(() => {
                 // console.log('data=', this.data);
                 this.data.forEach((serie: UbiDataChartSerie) => {
-                    let existedSerie = _.find(this.highchartsOptions.series, {name: serie.name});
+                    let existedSerie = _.find(this.highchartsOptions.series, { name: serie.name });
 
-                    if(!serie.data) {
+                    if (!serie.data) {
                         console.warn('Serie.data should not be null.');
                     }
 
@@ -205,7 +261,7 @@ h
                             marker: {
                                 fillColor: '#FFFFFF',
                                 enabled: true,
-                                radius: 2
+                                radius: 1, // 点大小
                             },
                             states: {
                                 hover: {
@@ -217,7 +273,7 @@ h
                 });
 
                 this.highchartsUpdateFlag = true;
-            });
+            })
         }
     }
 
