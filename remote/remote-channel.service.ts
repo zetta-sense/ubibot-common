@@ -7,6 +7,7 @@ import { UbiChannelDAO, UbiChannel } from '../entities/ubi-channel.entity';
 import { UbiError } from '../errors/UbiError';
 import { UbiRule, UbiRuleStatus } from '../entities/ubi-rule.entity';
 import * as _ from 'lodash';
+import { DatePipe } from '@angular/common';
 
 export interface UbiCheckDeviceReponse {
     device: {
@@ -54,6 +55,11 @@ export interface UbiFeedsItem {
     field12?: number;
 }
 
+export enum UbiFeedType {
+    Sampling = 'sampling',
+    Average = 'average',
+}
+
 /**
  * A client service for remote channel service.
  *
@@ -66,6 +72,7 @@ export class RemoteChannelService {
 
     constructor(
         private http: HttpClient,
+        private datePipe: DatePipe,
         private ubibotCommonConfig: UbibotCommonConfigService
     ) {
     }
@@ -374,14 +381,28 @@ export class RemoteChannelService {
      * @returns {Observable<UbiFeedsResponse>}
      * @memberof RemoteChannelService
      */
-    fetchFeeds(channelId: string): Observable<UbiFeedsResponse> {
+    fetchFeeds(channelId: string, start?: Date, end?: Date, type: UbiFeedType = UbiFeedType.Sampling): Observable<UbiFeedsResponse> {
         if (!channelId) throw new UbiError('Channel ID is required for this API!');
 
         let url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/feeds`;
+        const serverExpectedDateFormat = 'yyyy-MM-dd HH:mm:ss';
+        const params: any = {};
+
+        if (start) {
+            params['start'] = this.datePipe.transform(start, serverExpectedDateFormat);
+        }
+
+        if (end) {
+            params['end'] = this.datePipe.transform(end, serverExpectedDateFormat);
+        }
+
+        if (type === UbiFeedType.Average) {
+            params['average'] = 60;
+        }
 
         return combineLatest(
             this.get(channelId),
-            this.http.get(url),
+            this.http.get(url, { params: params }),
         ).pipe(
             switchMap(([channel, resp]) => {
                 const ret: UbiFeedsResponse = Object.assign({}, resp) as UbiFeedsResponse;

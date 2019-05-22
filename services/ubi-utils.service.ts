@@ -13,7 +13,7 @@ import { FromUTF8Array, ToUTF8Array } from '../misc/utf8arr';
 import { AppConfig } from '../../../environments/environment';
 import { UbiUserDisplayPipe } from '../core/pipes/ubi-user-display.pipe';
 import { UbiDataChartSerie, UbiDataChartPoint } from '../core/components/ubi-data-chart/ubi-data-chart.component';
-import { UbiFeedsResponse } from '../remote/remote-channel.service';
+import { UbiFeedsResponse, UbiFeedType } from '../remote/remote-channel.service';
 import { UbiChannelDAO, ConvertValue, UbiValueOptions } from '../entities/ubi-channel.entity';
 import { UbiChannelFieldDef } from '../entities/ubi-channel-field-def.entity';
 
@@ -57,6 +57,17 @@ export interface UbiFeedPack {
     title: string,
     field: UbiChannelFieldDef,
     series: UbiDataChartSerie[],
+
+    feedType: UbiFeedType,
+
+    maxPoint?: UbiDataChartPoint,
+    minPoint?: UbiDataChartPoint,
+
+    avg?: number,
+    sum?: number,
+
+    start: Date, // 整个resp数据的开始日期
+    end: Date,  // 整个resp数据的结束日期
 }
 
 
@@ -453,9 +464,13 @@ export class UbiUtilsService {
      * @returns {UbiFeedPack[]}
      * @memberof UbiUtilsService
      */
-    extractFeeds(resp: UbiFeedsResponse, opts?: UbiValueOptions): UbiFeedPack[] {
+    extractFeeds(resp: UbiFeedsResponse, opts?: UbiValueOptions, type?: UbiFeedType): UbiFeedPack[] {
         const channel: UbiChannelDAO = new UbiChannelDAO(resp.channel);
         const fields: UbiChannelFieldDef[] = channel.getFields().getEnabledFieldDefs()
+
+        // 追加头尾两端的端点
+        const start: string = resp.start;
+        const end: string = resp.end;
 
         const map: { [key: string]: UbiFeedPack } = {};
 
@@ -463,28 +478,33 @@ export class UbiUtilsService {
         for (let i = 0; i < fields.length; i++) {
             const field: UbiChannelFieldDef = fields[i];
             const fieldKey = field.key;
-            const filedName = field.label;
+            const fieldName = field.label;
 
             const data: UbiDataChartPoint[] = [];
 
-            // fake data to debug
-            // const data: UbiDataChartPoint[] = [
-            //     { x: 1558409528774, y: 1 },
-            //     { x: 1558410001000, y: 2.1 },
-            //     { x: 1558410101000, y: 1.4 },
-            //     { x: 1558410201000, y: 1.8 },
+            // tag: mock data to debug
+            // resp.feeds = [
+            //     { created_at: '2019-05-22T21:30:39+08:00', field1: 1 },
+            //     { created_at: '2019-05-22T21:30:39+08:05', field1: 2.1 },
+            //     { created_at: '2019-05-22T21:30:39+08:09', field1: 1.4 },
+            //     { created_at: '2019-05-22T21:30:39+08:15', field1: 1.8 },
             // ];
 
             const serie_1: UbiDataChartSerie = {
                 name: fieldKey,
+                label: fieldName,
                 data: data,
             };
 
             map[fieldKey] = {
                 key: fieldKey,
                 field: field,
-                title: filedName,
+                title: fieldName,
                 series: [serie_1],
+                start: new Date(start),
+                end: new Date(end),
+
+                feedType: type || UbiFeedType.Sampling,
             };
         }
 
@@ -506,25 +526,38 @@ export class UbiUtilsService {
             });
         }
 
-        // 排序
+        // 排序 / 找出最大最小值 / 计算平均值
         const ret: UbiFeedPack[] = _.values(map);
         for (let i = 0; i < ret.length; i++) {
-            const data = ret[i].series[0].data;
+            const pack = ret[i];
+            const data = pack.series[0].data;
 
             // asc sort
-            _.sortBy(data, (o: UbiDataChartPoint) => o.x);
+            data.sort((a, b) => (a.x as string || '').localeCompare(b.x));
 
-            // 追加头尾两端的端点
-            const start: string = resp.start;
-            const end: string = resp.end;
-
-            if (start && _.find(data, { x: start }) && data.length && data[0].x > start) {
+            const first = _.first(data);
+            // console.log(!!start, !_.find(data, { x: start }), (!first || first.x > start));
+            if (!!start && !_.find(data, { x: start }) && (!first || first.x > start) && data.length) {
+                // console.log('adding first point');
                 data.unshift({ x: start, y: null });
             }
 
-            if (end && _.find(data, { x: end }) && data.length && data[data.length - 1].x < end) {
+            const last = _.last(data);
+            if (!!end && !_.find(data, { x: end }) && (!last || last.x < end) && data.length) {
+                // console.log('adding last point');
                 data.push({ x: end, y: null });
             }
+
+
+            const dataFiltered = _.filter(data, (o: UbiDataChartPoint) => o.y != null); // 去除y空值点
+            const maxPoint = _.maxBy(dataFiltered, (o: UbiDataChartPoint) => o.y);
+            const minPoint = _.minBy(dataFiltered, (o: UbiDataChartPoint) => o.y);
+            pack.maxPoint = maxPoint;
+            pack.minPoint = minPoint;
+            const sum = dataFiltered.length ? _.reduce(dataFiltered, (sum: number, o: UbiDataChartPoint) => sum + o.y, 0) : null;
+            const avg = dataFiltered.length ? sum / dataFiltered.length : null;
+            pack.sum = sum;
+            pack.avg = avg;
         }
 
         return ret;

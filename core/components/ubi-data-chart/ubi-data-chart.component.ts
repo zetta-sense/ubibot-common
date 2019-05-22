@@ -9,6 +9,7 @@ import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
 import { TranslateService } from '@ngx-translate/core';
 import { UbiUtilsService } from '../../../services/ubi-utils.service';
 import { take } from 'rxjs/operators';
+import { UbiFeedType } from 'src/modules/ubibot-common/remote/remote-channel.service';
 
 // ref: https://github.com/highcharts/highcharts-angular#theme
 NoDataToDisplay(Highcharts);
@@ -26,6 +27,7 @@ export interface UbiDataChartPoint {
  */
 export interface UbiDataChartSerie {
     name: string;
+    label: string;
     data: UbiDataChartPoint[],
 }
 
@@ -67,9 +69,8 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         chart: {
             type: 'line'
         },
-        title: {
-            text: null
-        },
+        title: {},
+        subtitle: {},
         credits: {
             enabled: false
         },
@@ -87,7 +88,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             gridLineWidth: 1,
             title: {
                 text: null,// remove side label - Values
-            }
+            },
         },
         lang: {
             noData: "",
@@ -128,6 +129,8 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
      */
     @Input() title: string;
 
+    @Input() subtitle: string;
+
     /**
      * Unit to append.
      *
@@ -135,6 +138,33 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
      * @memberof UbiDataChartComponent
      */
     @Input() unit: string;
+
+
+    /**
+     * Feed type.
+     *
+     * @type {UbiFeedType}
+     * @memberof UbiDataChartComponent
+     */
+    @Input() feedType: UbiFeedType;
+
+
+    /**
+     * Paint max if not null.
+     *
+     * @type {UbiDataChartPoint}
+     * @memberof UbiDataChartComponent
+     */
+    @Input() maxPoint: UbiDataChartPoint;
+
+
+    /**
+     * Paint min if not null.
+     *
+     * @type {UbiDataChartPoint}
+     * @memberof UbiDataChartComponent
+     */
+    @Input() minPoint: UbiDataChartPoint;
 
     // @Input() width = 480;
     // @Input() height = 288;
@@ -160,9 +190,12 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             this.chart = chart;
 
             this.updateData();
+            this.updateExtra();
             this.updateTitle();
+            this.updateTooltip();
             // this.chart.update
 
+            // FIXME: remote later
             (<any>window).a = chart;
         });
 
@@ -180,12 +213,20 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);
         if (this.chart) {
-            if (changes.title || changes.unit) {
+            if (changes.title || changes.unit || changes.subtitle) {
                 this.updateTitle();
             }
 
             if (changes.data) {
                 this.updateData();
+            }
+
+            if (changes.unit) {
+                this.updateTooltip();
+            }
+
+            if (changes.maxPoint || changes.minPoint) {
+                this.updateExtra();
             }
         }
 
@@ -196,19 +237,36 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         HighchartsThemeDarkUnica(Highcharts);
     }
 
+    private updateTooltip() {
+        this.ngZone.onStable.pipe(take(1)).subscribe(() => {
+            if (this.unit) {
+                this.highchartsOptions.tooltip.valueSuffix = ` ${this.unit}`;
+            } else {
+                this.highchartsOptions.tooltip.valueSuffix = undefined;
+            }
+        });
+    }
+
     private updateTitle() {
         if (this.chart) {
             // tag: 避免changed after check
             this.ngZone.onStable.pipe(take(1)).subscribe(() => {
                 // console.log('update title to:', this.title);
                 let title = 'UbiBot';
+
+                const feedType = this.feedType === UbiFeedType.Average ?
+                    this.translate.instant('APP.COMMON.AVERAGE') : this.translate.instant('APP.COMMON.SAMPLING');
+
                 if (this.title && this.unit) {
-                    title = `${this.title} ${this.unit}`;
+                    title = `${this.title} ${feedType} ${this.unit}`;
                 } else if (this.title) {
-                    title = `${this.title}`;
+                    title = `${this.title} ${feedType}`;
                 }
 
                 this.highchartsOptions.title.text = title;
+
+                let subtitle = this.subtitle || undefined;
+                this.highchartsOptions.subtitle.text = subtitle;
 
                 // 不能用Highcharts原生的api，会被ngx highcharts覆盖
                 // this.chart.setTitle({
@@ -254,7 +312,9 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     } else {
                         // @ts-ignore
                         this.chart.addSeries({
-                            name: serie.name,
+                            // type: 'line',
+                            id: serie.label,
+                            name: serie.label,
                             data: newDataPoints,
                             lineWidth: 1,// tag: 如果只显示点,则设为0
                             // connectNulls: true,
@@ -269,12 +329,57 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                                 }
                             }
                         }, false);
+
                     }
                 });
 
                 this.highchartsUpdateFlag = true;
             })
         }
+    }
+
+    private updateExtra() {
+        this.ngZone.onStable.pipe(take(1)).subscribe(() => {
+            const pointsToAdd = [];
+            const upperLowerBoundScale: number = 0.15;
+
+            if (this.minPoint) {
+                const minPoint = {
+                    x: Date.parse(this.minPoint.x),
+                    y: this.minPoint.y,
+                    color: '#0f0',
+                    title: `Min: ${this.minPoint.y} ${this.unit}`,
+                };
+
+                // 扩大y轴lower范围
+                (this.highchartsOptions.yAxis as any).min = this.minPoint.y - Math.abs(this.minPoint.y * upperLowerBoundScale);
+
+                pointsToAdd.push(minPoint);
+            }
+
+            if (this.maxPoint) {
+                const maxPoint = {
+                    x: Date.parse(this.maxPoint.x),
+                    y: this.maxPoint.y,
+                    color: '#f00',
+                    title: `Max: ${this.maxPoint.y} ${this.unit}`,
+                };
+
+                // 扩大y轴upper范围
+                (this.highchartsOptions.yAxis as any).max = this.maxPoint.y + Math.abs(this.maxPoint.y * upperLowerBoundScale);
+
+                pointsToAdd.push(maxPoint);
+            }
+
+            pointsToAdd.sort((a, b) => a.x - b.x);
+
+            this.chart.addSeries({
+                type: 'flags',
+                data: pointsToAdd,
+            }, false);
+
+            this.highchartsUpdateFlag = true;
+        });
     }
 
     highchartsAfterInit(chartInstance) {
