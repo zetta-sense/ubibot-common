@@ -1,6 +1,19 @@
 import { ValidatorFn, AbstractControl } from "@angular/forms";
 
 export const UbiValidators: { [key: string]: ValidatorFn } = {
+    positiveInteger: (control: AbstractControl): { [key: string]: any } | null => {
+        const pattern = /^[1-9]{1}[0-9]*$/i;
+        const passed = pattern.test(control.value);
+        return passed ? null : { 'invalidPositiveInteger': { value: control.value } };
+    },
+    integer: (control: AbstractControl): { [key: string]: any } | null => {
+        const pattern = /^-{0,1}\d+$/i;
+        const passed = pattern.test(control.value);
+        return passed ? null : { 'invalidInteger': { value: control.value } };
+    },
+    /**
+     * 数字，包括小数
+     */
     number: (control: AbstractControl): { [key: string]: any } | null => {
         const pattern = /^-{0,1}\d+\.{0,1}\d*$/i;
         const passed = pattern.test(control.value);

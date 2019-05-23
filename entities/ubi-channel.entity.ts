@@ -9,7 +9,7 @@ export interface UbiValueOptions {
     tempScale?: UbiExtraPreferenceTempScale,
 }
 
-export interface UbiChannelMetadata {
+export class UbiChannelMetadata {
     fn_th: number;
     fn_light: number;
     fn_ext_t: number;
@@ -22,6 +22,15 @@ export interface UbiChannelMetadata {
     cg_data_led: number;
 
     [key: string]: any;
+
+    constructor(raw: UbiChannelMetadata | any) {
+        Object.assign(this, raw);
+        Object.setPrototypeOf(this, UbiChannelMetadata.prototype);
+    }
+
+    toJSONString() {
+        return JSON.stringify(this);
+    }
 }
 
 /**
@@ -312,8 +321,14 @@ export class UbiChannelDAO extends UbiChannel {
     private __extractMetadata(): UbiChannelMetadata {
         // eg.
         // "{"fn_th":300,"fn_light":300,"fn_ext_t":300,"fn_battery":10800,"fn_485_th":0,"fn_485_sth":0,"fn_dp":900,"net_mode":0,"no_net_fn":1,"cg_data_led":1}"
-        const metadata = JSON.parse(this.metadata);
-        return metadata;
+        try {
+            const raw = JSON.parse(this.metadata);
+            const metadata = new UbiChannelMetadata(raw);
+            return metadata;
+        } catch (e) {
+            console.warn(e);
+        }
+        return new UbiChannelMetadata({});
     }
 
     /**
@@ -425,7 +440,7 @@ export class UbiChannelFieldValueDAO {
         return !this.isOnline();
     }
 
-    clone(): UbiChannelFieldValueDAO  {
+    clone(): UbiChannelFieldValueDAO {
         return _.clone(this);
     }
 }
