@@ -6,6 +6,8 @@ export enum EnumAppConstant {
     EVENT_UBI_MY_CHANNELS_UPDATED = 'ubi::ubi_my_channels_updated',
     EVENT_UBI_DATA_RELOAD = 'ubi::ubi_data_reload',
 
+    EVENT_UBI_CHANGE_LANGUAGE = 'ubi::ubi_change_language',
+
     DIALOG_LOADING_SINGLETON_ID = 'ubi_dialog_loading_singleton',
 }
 

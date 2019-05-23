@@ -341,18 +341,19 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     private updateExtra() {
         this.ngZone.onStable.pipe(take(1)).subscribe(() => {
             const pointsToAdd = [];
-            const upperLowerBoundScale: number = 0.15;
+            const upperLowerBoundScale: number = 0.35;
+            const diff = this.maxPoint ? this.maxPoint.y - this.minPoint.y : 0; // 有max就肯定有min，所以只要判断max
 
             if (this.minPoint) {
                 const minPoint = {
                     x: Date.parse(this.minPoint.x),
                     y: this.minPoint.y,
                     color: '#0f0',
-                    title: `Min: ${this.minPoint.y} ${this.unit}`,
+                    title: `${this.translate.instant('APP.COMMON.MIN')}: ${this.minPoint.y} ${this.unit}`,
                 };
 
-                // 扩大y轴lower范围
-                (this.highchartsOptions.yAxis as any).min = this.minPoint.y - Math.abs(this.minPoint.y * upperLowerBoundScale);
+                // 一般flags都在上方，不需要扩大y轴lower范围
+                (this.highchartsOptions.yAxis as any).min = this.minPoint.y;
 
                 pointsToAdd.push(minPoint);
             }
@@ -362,11 +363,11 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     x: Date.parse(this.maxPoint.x),
                     y: this.maxPoint.y,
                     color: '#f00',
-                    title: `Max: ${this.maxPoint.y} ${this.unit}`,
+                    title: `${this.translate.instant('APP.COMMON.MAX')}: ${this.maxPoint.y} ${this.unit}`,
                 };
 
                 // 扩大y轴upper范围
-                (this.highchartsOptions.yAxis as any).max = this.maxPoint.y + Math.abs(this.maxPoint.y * upperLowerBoundScale);
+                (this.highchartsOptions.yAxis as any).max = this.maxPoint.y + Math.abs(diff * upperLowerBoundScale);
 
                 pointsToAdd.push(maxPoint);
             }

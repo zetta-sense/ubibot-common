@@ -16,6 +16,7 @@ import { UbiDataChartSerie, UbiDataChartPoint } from '../core/components/ubi-dat
 import { UbiFeedsResponse, UbiFeedType } from '../remote/remote-channel.service';
 import { UbiChannelDAO, ConvertValue, UbiValueOptions } from '../entities/ubi-channel.entity';
 import { UbiChannelFieldDef } from '../entities/ubi-channel-field-def.entity';
+import { UbiEventService } from './ubi-event.service';
 
 export const UBIBOT_UTILS_DIALOG_AGENT = new InjectionToken<UbibotUtilsDialogAgent>('UBIBOT_UTILS_DIALOG_AGENT');
 
@@ -76,10 +77,13 @@ export interface UbiFeedPack {
 })
 export class UbiUtilsService {
 
-    constructor(private commonConfigService: UbibotCommonConfigService,
+    constructor(
+        private commonConfigService: UbibotCommonConfigService,
         private ubiUserDisplayPipe: UbiUserDisplayPipe,
         private translate: TranslateService,
-        @Optional() @Inject(UBIBOT_UTILS_DIALOG_AGENT) private utilsDialogAgent: UbibotUtilsDialogAgent) {
+        private ubiEvent: UbiEventService,
+        @Optional() @Inject(UBIBOT_UTILS_DIALOG_AGENT) private utilsDialogAgent: UbibotUtilsDialogAgent
+    ) {
 
         this.update();
 
@@ -163,10 +167,13 @@ export class UbiUtilsService {
 
     useLang(lang: string) {
         this.translate.use(lang);
-        // 不使用translate的subsribe，因为存在一种情况是agent改变了但language没有改变，
+        // 不使用translate的subscribe，因为存在一种情况是agent改变了但language没有改变，
         // 而lang的key是跟agent挂钩的，这样lang没改变会导致没法触发translate的lange change subscribe
         // 从而没有将lang保存到对应的storage key上
         this.saveLanguage(lang);
+
+        this.ubiEvent.broadcast(EnumAppConstant.EVENT_UBI_CHANGE_LANGUAGE, lang);
+
         console.log(`Setting current lang to ${lang}`);
     }
 
