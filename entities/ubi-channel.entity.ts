@@ -9,6 +9,21 @@ export interface UbiValueOptions {
     tempScale?: UbiExtraPreferenceTempScale,
 }
 
+export interface UbiChannelMetadata {
+    fn_th: number;
+    fn_light: number;
+    fn_ext_t: number;
+    fn_battery: number;
+    fn_485_th: number;
+    fn_485_sth: number;
+    fn_dp: number;
+    net_mode: number;
+    no_net_fn: number;
+    cg_data_led: number;
+
+    [key: string]: any;
+}
+
 /**
  * 用于接收到的channel raw数据
  *
@@ -106,6 +121,62 @@ export abstract class UbiChannel {
 
     isSimSupported() {
         return UbiChannel.IsSimSupported(this.product_id);
+    }
+
+    static IsAccSupported(productId: string): boolean {
+        if (productId === EnumBasicProductId.WS1) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 是否支持震动传感
+     *
+     * @returns
+     * @memberof UbiChannel
+     */
+    isAccSupported() {
+        return UbiChannel.IsAccSupported(this.product_id);
+    }
+
+    /**
+     * 是否支持rs485
+     *
+     * @returns
+     * @memberof UbiChannel
+     */
+    isRS485Supported() {
+        if (this.productId === EnumBasicProductId.WS1P) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 是否支持LED灯
+     *
+     * @returns
+     * @memberof UbiChannel
+     */
+    isLEDSupported() {
+        if (this.productId === EnumBasicProductId.WS1P) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 是否支持多种网络模式
+     *
+     * @returns
+     * @memberof UbiChannel
+     */
+    isMultiNetworkSupported() {
+        if (this.productId === EnumBasicProductId.WS1P) {
+            return true;
+        }
+        return false;
     }
 
     hasSSID(): boolean {
@@ -228,6 +299,22 @@ export class UbiChannelDAO extends UbiChannel {
         return UbiChannelLastValues.ConvertFromChannel(this);
     }
 
+    /**
+     * 返回一个不稳定的metadata
+     *
+     * @returns {UbiChannelMetadata}
+     * @memberof UbiChannelDAO
+     */
+    getParsedMetadata(): UbiChannelMetadata {
+        return this.__extractMetadata();
+    }
+
+    private __extractMetadata(): UbiChannelMetadata {
+        // eg.
+        // "{"fn_th":300,"fn_light":300,"fn_ext_t":300,"fn_battery":10800,"fn_485_th":0,"fn_485_sth":0,"fn_dp":900,"net_mode":0,"no_net_fn":1,"cg_data_led":1}"
+        const metadata = JSON.parse(this.metadata);
+        return metadata;
+    }
 
     /**
      * 返回一个稳定的UbiChannelFieldValueDAO实例，仅当有新数据时(merge)，会产生新的实例
