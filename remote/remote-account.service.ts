@@ -4,6 +4,37 @@ import { UbibotCommonConfigService } from '../providers/ubibot-common-config.ser
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UbiExtraPreference } from '../entities/ubi-extra-preference.entity';
+import { UbiError } from '../errors/UbiError';
+
+export interface UbiMessage {
+    body: string;
+    created_at: string;
+    message_id: string;
+    message_status: string;
+    message_type: string;
+    subject: string;
+}
+
+export interface UbiMessagesResponse {
+    type: UbiMessageType;
+
+    pageNumber: number;
+    itemsPerPage: number;
+    currentItems: number;
+    totalItems: number;
+    totalUnread: number;
+
+    messages: UbiMessage[];
+}
+
+export enum UbiMessageType {
+    All = '',
+    Product = 'product',
+    Alerts = 'alerts',
+    Finance = 'finance',
+    Account = 'account',
+    News = 'news',
+}
 
 @Injectable()
 export class RemoteAccountService {
@@ -115,6 +146,70 @@ export class RemoteAccountService {
                 const jsonStr = resp.settings;
                 const ubiExtraPref = new UbiExtraPreference(jsonStr);
                 return ubiExtraPref;
+            })
+        );
+    }
+
+
+
+    /**
+     * List User Messages (列出用户账户消息)
+     *
+     * send an HTTP GET/POST to http://api.ubibot.cn/accounts/messages/list
+     *
+     * Valid request parameters:
+     * account_key or token_id (string) – account_key  or token_id for internal use, obtained through login API. (required)
+     * pageNumber (string): page number for the request (optional)
+     * message_status (string): read or unread
+     * message_type (string): product, news, account,alerts
+     *
+     * @returns {Observable<UbiMessagesResponse>}
+     * @memberof RemoteAccountService
+     */
+    listMessages(page: number = 0, type: UbiMessageType = UbiMessageType.All): Observable<UbiMessagesResponse> {
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/messages/list`;
+
+        const params = {};
+        params['itemsPerPage'] = 10;
+
+        if (page) {
+            params['pageNumber'] = page;
+        }
+
+        // 如果是all则不填，否则填写对应的类型
+        if (type !== UbiMessageType.All) {
+            params['message_type'] = type;
+        }
+
+        return this.http.get(url, { params: params }).pipe(
+            map((resp: any) => {
+                const messagesResp = resp as UbiMessagesResponse;
+                messagesResp.pageNumber = parseFloat(resp.pageNumber);
+                messagesResp.itemsPerPage = parseFloat(resp.itemsPerPage); // 注意这个值服务器返回的是string和number，两者都有
+                messagesResp.type = type;
+                return messagesResp;
+            })
+        );
+    }
+
+
+    /**
+     * Read A User Message (打开某条信息)
+     *
+     * send an HTTP GET/POST to http://api.ubibot.cn/accounts/messages/read/MESSAGE_ID
+     *
+     * Replace MESSAGE_ID
+     *
+     * Valid request parameters:
+     * account_key or token_id (string) – account_key  or token_id for internal use, obtained through login API. (required)
+     */
+    readMessage(messageId: string): Observable<any> {
+        if (!messageId) throw new UbiError('Message ID is required for this API!');
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/messages/read/${messageId}`;
+        return this.http.get(url).pipe(
+            map((resp: any) => {
+                return resp;
             })
         );
     }

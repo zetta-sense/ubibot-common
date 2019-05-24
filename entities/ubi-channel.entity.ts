@@ -10,16 +10,30 @@ export interface UbiValueOptions {
 }
 
 export class UbiChannelMetadata {
+    fn_dp: number;
+
     fn_th: number;
     fn_light: number;
     fn_ext_t: number;
     fn_battery: number;
+
     fn_485_th: number;
     fn_485_sth: number;
-    fn_dp: number;
+
     net_mode: number;
+    wifi_mode: number;
     no_net_fn: number;
     cg_data_led: number;
+
+    fn_acc_act: number;
+    fn_acc_tap1: number;
+    fn_acc_tap2: number;
+    thres_acc_min: number;
+
+    fn_mag: number;
+    fn_mag_int: number;
+
+    fn_bt: number;
 
     [key: string]: any;
 
@@ -133,7 +147,7 @@ export abstract class UbiChannel {
     }
 
     static IsAccSupported(productId: string): boolean {
-        if (productId === EnumBasicProductId.WS1) {
+        if (productId === EnumBasicProductId.WS1 || productId === EnumBasicProductId.WS1_CN) {
             return true;
         }
         return false;
@@ -156,7 +170,7 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     isRS485Supported() {
-        if (this.productId === EnumBasicProductId.WS1P) {
+        if (this.product_id === EnumBasicProductId.WS1P) {
             return true;
         }
         return false;
@@ -169,7 +183,7 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     isLEDSupported() {
-        if (this.productId === EnumBasicProductId.WS1P) {
+        if (this.product_id === EnumBasicProductId.WS1P) {
             return true;
         }
         return false;
@@ -182,7 +196,7 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     isMultiNetworkSupported() {
-        if (this.productId === EnumBasicProductId.WS1P) {
+        if (this.product_id === EnumBasicProductId.WS1P) {
             return true;
         }
         return false;

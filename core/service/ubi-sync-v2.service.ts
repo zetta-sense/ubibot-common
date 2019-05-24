@@ -42,7 +42,7 @@ export class UbiSyncV2Service implements OnDestroy {
     makeSync<T>(
         syncMixer: UbiSyncV2Mixer<T>,
         syncDelay: number = 500,
-        syncInterval: number = 10 * 60 * 1000,
+        syncInterval: number = 5 * 60 * 1000,
         syncNoErrors: boolean = false,
     ): Observable<T> {
         return merge(
