@@ -28,6 +28,8 @@ export class UbibotCommonConfigService {
     public DefaultDateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
     public DefaultTempScale = 'celsius';
 
+    public DefaultItemsPerPage = 10;
+
     // @deprecated - this will be removed in future version
     public readonly LastLoginUsernameKey = 'last_login_username';
 

@@ -170,7 +170,7 @@ export class RemoteAccountService {
         let url = `${this.ubibotCommonConfig.EndPoint}/accounts/messages/list`;
 
         const params = {};
-        params['itemsPerPage'] = 10;
+        params['itemsPerPage'] = this.ubibotCommonConfig.DefaultItemsPerPage;
 
         if (page) {
             params['pageNumber'] = page;
