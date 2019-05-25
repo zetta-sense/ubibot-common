@@ -11,6 +11,17 @@ export interface UbiAuthConfig {
     [key: string]: any;
 }
 
+export interface UbiMe {
+    account: {
+        mobile: string;
+        email: string;
+
+        [key: string]: any;
+    };
+
+    [key: string]: any;
+}
+
 @Injectable()
 export class UbiAuthService {
 
@@ -76,7 +87,7 @@ export class UbiAuthService {
      * @returns
      * @memberof UbiAuthService
      */
-    me() {
+    me(): UbiMe {
         try {
             let resp = JSON.parse(localStorage.getItem(this.getStorageKey()));
             return resp;
@@ -91,7 +102,7 @@ export class UbiAuthService {
      * @returns {Observable<any>}
      * @memberof UbiAuthService
      */
-    meAsync(): Observable<any> {
+    meAsync(): Observable<UbiMe> {
         return from(this.remoteAccount.me());
     }
 
