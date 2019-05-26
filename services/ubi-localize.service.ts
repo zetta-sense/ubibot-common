@@ -28,7 +28,8 @@ export class UbiLocalizeService implements OnDestroy {// tag: 特别注意servic
         // -> determine server (newAgent)
         // -> reset lang (根据newAgent对准lang)
         // -> save lang (这时将lang save到新的agent)
-        this.resetLanguage(this.ubiUtils.getLanguage());
+        // console.log('fak?', this.ubiUtils.getLanguage())
+        this.resetLanguage();
 
         this.translate.onDefaultLangChange.subscribe(() => {
             // this.updateAppTitle();

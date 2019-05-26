@@ -2,11 +2,12 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { RemoteChannelService } from '../../remote/remote-channel.service';
 import { UbiChannel, UbiChannelDAO } from '../../entities/ubi-channel.entity';
 import { interval, Observable, EMPTY, timer, from, of, Subscription, OperatorFunction, Subject, BehaviorSubject, race, merge, empty, throwError } from 'rxjs';
-import { flatMap, catchError, timeout, delay, mergeMap, tap, finalize, map, switchMap } from 'rxjs/operators';
+import { flatMap, catchError, timeout, delay, mergeMap, tap, finalize, map, switchMap, take } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { UbiError } from '../../errors/UbiError';
 import { EnumAppError } from '../../enums/enum-app-error.enum';
 import { UbiUtilsService } from '../../services/ubi-utils.service';
+import { UbibotCommonConfigService } from '../../providers/ubibot-common-config.service';
 
 export interface UbiSyncV2Mixer<T> {
     pull: () => Observable<T>;
@@ -20,9 +21,12 @@ export class UbiSyncV2Service implements OnDestroy {
 
     private refresh$ = new Subject<void>();
 
+    private refreshed$ = new Subject<void>();
+
     constructor(
         private ubiUtils: UbiUtilsService,
         private remoteChannel: RemoteChannelService,
+        private ubiCommonConfig: UbibotCommonConfigService,
     ) {
         console.log('UbiSyncV2Service creating instance...');
     }
@@ -63,6 +67,7 @@ export class UbiSyncV2Service implements OnDestroy {
             switchMap((data) => {
                 return syncMixer.merge(data);
             }),
+            tap(() => this.refreshed$.next()),
             // 如果syncNoErrors = true则忽略错误
             catchError((err) => {
                 // this.ubiUtils.snack('Error occurs while sync.');
@@ -71,6 +76,20 @@ export class UbiSyncV2Service implements OnDestroy {
         );
     }
 
+
+    /**
+     * 当下一次刷新时触发，仅成功时，只触发一次
+     * 如果超时会返回rx timeout error
+     *
+     * @returns {Observable<void>}
+     * @memberof UbiSyncV2Service
+     */
+    waitRefreshDone(): Observable<void> {
+        return this.refreshed$.pipe(
+            take(1),
+            timeout(this.ubiCommonConfig.ServerAccessTimout),
+        );
+    }
 
     /**
      * Force a refresh.

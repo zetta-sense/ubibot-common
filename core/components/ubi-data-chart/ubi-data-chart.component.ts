@@ -78,7 +78,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             crosshair: true,
             type: 'datetime',
             gridLineWidth: 1,
-            dateTimeLabelFormats: this.highchartsDateTimeLabelFormats
+            // dateTimeLabelFormats: this.highchartsDateTimeLabelFormats
         },
         time: {
             timezoneOffset: new Date().getTimezoneOffset(),
@@ -101,7 +101,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             }
         },
         tooltip: {
-            xDateFormat: '%Y-%m-%d %H:%M:%S',
+            // xDateFormat: '%Y-%m-%d %H:%M:%S',
         },
         legend: {
             enabled: false,
@@ -166,6 +166,8 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
      */
     @Input() minPoint: UbiDataChartPoint;
 
+    @Input() dateFormat: string;
+
     // @Input() width = 480;
     // @Input() height = 288;
 
@@ -193,10 +195,11 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             this.updateExtra();
             this.updateTitle();
             this.updateTooltip();
+            this.updateDateFormat();
             // this.chart.update
 
-            // FIXME: remote later
-            (<any>window).a = chart;
+            // FIXME: remove later
+            // (<any>window).a = chart;
         });
 
     }
@@ -227,6 +230,10 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
             if (changes.maxPoint || changes.minPoint) {
                 this.updateExtra();
+            }
+
+            if (changes.dateFormat) {
+                this.updateDateFormat();
             }
         }
 
@@ -272,6 +279,45 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 // this.chart.setTitle({
                 //     text: this.title || ''
                 // }, undefined, undefined);
+
+                this.highchartsUpdateFlag = true;
+            });
+        }
+    }
+
+    private updateDateFormat() {
+        if (this.chart) {
+            this.ngZone.onStable.pipe(take(1)).subscribe(() => {
+
+                let format = this.dateFormat;
+                const segs = format.split(' '); // 0=date, 1=time
+
+                // 先分开两段再替换，因此不用考虑大M小m类似的问题
+                segs[0] = segs[0].replace(/y+/ig, '%Y');
+                segs[0] = segs[0].replace(/M+/ig, '%m');
+                segs[0] = segs[0].replace(/d+/ig, '%d');
+
+                segs[1] = segs[1].replace(/H+/ig, '%H');
+                segs[1] = segs[1].replace(/m+/ig, '%M');
+                segs[1] = segs[1].replace(/s+/ig, '%S');
+
+                const newFormat: {} = {
+                    millisecond: segs[1],//'%H:%M:%S.%L',
+                    second: segs[1],
+                    minute: segs[1].replace(/:%S/ig, ''),
+                    hour: segs[1].replace(/:%S/ig, ''),
+                    // 一般跨度不应达到7天以上，因此不用考虑太复杂的情况
+                    day: segs[0],
+                    week: segs[0],
+                    month: segs[0],
+                    year: segs[0]
+                };
+
+                // console.log(newFormat);
+
+                // @ts-ignore
+                this.highchartsOptions.xAxis.dateTimeLabelFormats = newFormat;
+                this.highchartsOptions.tooltip.xDateFormat = segs.join(' ');
 
                 this.highchartsUpdateFlag = true;
             });

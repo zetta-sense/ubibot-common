@@ -17,6 +17,7 @@ import { UbiFeedsResponse, UbiFeedType } from '../remote/remote-channel.service'
 import { UbiChannelDAO, ConvertValue, UbiValueOptions } from '../entities/ubi-channel.entity';
 import { UbiChannelFieldDef } from '../entities/ubi-channel-field-def.entity';
 import { UbiEventService } from './ubi-event.service';
+import { UbiLanguageDef, UbibotSupportedLanguagesService } from '../providers/ubibot-supported-languages.service';
 
 export const UBIBOT_UTILS_DIALOG_AGENT = new InjectionToken<UbibotUtilsDialogAgent>('UBIBOT_UTILS_DIALOG_AGENT');
 
@@ -79,6 +80,7 @@ export class UbiUtilsService {
 
     constructor(
         private commonConfigService: UbibotCommonConfigService,
+        private ubiSupportedLanguages: UbibotSupportedLanguagesService,
         private ubiUserDisplayPipe: UbiUserDisplayPipe,
         private translate: TranslateService,
         private ubiEvent: UbiEventService,
@@ -158,10 +160,11 @@ export class UbiUtilsService {
         console.log(`Setting default lang to ${defaultLang}`);
 
         // TODO: 以后有支持更多语言后会switch细分
+        // console.log(`preferred=${preferred}, getLanguage=${this.getLanguage()}`);
         const browserLang = window.navigator.language === 'zh-CN' ? 'zh-CN' : 'en-GB';
 
-        // 如果是第一次开启app，一般不会有preferred，这时取browserLang
-        let lang = preferred || browserLang || this.getLanguage();
+        // 如果是第一次开启app，一般不会有preferred也不应有保存了的language，这时取browserLang
+        let lang = preferred || this.getLanguage() || browserLang;
         this.useLang(lang);
     }
 
@@ -179,6 +182,7 @@ export class UbiUtilsService {
 
     saveLanguage(langKey?: string) {
         if (langKey) {
+            console.log(`Save ${langKey} to ${this.getStorageKeyLanguage()}`);
             localStorage.setItem(this.getStorageKeyLanguage(), langKey);
         } else {
             localStorage.removeItem(this.getStorageKeyLanguage());
@@ -201,7 +205,13 @@ export class UbiUtilsService {
      * Get last set language. If null, return config's default.
      */
     getLanguage() {
+        // console.log('Retrieve lang key:', this.getStorageKeyLanguage());
         return localStorage.getItem(this.getStorageKeyLanguage()) || this.commonConfigService.PreferredLanguage;
+    }
+
+    getLanguageDef() {
+        const language = this.getLanguage();
+        return _.find(this.ubiSupportedLanguages.getLanguages(), { key: language });
     }
 
     saveProductProfileCache(item) {
