@@ -41,6 +41,7 @@ export enum EnumAppError {
 
     FCM_NOT_UNUSABLE = '8908',
     FCM_NOT_SUPPORTED_BY_UBIBOT = '8909',
+    LOCATION_SERVICE_NOT_AVAILABLE = '8910',
 
 
     // minus error means acceptable errors
