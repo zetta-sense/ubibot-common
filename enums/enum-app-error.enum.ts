@@ -13,6 +13,7 @@ export enum EnumAppError {
     DEVICE_NETWORK_READ_TIMEOUT = '508',
     DEVICE_NETWORK_WRITE_TIMEOUT = '509',
     DEVICE_FIRST_CONTACT_TIMEOUT = '510',
+    DEVICE_NETWORK_ECONNREFUSED = '511',
     NETWORK_ERROR = '600', // network error
     INTERRUPTED_BY_USER = '801', // interrupted coz user aborted
     NO_USB_PORTS_FOUND = '903', // ERROR: No device USB ports were found
