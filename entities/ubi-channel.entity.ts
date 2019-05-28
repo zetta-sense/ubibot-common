@@ -125,14 +125,24 @@ export abstract class UbiChannel {
 
 
     /**
-     * 是否提供USB供电
+     * 是否有USB供电功能
      *
      * @returns {boolean}
      * @memberof UbiChannel
      */
-    isUsbSupport(): boolean {
+    isUsbSupported(): boolean {
         // 无论usb的值是什么，只要有这个key就认为support
         return this.getStaus().usb !== undefined;
+    }
+
+    /**
+     * 是否正在使用usb供电
+     *
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    isUsbWorking(): boolean {
+        return this.getStaus().usb === '1';
     }
 
     static IsSimSupported(productId: string): boolean {
