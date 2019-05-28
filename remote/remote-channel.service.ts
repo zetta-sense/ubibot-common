@@ -452,4 +452,8 @@ export class RemoteChannelService {
     updateMetadata(channelId: string, metadata: any): Observable<any> {
         return this.update(channelId, { metadata: metadata });
     }
+
+    updateChannelName(channelId: string, name: string): Observable<any> {
+        return this.update(channelId, { name: name });
+    }
 }
