@@ -1,9 +1,9 @@
-import {Inject, Injectable, InjectionToken} from '@angular/core';
-import {UbiUtilsService} from './ubi-utils.service';
-import {RemoteAccountService} from '../remote/remote-account.service';
-import {UbibotCommonConfigService} from '../providers/ubibot-common-config.service';
-import {Router} from '@angular/router';
-import {BehaviorSubject, Observable, from} from 'rxjs';
+import { Inject, Injectable, InjectionToken } from '@angular/core';
+import { UbiUtilsService } from './ubi-utils.service';
+import { RemoteAccountService } from '../remote/remote-account.service';
+import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
+import { Router } from '@angular/router';
+import { BehaviorSubject, Observable, from } from 'rxjs';
 
 export const UBIBOT_AUTH_CONFIGURATION = new InjectionToken<UbiAuthConfig>('UBIBOT_AUTH_CONFIGURATION');
 export interface UbiAuthConfig {
@@ -22,21 +22,25 @@ export interface UbiMe {
     [key: string]: any;
 }
 
-@Injectable()
+
+@Injectable({
+    providedIn: 'root'
+})
 export class UbiAuthService {
 
     authenticationState = new BehaviorSubject(null);
     redirectUrl: string;
 
     constructor(private ubiUtils: UbiUtilsService,
-                private ubibotCommonConfig: UbibotCommonConfigService,
-                private remoteAccount: RemoteAccountService,
-                private router: Router,
-                @Inject(UBIBOT_AUTH_CONFIGURATION) private authConfig: UbiAuthConfig) {
+        private ubibotCommonConfig: UbibotCommonConfigService,
+        private remoteAccount: RemoteAccountService,
+        private router: Router,
+        @Inject(UBIBOT_AUTH_CONFIGURATION) private authConfig: UbiAuthConfig) {
 
     }
 
     init() {
+        // alert('init UbiAuthService...');
         this.checkToken();
     }
 
@@ -92,6 +96,7 @@ export class UbiAuthService {
             let resp = JSON.parse(localStorage.getItem(this.getStorageKey()));
             return resp;
         } catch (e) {
+            throw e;
         }
         return null;
     }
@@ -124,13 +129,17 @@ export class UbiAuthService {
     }
 
     logout(): Promise<any> {
-        this.removeMe();
+        // 仅当已经login后才触发next(false)，这样不会导致interceptor在收到unbind触发的force_logout后不断连锁
+        if (this.me()) {
+            this.removeMe();
 
-        this.ubiUtils.resetLanguage();
-        this.redirectUrl = '/'; // 当登出时，应该重置redirectUrl
+            this.ubiUtils.resetLanguage();
+            this.redirectUrl = '/'; // 当登出时，应该重置redirectUrl
 
-        // this.router.navigate([this.authConfig.authPage]);
-        this.authenticationState.next(false);
+            // this.router.navigate([this.authConfig.authPage]);
+            // alert('someone calling logout...');
+            this.authenticationState.next(false);
+        }
 
         return Promise.resolve();
     }
@@ -144,13 +153,14 @@ export class UbiAuthService {
     }
 
     private checkToken() {
-        if(this.token()) {
+        // alert('calling checkToken...');
+        if (this.token()) {
             const href = window.location.href;
             const origin = window.location.origin;
             this.redirectUrl = href.slice(origin.length);
             // console.log('wat the fak?', this.redirectUrl);
             this.authenticationState.next(true);
-        }else{
+        } else {
             this.authenticationState.next(false);
         }
     }

@@ -9,6 +9,8 @@ export enum EnumAppConstant {
     EVENT_UBI_CHANGE_LANGUAGE = 'ubi::ubi_change_language',
 
     DIALOG_LOADING_SINGLETON_ID = 'ubi_dialog_loading_singleton',
+
+    RESET_LOGIN_PAGE = 'ubi::reset_login_page',
 }
 
 

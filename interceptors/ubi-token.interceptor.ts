@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
     HttpRequest,
     HttpResponse,
@@ -7,18 +7,18 @@ import {
     HttpEvent,
     HttpInterceptor
 } from '@angular/common/http';
-import {Observable, of, throwError, TimeoutError} from 'rxjs';
-import {map, catchError, timeout} from 'rxjs/operators';
-import {UbiAuthService} from "../services/ubi-auth.service";
-import {UbiError} from '../errors/UbiError';
-import {EnumAppError} from '../enums/enum-app-error.enum';
-import {UbibotCommonConfigService} from '../providers/ubibot-common-config.service';
+import { Observable, of, throwError, TimeoutError } from 'rxjs';
+import { map, catchError, timeout, tap } from 'rxjs/operators';
+import { UbiAuthService } from "../services/ubi-auth.service";
+import { UbiError } from '../errors/UbiError';
+import { EnumAppError } from '../enums/enum-app-error.enum';
+import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
 
 @Injectable()
 export class UbiTokenInterceptor implements HttpInterceptor {
 
     constructor(private authService: UbiAuthService,
-                private ubibotCommonConfig: UbibotCommonConfigService) {
+        private ubibotCommonConfig: UbibotCommonConfigService) {
     }
 
 
@@ -42,19 +42,22 @@ export class UbiTokenInterceptor implements HttpInterceptor {
                     }// else console.info('event =', event, ';');
                     return event;
                 }),
+                // tap(() => {
+                //     alert(JSON.stringify(request));
+                // }),
                 catchError((err: any, caught) => {
                     if (err instanceof HttpErrorResponse) {
                         // HttpErrorResponse的格式为{ "error": ..., "headers": ..., ... }
                         if (err.status === 401
                             && (<any>err).error
-                            && (<any>err).error.errorCode == 'permission_denied_force_log_off') {
-
+                            && (<any>err).error.errorCode == 'permission_denied_force_log_off'
+                        ) {
                             this.authService.logout();
                             return throwError(new UbiError(EnumAppError.SERVER_FORCED_LOGOUT));
                         }
                     }
 
-                    if(err instanceof TimeoutError) {
+                    if (err instanceof TimeoutError) {
                         return throwError(new UbiError(EnumAppError.SERVER_ACCESS_TIMEOUT));
                     }
 

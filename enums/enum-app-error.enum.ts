@@ -24,12 +24,14 @@ export enum EnumAppError {
 
     USER_CANCELED = '1000',
 
-    SERVER_FORCED_LOGOUT = '1400',
-    SERVER_ACCESS_TIMEOUT = '1480',
-    SERVER_DATA_SYNC_ERROR = '1481',
     USERNAME_OR_PASSWORD_ERROR = '1401',
     DEVICE_ATTACHED_BY_OTHERS = '1411',
     INVALID_ACTIVATION_CODE = '1412',
+
+    SERVER_FORCED_LOGOUT = '1400',
+    SERVER_ACCESS_TIMEOUT = '1480',
+    SERVER_DATA_SYNC_ERROR = '1481',
+    RETRIEVE_USER_PREFERENCE_TIMEOUT = '1482',
 
     SERVICE_NOT_AVAILABLE = '2000', // 一般内部使用，不需要翻译
     UNKNOWN_TYPE = '2001', // 一般内部使用，不需要翻译
@@ -37,6 +39,7 @@ export enum EnumAppError {
     UNDEFINED_ACTION = '2003', // 一般内部使用，不需要翻译，一般为无法决定流的下一步
     UNDEFINED_ACTION_FLOW = '2004', // 一般为不能获取对应的操作流，通常是新的产品在未更新的app上使用时产生
     CANNOT_DETERMINE_CURRENT_STEP = '2005', // 一般内部使用，不需要翻译，一般为无法决定流的当前步
+    NAVIGATION_FAILED = '2006',
 
     EXCEED_MIN_MAX_RULE_LIMIT = '3001',
 
