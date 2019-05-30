@@ -18,6 +18,7 @@ import { UbiChannelDAO, ConvertValue, UbiValueOptions } from '../entities/ubi-ch
 import { UbiChannelFieldDef } from '../entities/ubi-channel-field-def.entity';
 import { UbiEventService } from './ubi-event.service';
 import { UbiLanguageDef, UbibotSupportedLanguagesService } from '../providers/ubibot-supported-languages.service';
+import { UbiStorageService } from './ubi-storage.service';
 
 export const UBIBOT_UTILS_DIALOG_AGENT = new InjectionToken<UbibotUtilsDialogAgent>('UBIBOT_UTILS_DIALOG_AGENT');
 
@@ -82,6 +83,7 @@ export class UbiUtilsService {
         private commonConfigService: UbibotCommonConfigService,
         private ubiSupportedLanguages: UbibotSupportedLanguagesService,
         private ubiUserDisplayPipe: UbiUserDisplayPipe,
+        private ubiStorage: UbiStorageService,
         private translate: TranslateService,
         private ubiEvent: UbiEventService,
         @Optional() @Inject(UBIBOT_UTILS_DIALOG_AGENT) private utilsDialogAgent: UbibotUtilsDialogAgent
@@ -183,22 +185,22 @@ export class UbiUtilsService {
     saveLanguage(langKey?: string) {
         if (langKey) {
             console.log(`Save ${langKey} to ${this.getStorageKeyLanguage()}`);
-            localStorage.setItem(this.getStorageKeyLanguage(), langKey);
+            this.ubiStorage.save(this.getStorageKeyLanguage(), langKey);
         } else {
-            localStorage.removeItem(this.getStorageKeyLanguage());
+            this.ubiStorage.remove(this.getStorageKeyLanguage());
         }
     }
 
     setKeyValue(key: string, value: string) {
-        localStorage.setItem(key, value);
+        this.ubiStorage.save(key, value);
     }
 
     getKeyValue(key: string): string {
-        return localStorage.getItem(key);
+        return this.ubiStorage.get(key);
     }
 
     clearLocalStorage(): void {
-        localStorage.clear();
+        this.ubiStorage.clear();
     }
 
     /**
@@ -206,7 +208,7 @@ export class UbiUtilsService {
      */
     getLanguage() {
         // console.log('Retrieve lang key:', this.getStorageKeyLanguage());
-        return localStorage.getItem(this.getStorageKeyLanguage()) || this.commonConfigService.PreferredLanguage;
+        return this.ubiStorage.get(this.getStorageKeyLanguage()) || this.commonConfigService.PreferredLanguage;
     }
 
     getLanguageDef() {
@@ -216,13 +218,13 @@ export class UbiUtilsService {
 
     saveProductProfileCache(item) {
         if (typeof item == 'object') {
-            localStorage.setItem(this.getStorageKeyProductProfileCache(), JSON.stringify(item));
+            this.ubiStorage.save(this.getStorageKeyProductProfileCache(), JSON.stringify(item));
         }
     }
 
     getProductProfileCache() {
         let ret = {};
-        let tmp = localStorage.getItem(this.getStorageKeyProductProfileCache());
+        let tmp = this.ubiStorage.get(this.getStorageKeyProductProfileCache());
         try {
             ret = JSON.parse(tmp);
         } catch (e) {
@@ -232,15 +234,15 @@ export class UbiUtilsService {
 
     saveLastLogin(saveKey?: string) {
         if (saveKey) {
-            localStorage.setItem(this.getStorageKeyLastLogin(), saveKey);
+            this.ubiStorage.save(this.getStorageKeyLastLogin(), saveKey);
         } else {
-            localStorage.removeItem(this.getStorageKeyLastLogin());
+            this.ubiStorage.remove(this.getStorageKeyLastLogin());
         }
     }
 
     saveCurrentAgent() {
         const agent = this.commonConfigService.DeployAgent;
-        localStorage.setItem(this.getStorageKeyCurrentAgent(), agent);
+        this.ubiStorage.save(this.getStorageKeyCurrentAgent(), agent);
     }
 
 
@@ -251,11 +253,11 @@ export class UbiUtilsService {
      * @memberof UbiUtilsService
      */
     getLastAgent(): string {
-        return localStorage.getItem(this.getStorageKeyCurrentAgent());
+        return this.ubiStorage.get(this.getStorageKeyCurrentAgent());
     }
 
     getLastLogin() {
-        return localStorage.getItem(this.getStorageKeyLastLogin()) || '';
+        return this.ubiStorage.get(this.getStorageKeyLastLogin()) || '';
     }
 
     parseQRCode(input: string): UbiQRCodeResult {

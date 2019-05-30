@@ -7,10 +7,14 @@ export const UBIBOT_STORAGE_AGENT = new InjectionToken<UbiStorageAgent>('UBIBOT_
 
 export declare type IFuncStorageSet = (key: string, data: string) => void;
 export declare type IFuncStorageGet = (key: string) => string;
+export declare type IFuncStorageClear = () => void;
+export declare type IFuncStorageRemove = (key: string) => void;
 
 export interface UbiStorageAgent {
     set: IFuncStorageSet;
     get: IFuncStorageGet;
+    clear: IFuncStorageClear;
+    remove: IFuncStorageRemove;
 }
 
 
@@ -35,6 +39,12 @@ export class UbiStorageService {
                     const ret = localStorage.getItem(key);
                     return ret;
                 },
+                clear: () => {
+                    localStorage.clear();
+                },
+                remove: (key: string) => {
+                    localStorage.removeItem(key);
+                },
             };
         }
     }
@@ -45,5 +55,13 @@ export class UbiStorageService {
 
     get(key: string): string {
         return this.storageAgent.get(key);
+    }
+
+    clear(): void {
+        this.storageAgent.clear();
+    }
+
+    remove(key: string): void {
+        this.storageAgent.remove(key);
     }
 }

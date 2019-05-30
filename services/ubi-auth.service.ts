@@ -4,6 +4,7 @@ import { RemoteAccountService } from '../remote/remote-account.service';
 import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, from } from 'rxjs';
+import { UbiStorageService } from './ubi-storage.service';
 
 export const UBIBOT_AUTH_CONFIGURATION = new InjectionToken<UbiAuthConfig>('UBIBOT_AUTH_CONFIGURATION');
 export interface UbiAuthConfig {
@@ -31,7 +32,9 @@ export class UbiAuthService {
     authenticationState = new BehaviorSubject(null);
     redirectUrl: string;
 
-    constructor(private ubiUtils: UbiUtilsService,
+    constructor(
+        private ubiUtils: UbiUtilsService,
+        private ubiStorage: UbiStorageService,
         private ubibotCommonConfig: UbibotCommonConfigService,
         private remoteAccount: RemoteAccountService,
         private router: Router,
@@ -76,7 +79,7 @@ export class UbiAuthService {
             this.remoteAccount
                 .loginEncrypted(username, this.ubiUtils.sha256(password))
                 .then((resp) => {
-                    localStorage.setItem(this.getStorageKey(), JSON.stringify(resp));
+                    this.ubiStorage.save(this.getStorageKey(), JSON.stringify(resp));
                     this.authenticationState.next(true);
                     resolve(resp);
                 })
@@ -93,7 +96,7 @@ export class UbiAuthService {
      */
     me(): UbiMe {
         try {
-            let resp = JSON.parse(localStorage.getItem(this.getStorageKey()));
+            let resp = JSON.parse(this.ubiStorage.get(this.getStorageKey()));
             return resp;
         } catch (e) {
             throw e;
@@ -121,7 +124,7 @@ export class UbiAuthService {
 
     token() {
         try {
-            let resp = JSON.parse(localStorage.getItem(this.getStorageKey()));
+            let resp = JSON.parse(this.ubiStorage.get(this.getStorageKey()));
             return resp.token_id;
         } catch (e) { }
 
@@ -166,7 +169,7 @@ export class UbiAuthService {
     }
 
     private removeMe() {
-        localStorage.setItem(this.getStorageKey(), null);
+        this.ubiStorage.save(this.getStorageKey(), null);
     }
 
 

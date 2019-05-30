@@ -22,6 +22,7 @@ import { RemoteMiscInfoService } from './remote/remote-misc-info.service';
 import { DatePipe } from '@angular/common';
 import { RemoteLogsService } from './remote/remote-logs.service';
 import { UbibotSupportedLanguagesService } from './providers/ubibot-supported-languages.service';
+import { RemoteGroupService } from './remote/remote-group.service';
 
 export const UBIBOT_COMMON_CONFIGURATION = new InjectionToken<any>('UBIBOT_COMMON_CONFIGURATION');
 
@@ -63,6 +64,7 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
         RemoteProductService,
         RemoteMiscInfoService,
         RemoteLogsService,
+        RemoteGroupService,
         DatePipe,
         // init dep
         {
