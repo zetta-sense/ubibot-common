@@ -83,7 +83,7 @@ export class RemoteGroupService {
      * Valid request parameters:
      * account_key or token_id (string) – account_key  or token_id for internal use, obtained through login API. (required)
      * JSON Body FIELDS:
-     * group_name
+     * group_name, group_id
      *
      * @param {UbiGroup} group
      * @returns {Observable<UbiGroup>}

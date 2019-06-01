@@ -8,6 +8,7 @@ import { delay, map, catchError } from "rxjs/operators";
 import { RemoteChannelService } from "../../remote/remote-channel.service";
 import { UbiRule } from "../../entities/ubi-rule.entity";
 import { UbiUtilsService } from "../../services/ubi-utils.service";
+import { UbiError } from "../../errors/UbiError";
 
 @Injectable()
 export class UbiRuleResolver implements Resolve<UbiRule> {
@@ -19,8 +20,8 @@ export class UbiRuleResolver implements Resolve<UbiRule> {
         return this.remoteChannel.getRule(channelId, ruleId).pipe(
             map((rule: UbiRule) => rule),
             catchError((err) => {
-                this.ubiUtils.hideLoading();
-                this.ubiUtils.alert('A fatal error occured. Rule could not be resolved.');
+                // this.ubiUtils.hideLoading();
+                this.ubiUtils.error('A fatal error occured. Rule could not be resolved.');
                 return throwError(err);
             }),
         );//.pipe(delay(5000))

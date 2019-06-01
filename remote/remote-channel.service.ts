@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
 import { Observable, of, from, combineLatest, race } from 'rxjs';
-import { map, switchMap, mergeAll, combineAll, concatMap, tap, zipAll, withLatestFrom, take, takeLast } from 'rxjs/operators';
+import { map, switchMap, mergeAll, combineAll, concatMap, tap, zipAll, withLatestFrom, take, takeLast, share } from 'rxjs/operators';
 import { UbiChannelDAO, UbiChannel } from '../entities/ubi-channel.entity';
 import { UbiError } from '../errors/UbiError';
 import { UbiRule, UbiRuleStatus } from '../entities/ubi-rule.entity';
@@ -105,7 +105,7 @@ export class RemoteChannelService {
         return this.http.get(url).pipe(
             map((resp: any) => {
                 return new UbiChannelDAO(resp.channel);
-            })
+            }),
         );
     }
 
