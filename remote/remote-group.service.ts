@@ -57,17 +57,17 @@ export class RemoteGroupService {
      * JSON Body FIELDS:
      * group_name
      *
-     * @param {UbiGroup} group
+     * @param {string} groupName
      * @returns {Observable<UbiGroup>}
      * @memberof RemoteGroupService
      */
-    create(group: UbiGroup): Observable<UbiGroup> {
-        if (!group) throw new UbiError('Group is required for this API!');
+    create(groupName: string): Observable<UbiGroup> {
+        if (!groupName) throw new UbiError('Group name is required for this API!');
 
         let url = `${this.ubibotCommonConfig.EndPoint}/groups/channels/create_group`;
 
         const params = {};
-        params['group_name'] = group.group_name;
+        params['group_name'] = groupName;
 
         return this.http.post(url, params).pipe(
             map((resp: any) => resp.group)
@@ -95,6 +95,7 @@ export class RemoteGroupService {
         let url = `${this.ubibotCommonConfig.EndPoint}/groups/channels/update_group`;
 
         const params = {};
+        params['group_id'] = group.group_id;
         params['group_name'] = group.group_name;
 
         return this.http.post(url, params).pipe(

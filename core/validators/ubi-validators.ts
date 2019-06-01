@@ -19,10 +19,15 @@ export const UbiValidators: { [key: string]: ValidatorFn } = {
         const passed = pattern.test(control.value);
         return passed ? null : { 'invalidNumber': { value: control.value } };
     },
+    groupName: (control: AbstractControl): { [key: string]: any } | null => {
+        const pattern = /^[^<|>]{1,20}$/i;
+        let passed = pattern.test(control.value);
+        return passed ? null : { 'invalidGroupName': { value: control.value } };
+    },
     channelName: (control: AbstractControl): { [key: string]: any } | null => {
         const pattern = /^[^<|>]{1,20}$/i;
         let passed = pattern.test(control.value);
-        return passed ? null : { 'invalidUsername': { value: control.value } };
+        return passed ? null : { 'invalidChannelName': { value: control.value } };
     },
     username: (control: AbstractControl): { [key: string]: any } | null => {
         const pattern = /^[a-zA-Z][0-9a-zA-Z_]{5,14}$/i;
@@ -32,12 +37,12 @@ export const UbiValidators: { [key: string]: ValidatorFn } = {
     phoneCN: (control: AbstractControl): { [key: string]: any } | null => {
         const pattern = /^1\d{10}$/i;
         const passed = pattern.test(control.value);
-        return passed ? null : { 'invalidUsername': { value: control.value } };
+        return passed ? null : { 'invalidPhoneCN': { value: control.value } };
     },
     phoneIO: (control: AbstractControl): { [key: string]: any } | null => {
         const pattern = /^[+]\d{6,}$/i;
         const passed = pattern.test(control.value);
-        return passed ? null : { 'invalidUsername': { value: control.value } };
+        return passed ? null : { 'invalidPhoneIO': { value: control.value } };
     },
     ascii: (control: AbstractControl): { [key: string]: any } | null => {
         const passed = /^[\x00-\x7F]*$/.test(control.value);
