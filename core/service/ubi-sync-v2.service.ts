@@ -87,7 +87,7 @@ export class UbiSyncV2Service implements OnDestroy {
     waitRefreshDone(): Observable<void> {
         return this.refreshed$.pipe(
             take(1),
-            timeout(this.ubiCommonConfig.ServerAccessTimout),
+            timeout(this.ubiCommonConfig.ServerAccessTimeout),
         );
     }
 

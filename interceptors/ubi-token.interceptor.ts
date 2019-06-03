@@ -32,10 +32,14 @@ export class UbiTokenInterceptor implements HttpInterceptor {
             }
         });
 
+        // const isTestUrl = false;
+        // const isTestUrl = request.url.indexOf('groups/channels/update_group') != -1; //  仅用于触发要测试的url timeout
+
         return next.handle(request)
             .pipe(
+                // tap(() => console.log(request)),
                 // timeout(10), // make error for debug
-                timeout(this.ubibotCommonConfig.ServerAccessTimout),
+                // timeout(isTestUrl ? 500 : this.ubibotCommonConfig.ServerAccessTimeout),
                 map((event: HttpEvent<any>) => {
                     if (event instanceof HttpResponse && ~~(event.status / 100) > 3) {
                         // console.info('HttpResponse::event =', event, ';');

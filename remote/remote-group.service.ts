@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
 import { Observable, of, from, combineLatest, race } from 'rxjs';
-import { map, switchMap, mergeAll, combineAll, concatMap, tap, zipAll, withLatestFrom, take, takeLast } from 'rxjs/operators';
+import { map, switchMap, mergeAll, combineAll, concatMap, tap, zipAll, withLatestFrom, take, takeLast, timeout } from 'rxjs/operators';
 import { UbiChannelDAO, UbiChannel } from '../entities/ubi-channel.entity';
 import { UbiError } from '../errors/UbiError';
 import { UbiRule, UbiRuleStatus } from '../entities/ubi-rule.entity';
@@ -99,7 +99,7 @@ export class RemoteGroupService {
         params['group_name'] = group.group_name;
 
         return this.http.post(url, params).pipe(
-            map((resp: any) => resp.group)
+            map((resp: any) => resp.group),
         );
     }
 
@@ -124,7 +124,7 @@ export class RemoteGroupService {
         const params = {};
         params['group_id'] = group.group_id;
 
-        return this.http.post(url, params).pipe(
+        return this.http.post(url, undefined, { params: params }).pipe(
             map((resp: any) => resp)
         );
     }
