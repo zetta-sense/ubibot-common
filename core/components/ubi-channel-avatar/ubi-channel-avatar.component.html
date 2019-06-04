@@ -15,7 +15,8 @@
          src="assets/img-empty.png"
          [src]="avatarImage | resourceUrl: size : true">
 
-    <div class="status-bar vertical">
+    <div class="status-bar vertical"
+         *ngIf="!hideStatus">
         <i class="material-icons status-icon"
            *ngIf="channel?.hasSSID()">
             network_wifi

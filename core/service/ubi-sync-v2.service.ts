@@ -53,7 +53,7 @@ export class UbiSyncV2Service implements OnDestroy {
             // 按时pull的信号，如果pause了则不产生
             timer(syncDelay, syncInterval).pipe(
                 switchMap((x) => {
-                    return this.isPaused() ? empty() : of(x);
+                    return this.isPaused() ? EMPTY : of(x);
                 }),
             ),
             // 强制refresh的信号
@@ -71,7 +71,7 @@ export class UbiSyncV2Service implements OnDestroy {
             // 如果syncNoErrors = true则忽略错误
             catchError((err) => {
                 // this.ubiUtils.snack('Error occurs while sync.');
-                return syncNoErrors ? empty() : throwError(err);
+                return syncNoErrors ? EMPTY : throwError(err);
             }),
         );
     }

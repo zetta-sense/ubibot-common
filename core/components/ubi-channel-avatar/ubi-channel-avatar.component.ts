@@ -25,6 +25,9 @@ export class UbiChannelAvatarComponent implements OnInit, OnChanges {
     @Input()
     channel: UbiChannel;
 
+    @Input()
+    hideStatus: boolean;
+
     avatarImage: string;
 
     constructor(private ubiUtils: UbiUtilsService,
