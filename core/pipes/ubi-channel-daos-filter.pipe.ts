@@ -20,7 +20,8 @@ export class UbiChannelDaosFilterPipe implements PipeTransform {
         }
 
         const regexp: string = _.escapeRegExp(`${pattern}`);
-        const tester: RegExp = new RegExp(`^${regexp}`, 'i'); // ignore case, starts with pattern, but end with any
+        // const tester: RegExp = new RegExp(`^${regexp}`, 'i'); // ignore case, starts with pattern, but end with any
+        const tester: RegExp = new RegExp(`${regexp}`, 'ig'); // ignore case, global
 
         const ret = items.filter((channelDao: UbiChannelDAO) => {
             const channelName = channelDao.name;

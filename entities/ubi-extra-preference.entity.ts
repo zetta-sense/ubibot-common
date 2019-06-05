@@ -51,6 +51,11 @@ export enum UbiExtraPreferenceTempScale {
     Fahrenheit = 'fahrenheit',
 }
 
+export enum UbiExtraPreferenceChannelsListStyle {
+    Text = 'text',
+    Icon = 'icon',
+}
+
 
 export class UbiExtraPreference {
 
@@ -58,6 +63,8 @@ export class UbiExtraPreference {
     group_charts_fields_state: { [groupId: number]: UbiExtraPreferenceGroupChartsFieldsState };
     invoice_info: UbiExtraPreferenceInvoiceInfo;
     temp_scale: UbiExtraPreferenceTempScale;
+
+    channels_list_style: UbiExtraPreferenceChannelsListStyle;
 
     // tag: 未定义，可能于将来定义新的
     [key: string]: any;
