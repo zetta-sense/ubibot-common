@@ -168,21 +168,21 @@ export class RemoteGroupService {
      * channels: 为channel_id列表，例如channels: [171,172]
      *
      * @param {UbiGroup} group
-     * @param {UbiChannel} channel
+     * @param {string[]} channelIds
      * @returns {Observable<any>}
      * @memberof RemoteGroupService
      */
-    addChannel(group: UbiGroup, channel: UbiChannel): Observable<any> {
+    addChannels(group: UbiGroup, channelIds: string): Observable<any> {
         if (!group) throw new UbiError('Group is required for this API!');
-        if (!channel) throw new UbiError('Channel is required for this API!');
+        if (!channelIds) throw new UbiError('ChannelIds is required for this API!');
 
-        let url = `${this.ubibotCommonConfig.EndPoint}/groups/channels/list_channels`;
+        let url = `${this.ubibotCommonConfig.EndPoint}/groups/channels/add_channels`;
 
         const params = {};
         params['group_id'] = group.group_id;
-        params['channels'] = [channel.channel_id];
+        params['channels'] = channelIds;
 
-        return this.http.get(url, { params: params }).pipe(
+        return this.http.post(url, params).pipe(
             map((resp: any) => resp)
         );
     }
@@ -200,21 +200,21 @@ export class RemoteGroupService {
      * channels: 为channel_id列表，例如channels: [171,172]
      *
      * @param {UbiGroup} group
-     * @param {UbiChannel} channel
+     * @param {string[]} channelIds
      * @returns {Observable<any>}
      * @memberof RemoteGroupService
      */
-    removeChannel(group: UbiGroup, channel: UbiChannel): Observable<any> {
+    removeChannels(group: UbiGroup, channelIds: string[]): Observable<any> {
         if (!group) throw new UbiError('Group is required for this API!');
-        if (!channel) throw new UbiError('Channel is required for this API!');
+        if (!channelIds) throw new UbiError('ChannelIds is required for this API!');
 
         let url = `${this.ubibotCommonConfig.EndPoint}/groups/channels/remove_channels`;
 
         const params = {};
         params['group_id'] = group.group_id;
-        params['channels'] = [channel.channel_id];
+        params['channels'] = channelIds;
 
-        return this.http.get(url, { params: params }).pipe(
+        return this.http.post(url, params).pipe(
             map((resp: any) => resp)
         );
     }
