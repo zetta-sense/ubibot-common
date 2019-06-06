@@ -163,6 +163,20 @@ export abstract class UbiChannel {
         return false;
     }
 
+    isFamilyWS1(): boolean {
+        if (this.product_id === EnumBasicProductId.WS1 || this.product_id === EnumBasicProductId.WS1_CN) {
+            return true;
+        }
+        return false;
+    }
+
+    isFamilyWS1P(): boolean {
+        if (this.product_id === EnumBasicProductId.WS1P) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * 是否支持震动传感
      *
@@ -303,7 +317,7 @@ export class UbiChannelDAO extends UbiChannel {
                 const fieldValue = this.extra.lastValues[field.key];
                 const oldFieldValue = this.extra.oldValues[field.key];
 
-                const fieldDAO = new UbiChannelFieldValueDAO(fieldDef, fieldValue, oldFieldValue);
+                const fieldDAO = new UbiChannelFieldValueDAO(channel, fieldDef, fieldValue, oldFieldValue);
                 this.extra.fieldDAOs[field.key] = fieldDAO;
             }
         });
@@ -392,6 +406,15 @@ interface UbiChannelFieldValueDAOsMap {
 export class UbiChannelFieldValueDAO {
 
     /**
+     * 所属的channel
+     *
+     * @private
+     * @type {UbiChannel}
+     * @memberof UbiChannelFieldValueDAO
+     */
+    private channel: UbiChannel;
+
+    /**
      * Represents the field column. Not null always.
      *
      * @type {UbiChannelFieldDef}
@@ -424,10 +447,12 @@ export class UbiChannelFieldValueDAO {
      * @memberof UbiChannelFieldValueDAO
      */
     constructor(
+        channel: UbiChannel,
         fieldDef: UbiChannelFieldDef,
         valueItem: UbiChannelLastValuesItem,
         oldValueItem: UbiChannelLastValuesItem,
     ) {
+        this.channel = channel;
         this.fieldDef = fieldDef;
         this.valueItem = valueItem;
         this.oldValueItem = oldValueItem;
@@ -446,6 +471,10 @@ export class UbiChannelFieldValueDAO {
             ret = ConvertValue(ret, this.fieldDef, opts);
         }
         return ret;
+    }
+
+    getChannel(): UbiChannel {
+        return this.channel;
     }
 
     getOldValue(): number {
