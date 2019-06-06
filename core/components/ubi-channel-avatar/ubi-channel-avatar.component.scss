@@ -9,7 +9,8 @@
         position: relative;
 
         img {
-            background-color: transparent;
+            // background-color: transparent;
+            background-color: #fff;
             //border-radius: 50%;
             width: 100%;
         }
@@ -34,11 +35,18 @@
         white-space: nowrap;
         position: absolute;
         top: 0;
-        right: 0;
         background: rgba(255, 255, 255, 0.75);
         height: 100%;
         display: flex;
         flex-flow: column;
+    }
+
+    .status-bar.vertical.left {
+        left: 0;
+    }
+
+    .status-bar.vertical.right {
+        right: 0;
     }
 
     .status-icon {

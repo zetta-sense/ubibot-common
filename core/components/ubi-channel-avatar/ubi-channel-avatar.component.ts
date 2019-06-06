@@ -28,6 +28,9 @@ export class UbiChannelAvatarComponent implements OnInit, OnChanges {
     @Input()
     hideStatus: boolean;
 
+    @Input()
+    statusPosition: 'right' | 'left' = 'right';
+
     avatarImage: string;
 
     constructor(private ubiUtils: UbiUtilsService,

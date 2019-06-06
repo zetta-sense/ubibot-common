@@ -16,6 +16,10 @@
          [src]="avatarImage | resourceUrl: size : true">
 
     <div class="status-bar vertical"
+         [ngClass]="{
+             'right': statusPosition === 'right',
+             'left': statusPosition === 'left'
+            }"
          *ngIf="!hideStatus">
         <i class="material-icons status-icon"
            *ngIf="channel?.hasSSID()">
