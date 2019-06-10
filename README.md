@@ -19,6 +19,6 @@ src/modules/xxx固定不能变
 
 
 #### deps
-ngx-translate, highcharts
+ngx-translate, highcharts, fontawesome 5, lodash
 
 

@@ -16,6 +16,7 @@ import { UbiVarDirective } from './directives/ubi-var.directive';
 import { UbiFieldValueDirective } from './directives/ubi-field-value.directive';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UbiSyncV2Service } from './service/ubi-sync-v2.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 /**
  * Core module of common module.
@@ -64,6 +65,7 @@ import { UbiSyncV2Service } from './service/ubi-sync-v2.service';
         FormsModule,
         ReactiveFormsModule,
         HighchartsChartModule,
+        FontAwesomeModule,
     ]
 })
 export class UbiCoreModule { }

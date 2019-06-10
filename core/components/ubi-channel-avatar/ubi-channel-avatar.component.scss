@@ -27,7 +27,7 @@
         position: absolute;
         bottom: -4px;
         right: 0;
-        background: rgba(255, 255, 255, 0.75);
+        // background: rgba(255, 255, 255, 0.75);
         width: 100%;
     }
 
@@ -35,7 +35,7 @@
         white-space: nowrap;
         position: absolute;
         top: 0;
-        background: rgba(255, 255, 255, 0.75);
+        // background: rgba(255, 255, 255, 0.75);
         height: 100%;
         display: flex;
         flex-flow: column;
@@ -50,10 +50,25 @@
     }
 
     .status-icon {
-        font-size: 16px;
-        color: var(--ubi-icon-success);
+        // font-size: 16px;
+        // color: var(--ubi-icon-success);
         vertical-align: middle;
         text-shadow: 1px 1px 2px #ccc;
+
+        color: var(--ubi-icon-success);
+        background: #fff;
+        border-radius: 50%;
+        padding: 2px;
+        font-size: 10px;
+
+        width: 18px;
+        height: 18px;
+
+        margin-bottom: 4px;
+
+        display: flex;
+        align-items: center; // v
+        justify-content: center; // h
     }
 
     .grayscale {

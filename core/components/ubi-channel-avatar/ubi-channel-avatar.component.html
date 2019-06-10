@@ -21,7 +21,23 @@
              'left': statusPosition === 'left'
             }"
          *ngIf="!hideStatus">
-        <i class="material-icons status-icon"
+
+        <span class="status-icon"
+              *ngIf="channel?.hasSSID()">
+            <fa-icon [icon]="iconWiFi"></fa-icon>
+        </span>
+
+        <span class="status-icon"
+              *ngIf="channel?.hasICCID()">
+            <fa-icon [icon]="iconGSM"></fa-icon>
+        </span>
+
+        <span class="status-icon"
+              *ngIf="channel?.isUsbWorking()">
+            <fa-icon [icon]="iconUSB"></fa-icon>
+        </span>
+
+        <!-- <i class="material-icons status-icon"
            *ngIf="channel?.hasSSID()">
             network_wifi
         </i>
@@ -32,7 +48,7 @@
         <i class="material-icons status-icon"
            *ngIf="channel?.isUsbWorking()">
             usb
-        </i>
+        </i> -->
     </div>
 </span>
 <!-- <span style="display: none;">{{avatarImage | resourceUrl: size : true}}</span> -->

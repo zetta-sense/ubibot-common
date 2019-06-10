@@ -1,7 +1,13 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { UbiUtilsService } from '../../../services/ubi-utils.service';
 import { UbibotCommonConfigService } from '../../../providers/ubibot-common-config.service';
 import { UbiChannel } from '../../../entities/ubi-channel.entity';
+
+
+import {
+    faWifi, faSignal,
+} from '@fortawesome/free-solid-svg-icons';
+import { faUsb } from '@fortawesome/fontawesome-free-brands';
 
 /**
  * Generated class for the UbiChannelAvatarComponent component.
@@ -15,6 +21,10 @@ import { UbiChannel } from '../../../entities/ubi-channel.entity';
     styleUrls: ['ubi-channel-avatar.component.scss']
 })
 export class UbiChannelAvatarComponent implements OnInit, OnChanges {
+
+    iconWiFi = faWifi;
+    iconGSM = faSignal;
+    iconUSB = faUsb;
 
     @Input()
     size = 128;
@@ -34,7 +44,7 @@ export class UbiChannelAvatarComponent implements OnInit, OnChanges {
     avatarImage: string;
 
     constructor(private ubiUtils: UbiUtilsService,
-                private ubibotCommonConfig: UbibotCommonConfigService) {
+        private ubibotCommonConfig: UbibotCommonConfigService) {
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -42,9 +52,9 @@ export class UbiChannelAvatarComponent implements OnInit, OnChanges {
     }
 
     updateAvatarImage() {
-        if(this.channel) {
+        if (this.channel) {
             this.avatarImage = this.channel.c_icon_base;
-        }else{
+        } else {
             // 如果没有channel则重置
             this.avatarImage = undefined;
         }
