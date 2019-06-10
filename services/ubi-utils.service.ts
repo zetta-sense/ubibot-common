@@ -119,11 +119,19 @@ export class UbiUtilsService {
         }
     }
 
+
+    /**
+     * 更新及保存当前agent
+     *
+     * @param {string} [newAgent]
+     * @memberof UbiUtilsService
+     */
     update(newAgent?: string) {
-        console.log('Updating with new config UCM - UbiUtilsService...');
+        console.log(`Updating with new config UCM - UbiUtilsService...${newAgent}`);
 
         if (newAgent) {
             this.commonConfigService.DeployAgent = newAgent;
+            this.saveCurrentAgent();
         }
         this.commonConfigService.update();
     }

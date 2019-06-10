@@ -157,10 +157,13 @@ export class UbiAuthService {
 
     private checkToken() {
         // alert('calling checkToken...');
+        const href = window.location.href;
+        const origin = window.location.origin;
+        const redirectUrl = href.slice(origin.length);
+        // console.log(`checkToken redirectUrl=${redirectUrl}`);
+
         if (this.token()) {
-            const href = window.location.href;
-            const origin = window.location.origin;
-            this.redirectUrl = href.slice(origin.length);
+            this.redirectUrl = redirectUrl;
             // console.log('wat the fak?', this.redirectUrl);
             this.authenticationState.next(true);
         } else {
