@@ -311,6 +311,10 @@ export class UbiUtilsService {
                         { account: this.ubiUserDisplayPipe.transform(owner) }))}`;
                 } else if (ubiServerError.errorCode == 'invalid_activation_code') {
                     ret = `${this.parseError(new UbiError(EnumAppError.INVALID_ACTIVATION_CODE))}`;
+                } else if (ubiServerError.errorCode == 'username_exist') {
+                    ret = `${this.parseError(new UbiError(EnumAppError.USERNAME_EXISTED))}`;
+                } else if (ubiServerError.errorCode == 'email_address_exist') {
+                    ret = `${this.parseError(new UbiError(EnumAppError.EMAIL_EXISTED))}`;
                 } else {
                     ret = `server: ${ubiServerError.desp}`;
                 }

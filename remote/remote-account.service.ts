@@ -213,4 +213,111 @@ export class RemoteAccountService {
             })
         );
     }
+
+
+    /**
+     * Create User Account (Internal)
+     * To create a user, send an HTTP POST to http://api.ubibot.cn/accounts/create
+     *
+     * JSON Body FIELDS:
+     * username, password, email, timezone
+     *
+     * Example Body:
+     * {"username":"abc","password":"123","email":"123@gmail.com", “timezone”: “Europe/London”, "captcha_code":""}
+     * Captcha Image URL: http://api.ubibot.cn/accounts/captcha
+     * Response:
+     * {"result":"success","user":{"username":"scdcd","email":"asdf@dfd.cddddom","account_key":"d9b4cb5cf9be1324380817232aaef9ed"}}
+     * account_key is used for managing channels through the API.
+     *
+     * @param {string} email
+     * @param {string} username
+     * @param {string} password
+     * @returns {Observable<any>}
+     * @memberof RemoteAccountService
+     */
+    registerByEmail(email: string, username: string, password: string): Observable<any> {
+        if (!email) throw new UbiError('Email is required for this API!');
+        if (!username) throw new UbiError('Username is required for this API!');
+        if (!password) throw new UbiError('Password is required for this API!');
+
+        const params = {
+            email: email,
+            username: username,
+            password: password,
+        };
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/create`;
+        return this.http.post(url, params).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
+
+
+    /**
+     * 手机注册-创建用户账户-第2步：
+     *
+     * send an HTTP POST to http://api.ubibot.cn/accounts/create_mobile_step2
+     *
+     * JSON Body FIELDS:
+     * mobile, sms_code, password, timezone
+     * timezone选填，可默认为一个
+     * sms_code为用户收到短信
+     *
+     * @param {string} mobile
+     * @param {string} sms_code fetch by step 1
+     * @param {string} username
+     * @param {string} password
+     * @returns {Observable<any>}
+     * @memberof RemoteAccountService
+     */
+    registerByMobile(mobile: string, sms_code: string, username: string, password: string): Observable<any> {
+        if (!mobile) throw new UbiError('Email is required for this API!');
+        if (!sms_code) throw new UbiError('sms_code is required for this API!');
+        if (!username) throw new UbiError('Username is required for this API!');
+        if (!password) throw new UbiError('Password is required for this API!');
+
+        const params = {
+            mobile: mobile,
+            sms_code: sms_code,
+            username: username,
+            password: password,
+        };
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/create_mobile_step2`;
+        return this.http.post(url, params).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
+
+    /**
+     * User Account Management(内部使用)
+     *
+     * 手机注册-创建用户账户-第1步：
+     * send an HTTP GET/POST to http://api.ubibot.cn/accounts/create_mobile_step1
+     *
+     * JSON Body FIELDS:
+     * mobile
+     *
+     * @param {string} mobile
+     * @returns {Observable<any>}
+     * @memberof RemoteAccountService
+     */
+    sendSMSRegisterCode(mobile: string): Observable<any> {
+        if (!mobile) throw new UbiError('Email is required for this API!');
+
+        const params = {
+            mobile: mobile,
+        };
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/create_mobile_step1`;
+        return this.http.post(url, params).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
 }

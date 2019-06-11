@@ -29,10 +29,20 @@ export const UbiValidators: { [key: string]: ValidatorFn } = {
         let passed = pattern.test(control.value);
         return passed ? null : { 'invalidChannelName': { value: control.value } };
     },
+    email: (control: AbstractControl): { [key: string]: any } | null => {
+        const pattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i;
+        const passed = pattern.test(control.value);
+        return passed ? null : { 'invalidEmail': { value: control.value } };
+    },
     username: (control: AbstractControl): { [key: string]: any } | null => {
         const pattern = /^[a-zA-Z][0-9a-zA-Z_]{5,14}$/i;
         const passed = pattern.test(control.value);
         return passed ? null : { 'invalidUsername': { value: control.value } };
+    },
+    password: (control: AbstractControl): { [key: string]: any } | null => {
+        const pattern = /^[\x00-\xFF]{8,40}$/i;
+        const passed = pattern.test(control.value);
+        return passed ? null : { 'invalidPassword': { value: control.value } };
     },
     phoneCN: (control: AbstractControl): { [key: string]: any } | null => {
         const pattern = /^1\d{10}$/i;
