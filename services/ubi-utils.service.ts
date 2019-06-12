@@ -315,6 +315,12 @@ export class UbiUtilsService {
                     ret = `${this.parseError(new UbiError(EnumAppError.USERNAME_EXISTED))}`;
                 } else if (ubiServerError.errorCode == 'email_address_exist') {
                     ret = `${this.parseError(new UbiError(EnumAppError.EMAIL_EXISTED))}`;
+                } else if (ubiServerError.errorCode == 'request_too_fast'
+                    && ubiServerError.desp == 'please wait another 60 seconds') {
+                    ret = `${this.parseError(new UbiError(EnumAppError.SEND_SMS_CODE_COOLDOWN))}`;
+                } else if (ubiServerError.errorCode == 'invalid_code'
+                    && ubiServerError.desp == 'sms_code is not correct') {
+                    ret = `${this.parseError(new UbiError(EnumAppError.INVALID_SMS_CODE))}`;
                 } else {
                     ret = `server: ${ubiServerError.desp}`;
                 }
