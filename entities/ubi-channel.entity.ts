@@ -146,7 +146,10 @@ export abstract class UbiChannel {
     }
 
     static IsSimSupported(productId: string): boolean {
-        if (productId === EnumBasicProductId.WS1P) {
+        if (productId === EnumBasicProductId.WS1P
+            // || productId === EnumBasicProductId.GS1_A
+            || productId === EnumBasicProductId.GS1_AL2G1RS
+            || productId === EnumBasicProductId.GS1_AL4G1RS) {
             return true;
         }
         return false;
@@ -156,11 +159,54 @@ export abstract class UbiChannel {
         return UbiChannel.IsSimSupported(this.product_id);
     }
 
+    /**
+     *
+     * 是否支持震动传感
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
     static IsAccSupported(productId: string): boolean {
         if (productId === EnumBasicProductId.WS1 || productId === EnumBasicProductId.WS1_CN) {
             return true;
         }
         return false;
+    }
+
+    isAccSupported() {
+        return UbiChannel.IsAccSupported(this.product_id);
+    }
+
+    static IsEthSupported(productId: string): boolean {
+        if (productId === EnumBasicProductId.GS1_AETH1RS) {
+            return true;
+        }
+        return false;
+    }
+
+    isEthSupported() {
+        return UbiChannel.IsEthSupported(this.product_id);
+    }
+
+    static IsBleSupported(productId: string): boolean {
+        if (productId === EnumBasicProductId.SP1) {
+            return true;
+        }
+        return false;
+    }
+
+    isBleSupported() {
+        return UbiChannel.IsBleSupported(this.product_id);
+    }
+
+    static IsWifiSupported(productId: string): boolean {
+        return productId !== EnumBasicProductId.SP1;
+    }
+
+    isWifiSupported() {
+        return UbiChannel.IsWifiSupported(this.product_id);
     }
 
     isFamilyWS1(): boolean {
@@ -175,16 +221,6 @@ export abstract class UbiChannel {
             return true;
         }
         return false;
-    }
-
-    /**
-     * 是否支持震动传感
-     *
-     * @returns
-     * @memberof UbiChannel
-     */
-    isAccSupported() {
-        return UbiChannel.IsAccSupported(this.product_id);
     }
 
     /**
