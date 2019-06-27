@@ -54,6 +54,7 @@ export enum EnumAppError {
     BLE_CONNECT_TIMEOUT = '8921',
     BLE_CONNECTED_BUT_NO_PERIPHERALS_FOUND = '8922',
     BLE_CONNECT_FAILED = '8923',
+    BLE_SCAN_DEVICE_NOT_FOUND = '8924',
 
 
     // minus error means acceptable errors

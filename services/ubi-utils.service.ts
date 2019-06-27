@@ -493,6 +493,18 @@ export class UbiUtilsService {
         }
     }
 
+    predictDeviceBleName(serial: string, productId: string): string {
+        let ret: string;
+        if(productId === EnumBasicProductId.SP1) {
+            // Ubibot - SP1 - XXXXX
+            // 序列号前5位
+            const part1 = 'Ubibot-SP1';
+            const part2 = serial.substring(0, 5);
+            ret = `${part1}-${part2}`;
+        }
+        return ret;
+    }
+
 
     /**
      * 单serie解包
