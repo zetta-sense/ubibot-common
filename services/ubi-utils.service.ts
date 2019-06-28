@@ -500,7 +500,8 @@ export class UbiUtilsService {
             // 序列号前5位
             const part1 = 'Ubibot-SP1'; // MDPS-
             const part2 = serial.substring(0, 5);
-            ret = `${part1}-${part2}`;
+            // ret = `${part1}-${part2}`;
+            ret = 'MDPS-1016';
         }
         return ret;
     }
