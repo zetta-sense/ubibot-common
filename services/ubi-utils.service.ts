@@ -498,7 +498,7 @@ export class UbiUtilsService {
         if(productId === EnumBasicProductId.SP1) {
             // Ubibot - SP1 - XXXXX
             // 序列号前5位
-            const part1 = 'Ubibot-SP1';
+            const part1 = 'Ubibot-SP1'; // MDPS-
             const part2 = serial.substring(0, 5);
             ret = `${part1}-${part2}`;
         }
