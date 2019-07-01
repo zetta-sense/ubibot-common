@@ -30,7 +30,7 @@ export const UbiValidators: { [key: string]: ValidatorFn } = {
         return passed ? null : { 'invalidChannelName': { value: control.value } };
     },
     email: (control: AbstractControl): { [key: string]: any } | null => {
-        const pattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i;
+        const pattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,10}$/i;
         const passed = pattern.test(control.value);
         return passed ? null : { 'invalidEmail': { value: control.value } };
     },
