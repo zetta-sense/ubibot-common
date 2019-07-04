@@ -408,7 +408,9 @@ export class UbiUtilsService {
         } else {
             try {
                 errMsg = `Low-level exception`;
-                errInfo = `${err.message}`;
+                errInfo = `${err.message || err.desp}`; // UploadService的错误返回原请求错误,服务器错误内含desp
+
+                console.error(err);
             } catch (e) {
                 errMsg = 'Cannot parse error message. More info in console.';
                 console.error(e);

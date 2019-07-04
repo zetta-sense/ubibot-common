@@ -223,6 +223,17 @@ export abstract class UbiChannel {
         return false;
     }
 
+    isFamilyGS1(): boolean {
+        if (this.product_id === EnumBasicProductId.GS1_A ||
+            this.product_id === EnumBasicProductId.GS1_AETH1RS ||
+            this.product_id === EnumBasicProductId.GS1_AL2G1RS ||
+            this.product_id === EnumBasicProductId.GS1_AL4G1RS) {
+            return true;
+        }
+        return false;
+    }
+
+
     /**
      * 是否支持rs485
      *

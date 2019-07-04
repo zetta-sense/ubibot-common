@@ -43,8 +43,10 @@ export class UbiChannelAvatarComponent implements OnInit, OnChanges {
 
     avatarImage: string;
 
-    constructor(private ubiUtils: UbiUtilsService,
-        private ubibotCommonConfig: UbibotCommonConfigService) {
+    constructor(
+        private ubiUtils: UbiUtilsService,
+        private ubibotCommonConfig: UbibotCommonConfigService,
+    ) {
     }
 
     ngOnChanges(changes: SimpleChanges) {
