@@ -130,7 +130,8 @@ export class UbiAuthService {
      * @memberof UbiAuthService
      */
     zendeskId() {
-        return this.me() && this.me().account.external_id;
+        // 目前就是对应user_id关联
+        return this.me() && this.me().account.user_id;
     }
 
     token() {
