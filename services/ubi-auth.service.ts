@@ -122,6 +122,17 @@ export class UbiAuthService {
         return this.me() && this.me().account.user_id;
     }
 
+
+    /**
+     * 返回关联的zendesk id
+     *
+     * @returns
+     * @memberof UbiAuthService
+     */
+    zendeskId() {
+        return this.me() && this.me().account.external_id;
+    }
+
     token() {
         try {
             let resp = JSON.parse(this.ubiStorage.get(this.getStorageKey()));
