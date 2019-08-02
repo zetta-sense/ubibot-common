@@ -237,11 +237,27 @@ export abstract class UbiChannel {
     /**
      * 是否支持rs485
      *
+     * Updated for  http://jira.cloudforce.cn:9000/browse/UBCONSOLE-73
+     *
      * @returns
      * @memberof UbiChannel
      */
     isRS485Supported() {
-        if (this.product_id === EnumBasicProductId.WS1P) {
+        if (this.product_id === EnumBasicProductId.WS1P ||
+            this.product_id === EnumBasicProductId.GS1_A ||
+            this.product_id === EnumBasicProductId.GS1_AETH1RS ||
+            this.product_id === EnumBasicProductId.GS1_AL2G1RS ||
+            this.product_id === EnumBasicProductId.GS1_AL4G1RS) {
+            return true;
+        }
+        return false;
+    }
+
+    isRS485AutoDetectSupported() {
+        if (this.product_id === EnumBasicProductId.GS1_A ||
+            this.product_id === EnumBasicProductId.GS1_AETH1RS ||
+            this.product_id === EnumBasicProductId.GS1_AL2G1RS ||
+            this.product_id === EnumBasicProductId.GS1_AL4G1RS) {
             return true;
         }
         return false;
@@ -258,6 +274,26 @@ export abstract class UbiChannel {
             return true;
         }
         return false;
+    }
+
+    // 根据 http://jira.cloudforce.cn:9000/browse/UBCONSOLE-73
+    isFnLightSupported() {
+        if (this.product_id === EnumBasicProductId.GS1_A
+            || this.product_id === EnumBasicProductId.GS1_AETH1RS) {
+            return false;
+        }
+        return true;
+    }
+
+    // 根据 http://jira.cloudforce.cn:9000/browse/UBCONSOLE-73
+    isFnExtTSupported() {
+        if (this.product_id === EnumBasicProductId.GS1_A
+            || this.product_id === EnumBasicProductId.GS1_AETH1RS
+            || this.product_id === EnumBasicProductId.GS1_AL2G1RS
+            || this.product_id === EnumBasicProductId.GS1_AL4G1RS) {
+            return false;
+        }
+        return true;
     }
 
     /**
