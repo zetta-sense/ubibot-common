@@ -1,5 +1,6 @@
 :host(ubi-me-avatar) {
     text-align: center;
+    display: inline-block;
 
     .avatar-small {
         vertical-align: text-bottom;
@@ -7,7 +8,7 @@
         border-radius: 50%;
         border:1px solid #aaa;
         box-shadow: inset 0 0 10rem rgba(0,0,0,.25), 0 0 4rem rgba(255,255,255,.45);
-        box-sizing: content-box;
+        box-sizing: border-box;
 
         img {
             background-color: #f7f7f7;
@@ -17,7 +18,7 @@
 
         img.rounded {
             border-radius: 100%;
-            vertical-align: bottom;
+            vertical-align: baseline;
         }
     }
 }

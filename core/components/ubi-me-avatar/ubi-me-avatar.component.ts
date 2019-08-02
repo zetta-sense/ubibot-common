@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, HostBinding, OnChanges } from '@angular/core';
 import { UbiAuthService } from '../../../services/ubi-auth.service';
 
 /**
@@ -12,7 +12,7 @@ import { UbiAuthService } from '../../../services/ubi-auth.service';
     templateUrl: 'ubi-me-avatar.component.html',
     styleUrls: ['ubi-me-avatar.component.scss']
 })
-export class UbiMeAvatarComponent implements OnInit {
+export class UbiMeAvatarComponent implements OnInit, OnChanges {
 
     @Input()
     size = 32;
@@ -22,6 +22,9 @@ export class UbiMeAvatarComponent implements OnInit {
 
     @Input()
     rounded = false;
+
+    @HostBinding('style.width') componentWidth;
+    @HostBinding('style.height') componentHeight;
 
     me: any;
 
@@ -36,4 +39,8 @@ export class UbiMeAvatarComponent implements OnInit {
         // console.log(`logoForEmpty=${this.logoForEmpty}`);
     }
 
+    ngOnChanges() {
+        this.componentWidth = `${this.size}px`;
+        this.componentHeight = `${this.size}px`;
+    }
 }

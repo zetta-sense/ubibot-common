@@ -67,7 +67,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     highchartsOptions: Highcharts.Options = {
         chart: {
-            type: 'line'
+            type: 'line',
         },
         title: {},
         subtitle: {},
@@ -97,7 +97,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             style: {
                 fontWeight: 'bold',
                 fontSize: '24px',
-                color: '#ffffff'
+                color: '#444'
             }
         },
         tooltip: {
@@ -241,7 +241,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     }
 
     private updateTheme() {
-        HighchartsThemeDarkUnica(Highcharts);
+        // HighchartsThemeDarkUnica(Highcharts);
     }
 
     private updateTooltip() {
@@ -271,9 +271,16 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 }
 
                 this.highchartsOptions.title.text = title;
+                this.highchartsOptions.title.style = {
+                    color: '#3880ff',
+                    fontWeight: 'bold',
+                };
 
                 let subtitle = this.subtitle || undefined;
                 this.highchartsOptions.subtitle.text = subtitle;
+                this.highchartsOptions.subtitle.style = {
+                    fontSize: '10px',
+                };
 
                 // 不能用Highcharts原生的api，会被ngx highcharts覆盖
                 // this.chart.setTitle({
@@ -358,14 +365,17 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     } else {
                         // @ts-ignore
                         this.chart.addSeries({
-                            // type: 'line',
+                            type: 'area',
                             id: serie.label,
                             name: serie.label,
                             data: newDataPoints,
+                            color: '#a1c2fc', // 连线
+                            fillColor: 'rgba(127,127,127,0.1)',  // When you set an explicit fillColor, the fillOpacity is not applied.
+                            // Instead, you should define the opacity in the fillColor with an rgba color definition.
                             lineWidth: 1,// tag: 如果只显示点,则设为0
                             // connectNulls: true,
-                            marker: {
-                                fillColor: '#FFFFFF',
+                            marker: { // 有值的点
+                                fillColor: '#3880ff',
                                 enabled: true,
                                 radius: 1, // 点大小
                             },
