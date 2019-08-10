@@ -1,0 +1,21 @@
+<input #input1
+       type="number"
+       maxlength="3"
+       (keyup)="onInputChange($event, input1.value)" />
+<span class="seperator">.</span>
+<input #input2
+       type="number"
+       maxlength="3"
+       (keyup)="onInputChange($event, input2.value)" />
+<span class="seperator">.</span>
+<input #input3
+       type="number"
+       maxlength="3"
+       (keyup)="onInputChange($event, input3.value)" />
+<span class="seperator">.</span>
+<input #input4
+       type="number"
+       maxlength="3"
+       (keyup)="onInputChange($event, input4.value)" />
+
+<div *ngIf="errors.length">error!!</div>

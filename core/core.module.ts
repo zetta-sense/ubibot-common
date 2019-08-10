@@ -17,6 +17,7 @@ import { UbiFieldValueDirective } from './directives/ubi-field-value.directive';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UbiSyncV2Service } from './service/ubi-sync-v2.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { UbiIpv4InputComponent } from './components/ubi-ipv4-input/ubi-ipv4-input.component';
 
 /**
  * Core module of common module.
@@ -38,6 +39,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
         BytesPipe,
         UbiVarDirective,
         UbiFieldValueDirective,
+        UbiIpv4InputComponent,
     ],
     exports: [
         UbiMeAvatarComponent,
@@ -51,6 +53,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
         UbiVarDirective,
         UbiLazyImgDirective,
         UbiFieldValueDirective,
+        UbiIpv4InputComponent,
     ],
     providers: [ // 用于DI
         UbiUserDisplayPipe,

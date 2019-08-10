@@ -58,6 +58,31 @@ export const UbiValidators: { [key: string]: ValidatorFn } = {
         const passed = /^[\x00-\x7F]*$/.test(control.value);
         return passed ? null : { 'requireASCII': { value: control.value } };
     },
+    ipv4: (control: AbstractControl): { [key: string]: any } | null => {
+        if (control.value) {
+            const seg4check = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(control.value);
+
+            let valueCheck = true;
+            try {
+                const segs: string[] = control.value.split('.');
+                for (let i = 0; i < 4; i++) {
+                    const v = parseInt(segs[i], 10);
+                    if (v >= 0 && v <= 255) {
+                        // do nothing
+                    } else {
+                        valueCheck = false;
+                        break;
+                    }
+                }
+            } catch (e) {
+                valueCheck = false;
+            }
+
+            return seg4check && valueCheck ? null : { 'invalidIPv4': { value: control.value } };
+        }
+
+        return null;
+    },
     // ASCII 拓展
     asciiEx: (control: AbstractControl): { [key: string]: any } | null => {
         const passed = /^[\x00-\xFF]*$/.test(control.value);

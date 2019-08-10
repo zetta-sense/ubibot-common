@@ -5,6 +5,7 @@ export enum EnumDeviceCommand {
     SetupProduct    = 'SetupProduct',
     ScanNetwork     = 'ScanWifiList',
     SetupWifi       = 'SetupWifi',
+    SetupEthernet   = 'SetupEthernet',
     DeviceActivate  = 'DeviceActivate',
     SetMetadata     = 'SetMetaData',
     GetLastError    = 'GetLastError',
