@@ -96,7 +96,7 @@ export class UbiIpv4InputComponent implements ControlValueAccessor, OnInit, OnCh
         });
     }
 
-    onInputChange() {
+    onInputChange(event, value) {
 
         const seg1 = this.inputRef1.nativeElement.value;
         const seg2 = this.inputRef2.nativeElement.value;
