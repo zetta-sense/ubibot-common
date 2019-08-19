@@ -40,6 +40,7 @@ export class UbiTokenInterceptor implements HttpInterceptor {
                 // tap(() => console.log(request)),
                 // timeout(10), // make error for debug
                 // timeout(isTestUrl ? 500 : this.ubibotCommonConfig.ServerAccessTimeout),
+                timeout(this.ubibotCommonConfig.ServerAccessTimeout), // tag: 上次为什么删了，怪，不能删
                 map((event: HttpEvent<any>) => {
                     if (event instanceof HttpResponse && ~~(event.status / 100) > 3) {
                         // console.info('HttpResponse::event =', event, ';');
