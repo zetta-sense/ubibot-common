@@ -1,5 +1,5 @@
 import { UbiChannelFields } from "./ubi-channel-fields.entity";
-import { UbiChannelFieldDef } from "./ubi-channel-field-def.entity";
+import { UbiChannelFieldDef, UbiChannelFieldDefScaleType } from "./ubi-channel-field-def.entity";
 import { UbiChannelLastValues, UbiChannelLastValuesItem } from "./ubi-channel-last-values.entity";
 import * as _ from 'lodash';
 import { UbiExtraPreferenceTempScale } from "./ubi-extra-preference.entity";
@@ -543,6 +543,7 @@ export class UbiChannelFieldValueDAO {
 
     /**
      * 获取该field的值，可以传入tempscale参数自动将温度field变换为相应温标下的值
+     * 不传入tempscale时为系统标准值
      *
      * @param {UbiValueOptions} eg. {tempScale: 'celsius'}
      * @returns {number}
@@ -606,7 +607,7 @@ export function UseCelsius(tempScale: UbiExtraPreferenceTempScale): boolean {
  */
 export function ConvertValue(value: number, fieldDef: UbiChannelFieldDef, opts: UbiValueOptions = {}) {
     // 仅当为温度时，且偏好非celsius则转换值
-    if (fieldDef.scaleType === '1' && !UseCelsius(opts.tempScale) && value != null) {
+    if (fieldDef.scaleType === UbiChannelFieldDefScaleType.TEMPERATURE && !UseCelsius(opts.tempScale) && value != null) {
         value = value * 9 / 5 + 32;
         value = parseFloat(value.toFixed(5));
     }
@@ -625,7 +626,7 @@ export function ConvertValue(value: number, fieldDef: UbiChannelFieldDef, opts: 
  */
 export function ConvertValueReverse(value: number, fieldDef: UbiChannelFieldDef, opts: UbiValueOptions = {}) {
     // 仅当为温度时，且偏好非celsius则转换值
-    if (fieldDef.scaleType === '1' && !UseCelsius(opts.tempScale) && value != null) {
+    if (fieldDef.scaleType === UbiChannelFieldDefScaleType.TEMPERATURE && !UseCelsius(opts.tempScale) && value != null) {
         value = (value - 32) * 5 / 9;
         value = parseFloat(value.toFixed(5));
     }

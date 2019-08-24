@@ -1,5 +1,5 @@
 import { UbiChannel } from "./ubi-channel.entity";
-import { UbiChannelFieldDef } from "./ubi-channel-field-def.entity";
+import { UbiChannelFieldDef, UbiChannelFieldDefScaleType } from "./ubi-channel-field-def.entity";
 import { UbiChannelVConfig, VConfigItemHidden } from "./ubi-channel-vconfig.entity";
 
 /**
@@ -69,7 +69,7 @@ export class UbiChannelFields<T extends UbiChannelFieldDef> extends Array<T> {
                     fieldDef.enabled = false;
                 }
 
-                fieldDef.scaleType = configItem.u;
+                fieldDef.scaleType = configItem.u as UbiChannelFieldDefScaleType;
 
                 ret.push(fieldDef);
             }

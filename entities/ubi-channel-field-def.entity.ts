@@ -1,5 +1,49 @@
 import { UbiChannelVConfig, VConfigItemHidden } from "./ubi-channel-vconfig.entity";
 
+export enum UbiChannelFieldDefScaleType {
+    // vconfig值, 值域一般为1, 3, 4, 5, 6, 7, 8, 9
+
+    /**
+     * 温度
+     */
+    TEMPERATURE = '1',
+
+    /**
+     * 湿度
+     */
+    HUMIDITY = '3',
+
+    /**
+     * 亮度
+     */
+    BRIGHTNESS = '4',
+
+    /**
+     * 电压
+     */
+    VOLTAGE = '5',
+
+    /**
+     * 信号
+     */
+    DBM = '6',
+
+    /**
+     * 震动
+     */
+    SHOCK = '7',
+
+    /**
+     * 敲击
+     */
+    KNOCK = '8',
+
+    /**
+     * 门磁
+     */
+    MAGNETIC = '9',
+}
+
 export class UbiChannelFieldDef {
 
     /**
@@ -20,6 +64,7 @@ export class UbiChannelFieldDef {
 
     /**
      * 此field对产品是否有效，一般由UbiChannelFields初始化
+     * 即vconfig的h值以及fieldxx是否有定义
      *
      * @type {boolean}
      * @memberof UbiChannelFieldDef
@@ -30,10 +75,10 @@ export class UbiChannelFieldDef {
      *  计量类型，如 “1”=温度（摄氏），“3”=湿度
      * 即vconfig的u值
      *
-     * @type {string}
+     * @type {UbiChannelFieldDefScaleType}
      * @memberof UbiChannelFieldDef
      */
-    scaleType: string;
+    scaleType: UbiChannelFieldDefScaleType;
 
     constructor() {
 
