@@ -235,7 +235,7 @@ export abstract class UbiChannel {
 
 
     /**
-     * 是否支持rs485
+     * 是否支持rs485 (ws1, gs1_a不支持)
      *
      * Updated for  http://jira.cloudforce.cn:9000/browse/UBCONSOLE-73
      *
@@ -244,7 +244,6 @@ export abstract class UbiChannel {
      */
     isRS485Supported() {
         if (this.product_id === EnumBasicProductId.WS1P ||
-            this.product_id === EnumBasicProductId.GS1_A ||
             this.product_id === EnumBasicProductId.GS1_AETH1RS ||
             this.product_id === EnumBasicProductId.GS1_AL2G1RS ||
             this.product_id === EnumBasicProductId.GS1_AL4G1RS) {
@@ -253,11 +252,15 @@ export abstract class UbiChannel {
         return false;
     }
 
+    /**
+     * 目前除ws1p外的能支持rs的型号都应该能自动检测
+     *
+     * @returns
+     * @memberof UbiChannel
+     */
     isRS485AutoDetectSupported() {
-        if (this.product_id === EnumBasicProductId.GS1_A ||
-            this.product_id === EnumBasicProductId.GS1_AETH1RS ||
-            this.product_id === EnumBasicProductId.GS1_AL2G1RS ||
-            this.product_id === EnumBasicProductId.GS1_AL4G1RS) {
+        if (this.isRS485Supported() &&
+            this.product_id !== EnumBasicProductId.WS1P) {
             return true;
         }
         return false;
