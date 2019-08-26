@@ -497,7 +497,7 @@ export class UbiUtilsService {
 
     predictDeviceBleName(serial: string, productId: string): string {
         let ret: string;
-        if(productId === EnumBasicProductId.SP1) {
+        if (productId === EnumBasicProductId.SP1) {
             // Ubibot - SP1 - XXXXX
             // 序列号前5位
             const part1 = 'Ubibot-SP1'; // MDPS-
@@ -521,8 +521,9 @@ export class UbiUtilsService {
         const fields: UbiChannelFieldDef[] = channel.getFields().getEnabledFieldDefs()
 
         // 追加头尾两端的端点
-        const start: string = resp.start;
-        const end: string = resp.end;
+        // tag: 必须要转换为number, 如果是string, 可能由于带有zone time的关系导致比较错误
+        const start: number = new Date(resp.start).getTime();
+        const end: number = new Date(resp.end).getTime();
 
         const map: { [key: string]: UbiFeedPack } = {};
 
@@ -572,7 +573,7 @@ export class UbiUtilsService {
                 // 不使用正则尽量提高performance
                 if (pack && 'created_at' !== k) {
                     const value = ConvertValue(feed[k], pack.field, opts);
-                    const point: UbiDataChartPoint = { x: createdAt, y: value };
+                    const point: UbiDataChartPoint = { x: new Date(createdAt).getTime(), y: value };
                     pack.series[0].data.push(point);
                 }
             });
@@ -585,17 +586,17 @@ export class UbiUtilsService {
             const data = pack.series[0].data;
 
             // asc sort
-            data.sort((a, b) => (a.x as string || '').localeCompare(b.x));
+            data.sort((a, b) => a.x - b.x);
 
             const first = _.first(data);
             // console.log(!!start, !_.find(data, { x: start }), (!first || first.x > start));
-            if (!!start && !_.find(data, { x: start }) && (!first || first.x > start) && data.length) {
+            if (!isNaN(start) && !_.find(data, { x: start }) && (!first || first.x > start) && data.length) {
                 // console.log('adding first point');
                 data.unshift({ x: start, y: null });
             }
 
             const last = _.last(data);
-            if (!!end && !_.find(data, { x: end }) && (!last || last.x < end) && data.length) {
+            if (!isNaN(end) && !_.find(data, { x: end }) && (!last || last.x < end) && data.length) {
                 // console.log('adding last point');
                 data.push({ x: end, y: null });
             }

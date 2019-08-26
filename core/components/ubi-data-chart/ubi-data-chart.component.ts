@@ -15,7 +15,14 @@ import { UbiFeedType } from 'src/modules/ubibot-common/remote/remote-channel.ser
 NoDataToDisplay(Highcharts);
 
 export interface UbiDataChartPoint {
-    x: any;
+    /**
+     * 日期
+     *
+     * @type {*}
+     * @memberof UbiDataChartPoint
+     */
+    x: number;
+
     y: any;
 }
 
@@ -402,7 +409,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
             if (this.minPoint) {
                 const minPoint = {
-                    x: Date.parse(this.minPoint.x),
+                    x: this.minPoint.x,
                     y: this.minPoint.y,
                     color: '#0f0',
                     title: `${this.translate.instant('APP.COMMON.MIN')}: ${this.minPoint.y} ${this.unit}`,
@@ -416,7 +423,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
             if (this.maxPoint) {
                 const maxPoint = {
-                    x: Date.parse(this.maxPoint.x),
+                    x: this.maxPoint.x,
                     y: this.maxPoint.y,
                     color: '#f00',
                     title: `${this.translate.instant('APP.COMMON.MAX')}: ${this.maxPoint.y} ${this.unit}`,
