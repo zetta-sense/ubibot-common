@@ -151,9 +151,16 @@ export class UbiUtilsService {
         return `last_login_username-${this.commonConfigService.DeployAgent}`;
     }
 
-    // 因为会update agent，必须使用动态获取
     private getStorageKeyCurrentAgent() {
         return `currentAgent`;
+    }
+
+    private getStorageKeyJPushToken() {
+        return `last_jpush_token`;
+    }
+
+    private getStorageKeyFCMToken() {
+        return `last_fcm_token`;
     }
 
     // saveReportLocal(report: UbiReport) {
@@ -251,6 +258,35 @@ export class UbiUtilsService {
     saveCurrentAgent() {
         const agent = this.commonConfigService.DeployAgent;
         this.ubiStorage.save(this.getStorageKeyCurrentAgent(), agent);
+    }
+
+
+    saveLastJPushToken(token: string): void {
+        if (token) {
+            this.ubiStorage.save(this.getStorageKeyJPushToken(), token);
+        }
+    }
+
+    removeLastJPushToken(): void {
+        this.ubiStorage.remove(this.getStorageKeyJPushToken());
+    }
+
+    saveLastFCMToken(token: string): void {
+        if (token) {
+            this.ubiStorage.save(this.getStorageKeyFCMToken(), token);
+        }
+    }
+
+    removeLastFCMToken(): void {
+        this.ubiStorage.remove(this.getStorageKeyFCMToken());
+    }
+
+    getLastJPushToken(): string {
+        return this.ubiStorage.get(this.getStorageKeyJPushToken());
+    }
+
+    getLastFCMToken(): string {
+        return this.ubiStorage.get(this.getStorageKeyFCMToken());
     }
 
 

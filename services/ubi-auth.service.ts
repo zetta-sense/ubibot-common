@@ -49,7 +49,7 @@ export class UbiAuthService {
 
 
     /**
-     * 改为动态获取，因为登陆时会随时更新config的agebt配置
+     * 改为动态获取，因为登陆时会随时更新config的agent配置
      *
      * @returns
      * @memberof UbiAuthService
@@ -164,6 +164,7 @@ export class UbiAuthService {
     }
 
     unbindDeviceToken(token: string): Promise<any> {
+        console.log(`Calling unbindDeviceToken with token: ${token}`);
         return this.remoteAccount.unbindDeviceToken(token);
     }
 
