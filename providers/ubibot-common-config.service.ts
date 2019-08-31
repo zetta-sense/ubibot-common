@@ -10,6 +10,7 @@ export class UbibotCommonConfigService {
     public EnableServiceFCM = true;
 
     public LogoFile = 'assets/logo.png';
+    public LogoFileLogin = 'assets/images/login-logo-ubibot.png';
 
     public readonly DatabaseVersion = 1;
     public readonly DatabaseName = 'UbiDatabase';

@@ -10,9 +10,10 @@
 
         img {
             // background-color: transparent;
-            background-color: #fff;
+            background-color: #f0f0f0;// 不取全白
             //border-radius: 50%;
             width: 100%;
+            min-height: 100%;
         }
 
         img.rounded {
