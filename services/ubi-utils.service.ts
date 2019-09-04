@@ -226,6 +226,13 @@ export class UbiUtilsService {
         return this.ubiStorage.get(this.getStorageKeyLanguage()) || this.commonConfigService.PreferredLanguage;
     }
 
+    /**
+     * 返回一个当前lang的完整定义，包括key, label
+     * 详见UbiLnaguageDef
+     *
+     * @returns
+     * @memberof UbiUtilsService
+     */
     getLanguageDef() {
         const language = this.getLanguage();
         return _.find(this.ubiSupportedLanguages.getLanguages(), { key: language });
