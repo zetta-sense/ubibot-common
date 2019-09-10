@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UbiExtraPreference } from '../entities/ubi-extra-preference.entity';
 import { UbiError } from '../errors/UbiError';
+import * as lz from 'lz-string';
 
 export interface UbiMessage {
     body: string;
@@ -118,7 +119,11 @@ export class RemoteAccountService {
      */
     saveExtraPref(ubiExtraPref: UbiExtraPreference): Observable<any> {
         let url = `${this.ubibotCommonConfig.EndPoint}/accounts/settings/update`;
+
         const payload = ubiExtraPref.toString();
+
+        // todo: 是否要考虑压缩，届时将需要启用新的服务器api来逐步替换
+        // console.log(lz.compress(payload);
 
         return this.http.post(url, payload).pipe(
             map((resp: any) => resp)

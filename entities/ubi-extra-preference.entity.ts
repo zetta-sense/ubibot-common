@@ -57,6 +57,23 @@ export enum UbiExtraPreferenceChannelsListStyle {
 }
 
 
+/**
+ * 以channelId作为key的用户自定义channel列表view属性
+ * value为一个properties数组
+ *
+ * @export
+ * @interface UbiExtraPreferenceChannelsListItemCustomize
+ */
+export interface UbiExtraPreferenceChannelsListItemCustomize {
+    [channelId: string]: UbiExtraPreferenceChannelsListItemCustomizeProperties[];
+}
+export interface UbiExtraPreferenceChannelsListItemCustomizeProperties {
+    key: string;
+    index: number; // 排序
+    visible: boolean; // 用户自定义，默认应为true
+}
+
+
 export class UbiExtraPreference {
 
     datetime_format: UbiExtraPreferenceDateTimeFormat;
@@ -65,6 +82,8 @@ export class UbiExtraPreference {
     temp_scale: UbiExtraPreferenceTempScale;
 
     channels_list_style: UbiExtraPreferenceChannelsListStyle;
+
+    channels_list_item_customize: UbiExtraPreferenceChannelsListItemCustomize;
 
     // tag: 未定义，可能于将来定义新的
     [key: string]: any;

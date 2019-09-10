@@ -50,10 +50,10 @@ export class UbiIpv4InputComponent implements ControlValueAccessor, OnInit, OnCh
         }
     }
 
-    @ViewChild('input1') inputRef1: ElementRef;
-    @ViewChild('input2') inputRef2: ElementRef;
-    @ViewChild('input3') inputRef3: ElementRef;
-    @ViewChild('input4') inputRef4: ElementRef;
+    @ViewChild('input1', { static: true }) inputRef1: ElementRef;
+    @ViewChild('input2', { static: true }) inputRef2: ElementRef;
+    @ViewChild('input3', { static: true }) inputRef3: ElementRef;
+    @ViewChild('input4', { static: true }) inputRef4: ElementRef;
 
     constructor() { }
 
