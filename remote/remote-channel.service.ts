@@ -196,6 +196,68 @@ export class RemoteChannelService {
         );
     }
 
+    /**
+     * Remove Sharing of Channels
+     *
+     * To remove a list of channels shared to others, send an HTTP DELETE to http://api.datadudu.cn/share/channels
+     *
+     * Valid request parameters:
+     * account_key or token_id (string) – account_key  or token_id for internal use, obtained through login API. (required)
+     * JSON Body FIELDS:
+     * <> shared_ids (array): array of share_id that wish to remove
+     *
+     * @param {string} channelId
+     * @returns {Observable<any>}
+     * @memberof RemoteChannelService
+     */
+    removeShare(shareId: string): Observable<any> {
+        if (!shareId) throw new UbiError('Share ID is required for this API!');
+
+        const body: any = {
+            shared_ids: [shareId],
+        };
+
+        const url = `${this.ubibotCommonConfig.EndPoint}/share/channels/delete`;
+        return this.http.post(url, body).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
+
+    /**
+     * Share Channels
+     *
+     * To share a list of channels to someone, send an HTTP POST of JSON to http://api.datadudu.cn/share/channels.
+     *
+     * Valid request parameters:
+     * account_key or token_id (string) – account_key  or token_id for internal use, obtained through login API. (required)
+     * JSON Body FIELDS:
+     * <>·channels (array): array of channel_id that for sharing
+     * <>·to (string): user_id of the user that channels are shared to
+     *
+     * @param {string} channelId
+     * @param {string} userId
+     * @returns {Observable<any>}
+     * @memberof RemoteChannelService
+     */
+    shareChannelToOthers(channelId: string, userId: string): Observable<any> {
+        if (!channelId) throw new UbiError('Channel ID is required for this API!');
+        if (!userId) throw new UbiError('User ID is required for this API!');
+
+        const body: any = {
+            channels: [channelId],
+            to: userId,
+        };
+
+        const url = `${this.ubibotCommonConfig.EndPoint}/share/channels`;
+        return this.http.post(url, body).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
+
 
     /**
      * 用于校验服务器最近是否收到设备数据

@@ -16,6 +16,7 @@ export interface UbiMe {
     account: {
         mobile: string;
         email: string;
+        user_id: string;
 
         [key: string]: any;
     };

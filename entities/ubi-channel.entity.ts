@@ -350,6 +350,17 @@ export abstract class UbiChannel {
         return pattern.test(this.product_id);
     }
 
+    /**
+     * 根据user_id判断是否为此channel的owner
+     *
+     * @param {string} user_id
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    isOwnerOf(user_id: string): boolean {
+        return this.user_id === user_id;
+    }
+
 }
 
 
