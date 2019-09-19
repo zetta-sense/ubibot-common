@@ -92,6 +92,48 @@ export class RemoteChannelService {
     }
 
     /**
+     * View Channels Shared to Me
+     *
+     * To view the list of channels shared to me, send an HTTP GET to http://api.datadudu.cn/share/channels/to-me
+     *
+     * Valid request parameters:
+     * account_key or token_id (string) – account_key  or token_id for internal use, obtained through login API. (required)
+     * username (string): (optional) if username is supplied, will only list the channels shared from selected username
+     * user_id (string): (optional) if user_id is supplied, will only list the channels shared from selected user_id
+     * channel_id (string): (optional) if channel_id is supplied, will list the records matching such channel_id
+     *
+     * @returns {Observable<UbiChannel[]>}
+     * @memberof RemoteChannelService
+     */
+    listOthersToMe(): Observable<UbiChannel[]> {
+        let url = `${this.ubibotCommonConfig.EndPoint}/share/channels/to-me`;
+        return this.http.get(url).pipe(
+            map((resp: any) => resp.channels)
+        );//.subscribe(resp => resp)
+    }
+
+    /**
+     * View Channels Shared to Others
+     *
+     * To view the list of channels shared to others, send an HTTP GET to http://api.datadudu.cn/share/channels/to-others
+     *
+     * Valid request parameters:
+     * account_key or token_id (string) – account_key  or token_id for internal use, obtained through login API. (required)
+     * username (string): (optional) if username is supplied, will only list the channels shared to selected username
+     * user_id (string): (optional) if user_id is supplied, will only list the channels shared to selected user_id
+     * channel_id (string): (optional) if channel_id is supplied, will list the records matching such channel_id
+     *
+     * @returns {Observable<UbiChannel[]>}
+     * @memberof RemoteChannelService
+     */
+    listMeToOthers(): Observable<UbiChannel[]> {
+        let url = `${this.ubibotCommonConfig.EndPoint}/share/channels/to-others`;
+        return this.http.get(url).pipe(
+            map((resp: any) => resp.channels)
+        );//.subscribe(resp => resp)
+    }
+
+    /**
      * Get a channel.
      *
      * @param {string} channelId
