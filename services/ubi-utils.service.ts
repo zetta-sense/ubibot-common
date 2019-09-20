@@ -360,12 +360,15 @@ export class UbiUtilsService {
                     ret = `${this.parseError(new UbiError(EnumAppError.EMAIL_EXISTED))}`;
                 } else if (ubiServerError.errorCode == 'mobile_exist') {
                     ret = `${this.parseError(new UbiError(EnumAppError.MOBILE_EXISTED))}`;
-                }  else if (ubiServerError.errorCode == 'request_too_fast'
+                } else if (ubiServerError.errorCode == 'request_too_fast'
                     && ubiServerError.desp == 'please wait another 60 seconds') {
                     ret = `${this.parseError(new UbiError(EnumAppError.SEND_SMS_CODE_COOLDOWN))}`;
                 } else if (ubiServerError.errorCode == 'invalid_code'
                     && ubiServerError.desp == 'sms_code is not correct') {
                     ret = `${this.parseError(new UbiError(EnumAppError.INVALID_SMS_CODE))}`;
+                } else if (ubiServerError.errorCode == 'permission_denied'
+                    && ubiServerError.desp == 'You can not share channels to yourself') {
+                    ret = `${this.parseError(new UbiError(EnumAppError.INVALID_SHARE_SELF))}`;
                 } else {
                     ret = `server: ${ubiServerError.desp}`;
                 }
