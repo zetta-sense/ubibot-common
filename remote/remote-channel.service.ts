@@ -123,13 +123,21 @@ export class RemoteChannelService {
      * user_id (string): (optional) if user_id is supplied, will only list the channels shared to selected user_id
      * channel_id (string): (optional) if channel_id is supplied, will list the records matching such channel_id
      *
+     * @param {string} [channelId] optional
      * @returns {Observable<UbiChannel[]>}
      * @memberof RemoteChannelService
      */
-    listMeToOthers(): Observable<UbiChannel[]> {
+    listMeToOthers(channelId?: string): Observable<UbiChannel[]> {
         let url = `${this.ubibotCommonConfig.EndPoint}/share/channels/to-others`;
-        return this.http.get(url).pipe(
-            map((resp: any) => resp.channels)
+
+        const params: any = {};
+
+        if (channelId) {
+            params['channel_id'] = channelId;
+        }
+
+        return this.http.get(url, { params: params }).pipe(
+            map((resp: any) => resp.channels),
         );//.subscribe(resp => resp)
     }
 

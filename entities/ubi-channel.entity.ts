@@ -365,6 +365,26 @@ export abstract class UbiChannel {
 
 
 /**
+ * 分享API返回的形式
+ *
+ * @export
+ * @class UbiSharedChannel
+ * @extends {UbiChannel}
+ */
+export class UbiSharedChannel extends UbiChannel {
+    share_from: string;
+    share_id: string;
+    share_to: string;
+
+    // Ths following paramsters are of account shared to, NOT owner.
+    username: string;
+    email: string;
+    email_status: string;
+    mobile: string;
+    mobile_status: string;
+}
+
+/**
  * A DAO object to access parsed info by extra field.
  * If a channel entity should be updated, call update() method instead.
  *
