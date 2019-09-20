@@ -249,13 +249,13 @@ export class RemoteChannelService {
      * @returns {Observable<any>}
      * @memberof RemoteChannelService
      */
-    shareChannelToOthers(channelId: string, userId: string): Observable<any> {
+    shareChannelToUser(channelId: string, userId: string): Observable<any> {
         if (!channelId) throw new UbiError('Channel ID is required for this API!');
         if (!userId) throw new UbiError('User ID is required for this API!');
 
         const body: any = {
             channels: [channelId],
-            to: userId,
+            share_to: userId,
         };
 
         const url = `${this.ubibotCommonConfig.EndPoint}/share/channels`;

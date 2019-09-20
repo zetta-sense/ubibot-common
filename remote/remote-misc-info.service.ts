@@ -39,6 +39,15 @@ export interface UbiAppVersionInfo {
     url: string;
 }
 
+export interface UbiSearchUserResultItem {
+    avatar: string;
+    avatar_base: string;
+    email: string;
+    email_status: string;
+    user_id: string;
+    username: string;
+}
+
 @Injectable()
 export class RemoteMiscInfoService {
 
@@ -58,6 +67,34 @@ export class RemoteMiscInfoService {
         return this.http.get(url).pipe(
             map((resp: any) => {
                 return resp.apn_list;
+            })
+        );
+    }
+
+
+    /**
+     * Search User by user or user_id
+     *
+     * To search user accounts, send an HTTP GET to http://api.datadudu.cn/accounts/search
+     *
+     * Valid request parameters:
+     * account_key or token_id (string) - account_key  is User's account key; token_id  is obtained through login API (required).
+     * username (string) or user_id (string): (required) : search by username (minimum 3 characters needed)  or search by user_id, user_id must be full length and correct.
+     *
+     * @param {string} pattern
+     * @returns {Observable<UbiSearchUserResultItem>}
+     * @memberof RemoteMiscInfoService
+     */
+    searchUser(pattern: string): Observable<UbiSearchUserResultItem> {
+        const url = `${this.ubibotCommonConfig.EndPoint}/accounts/search`;
+
+        const params = {
+            username: pattern,
+        };
+
+        return this.http.get(url, { params: params }).pipe(
+            map((resp: any) => {
+                return resp.users;
             })
         );
     }

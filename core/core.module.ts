@@ -18,6 +18,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UbiSyncV2Service } from './service/ubi-sync-v2.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { UbiIpv4InputComponent } from './components/ubi-ipv4-input/ubi-ipv4-input.component';
+import { UbiUserAvatarComponent } from './components/ubi-user-avatar/ubi-user-avatar.component';
 
 /**
  * Core module of common module.
@@ -31,6 +32,7 @@ import { UbiIpv4InputComponent } from './components/ubi-ipv4-input/ubi-ipv4-inpu
         UbiUserDisplayPipe, // 必须，否则会抛出module not determined错误
         ResourceUrlPipe,
         UbiMeAvatarComponent,
+        UbiUserAvatarComponent,
         UbiDataChartComponent,
         UbiProductAvatarComponent,
         UbiChannelAvatarComponent,
@@ -43,6 +45,7 @@ import { UbiIpv4InputComponent } from './components/ubi-ipv4-input/ubi-ipv4-inpu
     ],
     exports: [
         UbiMeAvatarComponent,
+        UbiUserAvatarComponent,
         UbiDataChartComponent,
         UbiProductAvatarComponent,
         UbiChannelAvatarComponent,
