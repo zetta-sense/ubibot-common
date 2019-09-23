@@ -29,7 +29,7 @@ export class UbibotCommonConfigService {
     public DefaultDateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
     public DefaultTempScale = 'celsius';
 
-    public DefaultLocationFormat = '1.0-4'; // ref: https://angular.io/api/common/DecimalPipe
+    public DefaultLocationFormat = '1.4-4'; // ref: https://angular.io/api/common/DecimalPipe
 
     public DefaultItemsPerPage = 10;
 

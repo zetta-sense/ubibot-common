@@ -20,6 +20,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { UbiIpv4InputComponent } from './components/ubi-ipv4-input/ubi-ipv4-input.component';
 import { UbiUserAvatarComponent } from './components/ubi-user-avatar/ubi-user-avatar.component';
 import { NoopPipe } from './pipes/noop.pipe';
+import { EmptyPipe } from './pipes/noop.pipe copy';
 
 /**
  * Core module of common module.
@@ -41,6 +42,7 @@ import { NoopPipe } from './pipes/noop.pipe';
         UbiChannelDaosFilterPipe,
         BytesPipe,
         NoopPipe,
+        EmptyPipe,
         UbiVarDirective,
         UbiFieldValueDirective,
         UbiIpv4InputComponent,
@@ -56,6 +58,7 @@ import { NoopPipe } from './pipes/noop.pipe';
         UbiChannelDaosFilterPipe,
         BytesPipe,
         NoopPipe,
+        EmptyPipe,
         UbiVarDirective,
         UbiLazyImgDirective,
         UbiFieldValueDirective,
