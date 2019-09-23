@@ -19,6 +19,7 @@ import { UbiSyncV2Service } from './service/ubi-sync-v2.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { UbiIpv4InputComponent } from './components/ubi-ipv4-input/ubi-ipv4-input.component';
 import { UbiUserAvatarComponent } from './components/ubi-user-avatar/ubi-user-avatar.component';
+import { NoopPipe } from './pipes/noop.pipe';
 
 /**
  * Core module of common module.
@@ -39,6 +40,7 @@ import { UbiUserAvatarComponent } from './components/ubi-user-avatar/ubi-user-av
         UbiLazyImgDirective,
         UbiChannelDaosFilterPipe,
         BytesPipe,
+        NoopPipe,
         UbiVarDirective,
         UbiFieldValueDirective,
         UbiIpv4InputComponent,
@@ -53,6 +55,7 @@ import { UbiUserAvatarComponent } from './components/ubi-user-avatar/ubi-user-av
         ResourceUrlPipe,
         UbiChannelDaosFilterPipe,
         BytesPipe,
+        NoopPipe,
         UbiVarDirective,
         UbiLazyImgDirective,
         UbiFieldValueDirective,
