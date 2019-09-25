@@ -38,6 +38,7 @@ export class UbibotCommonConfigService {
 
     public readonly ServerAccessTimeout = 60 * 1000; // http请求timeout, 在cn访问io实在需要长时间
     public readonly ExternalLibAccessTimeout = 30 * 1000; // 外部js库请求timeout，如googlemap / amap
+    public readonly GeoLocateTimeout = 10 * 1000; // 定位超时
 
     public readonly UsbReadMaxRetry = 30; // 重试次数
     public readonly UsbReadInterval = 500; // 30 * 0.5 s,稍微频发点读取加快响应时间

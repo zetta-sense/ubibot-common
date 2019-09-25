@@ -17,6 +17,7 @@ export enum EnumAppError {
     DEVICE_RETURN_ERROR_INVALID_PASSWORD = '512',
     DEVICE_RETURN_ERROR_MALFORMED_FORMAT = '513',
     NETWORK_ERROR = '600', // network error
+    GEO_LOCATE_ERROR = '601', // geo-locate error
     INTERRUPTED_BY_USER = '801', // interrupted coz user aborted
     NO_USB_PORTS_FOUND = '903', // ERROR: No device USB ports were found
     USB_TIMEOUT = '904', // ERROR: Usb communicate timeout, 与907区别这是一种静态timeout
