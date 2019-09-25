@@ -561,6 +561,10 @@ export class RemoteChannelService {
         );
     }
 
+    updateLatLng(channelId: string, lat: number, lng: number): Observable<any> {
+        return this.update(channelId, { latitude: lat, longitude: lng });
+    }
+
     updateMetadata(channelId: string, metadata: any): Observable<any> {
         return this.update(channelId, { metadata: metadata });
     }
