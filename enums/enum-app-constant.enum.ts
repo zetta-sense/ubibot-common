@@ -8,6 +8,8 @@ export enum EnumAppConstant {
     EVENT_UBI_DATA_RELOAD = 'ubi::ubi_data_reload',
     EVENT_UBI_CHANNEL_SHARE_INFO_UPDATED = 'ubi::ubi_channel_info_updated',
 
+    EVENT_UBI_ACTIVATE_MAP_MODE = 'ubi::ubi_activate_map_mode', // FIXME: 以后移除
+
     EVENT_UBI_CHANGE_LANGUAGE = 'ubi::ubi_change_language',
 
     DIALOG_LOADING_SINGLETON_ID = 'ubi_dialog_loading_singleton',
