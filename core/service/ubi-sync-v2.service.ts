@@ -23,6 +23,8 @@ export class UbiSyncV2Service implements OnDestroy {
 
     private refreshed$ = new Subject<void>();
 
+    private error$ = new Subject<any>();
+
     constructor(
         private ubiUtils: UbiUtilsService,
         private remoteChannel: RemoteChannelService,
@@ -43,6 +45,18 @@ export class UbiSyncV2Service implements OnDestroy {
         return this.paused;
     }
 
+
+    /**
+     * 构建sync通道，所有异常通过error通道返回，sync只返回empty，所以这里不会触发throwError（同时避免因error而complete）
+     *
+     * @template T
+     * @param {UbiSyncV2Mixer<T>} syncMixer
+     * @param {number} [syncDelay=500]
+     * @param {number} [syncInterval=5 * 60 * 1000]
+     * @param {boolean} [syncNoErrors=false]
+     * @returns {Observable<T>}
+     * @memberof UbiSyncV2Service
+     */
     makeSync<T>(
         syncMixer: UbiSyncV2Mixer<T>,
         syncDelay: number = 500,
@@ -62,16 +76,39 @@ export class UbiSyncV2Service implements OnDestroy {
             ),
         ).pipe(
             switchMap(() => {
-                return syncMixer.pull();
+                // return new Observable<T>((observer) => {
+                //     syncMixer.pull().subscribe(
+                //         (ret) => observer.next(ret),
+                //         (err) => observer.error(err),
+                //     );
+                // })
+                return syncMixer.pull().pipe(
+                    // 必须在这里catchError，因为sync管道不应该因error而complete
+                    catchError((err) => {
+                        // 如果syncNoErrors = true则忽略错误
+                        if (!syncNoErrors) {
+                            this.error$.next(err);
+                        }
+                        return EMPTY;
+                    }),
+                );
             }),
             switchMap((data) => {
-                return syncMixer.merge(data);
+                return syncMixer.merge(data).pipe(
+                    // 必须在这里catchError，因为sync管道不应该因error而complete
+                    catchError((err) => {
+                        // 如果syncNoErrors = true则忽略错误
+                        if (!syncNoErrors) {
+                            this.error$.next(err);
+                        }
+                        return EMPTY;
+                    }),
+                );
             }),
             tap(() => this.refreshed$.next()),
-            // 如果syncNoErrors = true则忽略错误
-            catchError((err) => {
-                // this.ubiUtils.snack('Error occurs while sync.');
-                return syncNoErrors ? EMPTY : throwError(err);
+            finalize(() => {
+                console.log('SyncMixer observable complete!');
+                this.error$.complete();
             }),
         );
     }
@@ -88,6 +125,9 @@ export class UbiSyncV2Service implements OnDestroy {
         return this.refreshed$.pipe(
             take(1),
             timeout(this.ubiCommonConfig.ServerAccessTimeout),
+            catchError((err) => {
+                return EMPTY;
+            }),
         );
     }
 
@@ -100,6 +140,17 @@ export class UbiSyncV2Service implements OnDestroy {
         this.refresh$.next();
     }
 
+
+    /**
+     * error 通道，当sync通道结束，将唤起complete
+     *
+     * @returns {Observable<any>}
+     * @memberof UbiSyncV2Service
+     */
+    onError(): Observable<any> {
+        return this.error$;
+    }
+
     ngOnDestroy() {
         console.log(`UbiSyncV2Service destroyed...`);
     }
@@ -109,9 +160,16 @@ export class UbiSyncV2MixerChannelsImpl implements UbiSyncV2Mixer<UbiChannelDAO[
 
     private firstRun: boolean = true;
     private source: UbiChannelDAO[];
-    private puller: Observable<UbiChannel[]>; // 不需要DAO，兼容remote API
+    private puller: () => Observable<UbiChannel[]>; // 不需要DAO，兼容remote API
 
-    constructor(_source: UbiChannelDAO[], _puller: Observable<UbiChannel[]>) {
+    /**
+     * Creates an instance of UbiSyncV2MixerChannelsImpl.
+     *
+     * @param {UbiChannelDAO[]} _source
+     * @param {() => Observable<UbiChannel[]>} _puller 注意puller必须是一个Function, 它需要每次都生成新的observable
+     * @memberof UbiSyncV2MixerChannelsImpl
+     */
+    constructor(_source: UbiChannelDAO[], _puller: () => Observable<UbiChannel[]>) {
         if (!_source) throw new UbiError('Source is required for this API');
         if (!_puller) throw new UbiError('Puller is required for this API');
 
@@ -120,7 +178,7 @@ export class UbiSyncV2MixerChannelsImpl implements UbiSyncV2Mixer<UbiChannelDAO[
     }
 
     pull(): Observable<UbiChannelDAO[]> {
-        return this.puller.pipe(
+        return this.puller().pipe(
             switchMap((channels) => {
                 const ret = _.map(channels, (channel) => {
                     const channelDAO: UbiChannelDAO = new UbiChannelDAO(channel);
