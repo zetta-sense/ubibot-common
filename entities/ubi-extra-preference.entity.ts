@@ -76,6 +76,8 @@ export interface UbiExtraPreferenceChannelsListItemCustomizeProperties {
 
 export class UbiExtraPreference {
 
+    v: number; // 版本
+
     datetime_format: UbiExtraPreferenceDateTimeFormat;
     group_charts_fields_state: { [groupId: number]: UbiExtraPreferenceGroupChartsFieldsState };
     invoice_info: UbiExtraPreferenceInvoiceInfo;
