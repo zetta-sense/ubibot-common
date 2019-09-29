@@ -4,6 +4,7 @@ import { UbiChannelLastValues, UbiChannelLastValuesItem } from "./ubi-channel-la
 import * as _ from 'lodash';
 import { UbiExtraPreferenceTempScale } from "./ubi-extra-preference.entity";
 import { EnumBasicProductId } from "../enums/enum-basic-product-id.enum";
+import { Subject } from "rxjs";
 
 export interface UbiValueOptions {
     tempScale?: UbiExtraPreferenceTempScale,
@@ -396,6 +397,8 @@ export class UbiChannelDAO extends UbiChannel {
 
     private extra: UbiChannelFeildExtra;
 
+    private onChanged$: Subject<UbiChannelDAO> = new Subject();
+
     constructor(channel: UbiChannel) {
         super();
 
@@ -438,6 +441,12 @@ export class UbiChannelDAO extends UbiChannel {
                 this.extra.fieldDAOs[field.key] = fieldDAO;
             }
         });
+
+        this.onChanged$.next(this);
+    }
+
+    onChanged() {
+        return this.onChanged$;
     }
 
     getFields(): UbiChannelFields<UbiChannelFieldDef> {
@@ -595,8 +604,12 @@ export class UbiChannelFieldValueDAO {
         return this.channel;
     }
 
-    getOldValue(): number {
-        return this.oldValueItem && this.oldValueItem.value;
+    getOldValue(opts?: UbiValueOptions): number {
+        let ret = this.oldValueItem && this.oldValueItem.value;
+        if (ret != null) {
+            ret = ConvertValue(ret, this.fieldDef, opts);
+        }
+        return ret;
     }
 
     getFieldDef(): UbiChannelFieldDef {
