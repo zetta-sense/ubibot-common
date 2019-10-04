@@ -269,7 +269,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 let title = 'UbiBot';
 
                 const feedType = this.feedType === UbiFeedType.Average ?
-                    this.translate.instant('APP.COMMON.AVERAGE') : this.translate.instant('APP.COMMON.SAMPLING');
+                    this.translate.instant('APP.COMMON.AVERAGE') : ''; // this.translate.instant('APP.COMMON.SAMPLING')
 
                 if (this.title && this.unit) {
                     title = `${this.title} ${feedType} ${this.unit}`;
