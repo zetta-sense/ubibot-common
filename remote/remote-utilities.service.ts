@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
-import { Observable, of, from, combineLatest } from 'rxjs';
+import { Observable, of, from, combineLatest, race } from 'rxjs';
 import { map, switchMap, mergeAll, combineAll, concatMap, tap, zipAll, withLatestFrom, take, takeLast } from 'rxjs/operators';
 import { UbiError } from '../errors/UbiError';
 
@@ -33,13 +33,30 @@ export class RemoteUtilitiesService {
      * @returns {Observable<string>}
      * @memberof RemoteUtilitiesService
      */
-    getIPCountry(): Observable<string> {
-        const url = `https://api.ubibot.io/utilities/ip-info`; // 固定使用io, whatever io or cn
+    getIPCountryIO(): Observable<string> {
+        const url = `https://api.ubibot.io/utilities/ip-info`; // 固定使用io
         return this.http.get(url).pipe(
             map((resp: any) => resp.country)
         );
     }
 
+    getIPCountryCN(): Observable<string> {
+        const url = `https://api.ubibot.cn/utilities/ip-info`; // 固定使用cn
+        return this.http.get(url).pipe(
+            map((resp: any) => resp.country)
+        );
+    }
+
+    getIPCountry(): Observable<string> {
+        return race(
+            this.getIPCountryCN(),
+            this.getIPCountryIO(),
+        ).pipe(
+            switchMap((country: string) => {
+                return of(country);
+            }),
+        );
+    }
 
 
 }
