@@ -197,6 +197,20 @@ export class RemoteAccountService {
         );
     }
 
+    countUnreadMessages(): Observable<number> {
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/messages/list`;
+
+        const params = {};
+        params['itemsPerPage'] = 0;
+
+        return this.http.get(url, { params: params }).pipe(
+            map((resp: any) => {
+                const messagesResp = resp as UbiMessagesResponse;
+                return messagesResp.totalUnread;
+            })
+        );
+    }
+
 
     /**
      * Read A User Message (打开某条信息)
