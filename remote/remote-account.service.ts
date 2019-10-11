@@ -22,8 +22,8 @@ export interface UbiMessagesResponse {
     pageNumber: number;
     itemsPerPage: number;
     currentItems: number;
-    totalItems: number;
-    totalUnread: number;
+    totalItems: number; // 注意这个是分类后的items
+    totalUnread: number; // 注意这个是分类后的unread
 
     messages: UbiMessage[];
 }
