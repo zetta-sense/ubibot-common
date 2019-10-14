@@ -42,6 +42,31 @@ export enum UbiChannelFieldDefScaleType {
      * 门磁
      */
     MAGNETIC = '9',
+
+    /**
+     * 土壤绝对湿度
+     */
+    ABSOLUTE_HUMIDITY = '10',
+
+    /**
+     * GSM信号强度
+     */
+    GSM = '11',
+
+    /**
+     * RS485外接探头温度
+     */
+    RS485_EXT_TEMPERATURE = '12',
+
+    /**
+     * RS485外接探头湿度
+     */
+    RS485_EXT_HUMIDITY = '13',
+
+    /**
+     * DS18B20外接探头温度
+     */
+    DS18B20_EXT_TEMPERATURE = '14',
 }
 
 export class UbiChannelFieldDef {

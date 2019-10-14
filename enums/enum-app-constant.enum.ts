@@ -7,6 +7,7 @@ export enum EnumAppConstant {
     EVENT_UBI_OTHERS_CHANNELS_UPDATED = 'ubi::ubi_others_channels_updated',
     EVENT_UBI_DATA_RELOAD = 'ubi::ubi_data_reload',
     EVENT_UBI_CHANNEL_SHARE_INFO_UPDATED = 'ubi::ubi_channel_info_updated',
+    EVENT_UBI_UNREAD_MESSAGES_COUNT_UPDATED = 'ubi::ubi_unread_messages_count_updated',
 
     EVENT_UBI_ACTIVATE_MAP_MODE = 'ubi::ubi_activate_map_mode', // FIXME: 以后移除
 

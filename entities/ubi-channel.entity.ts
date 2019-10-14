@@ -654,7 +654,11 @@ export function UseCelsius(tempScale: UbiExtraPreferenceTempScale): boolean {
  */
 export function ConvertValue(value: number, fieldDef: UbiChannelFieldDef, opts: UbiValueOptions = {}) {
     // 仅当为温度时，且偏好非celsius则转换值
-    if (fieldDef.scaleType === UbiChannelFieldDefScaleType.TEMPERATURE && !UseCelsius(opts.tempScale) && value != null) {
+    if (!UseCelsius(opts.tempScale) && value != null && (
+        fieldDef.scaleType === UbiChannelFieldDefScaleType.TEMPERATURE ||
+        fieldDef.scaleType === UbiChannelFieldDefScaleType.RS485_EXT_TEMPERATURE ||
+        fieldDef.scaleType === UbiChannelFieldDefScaleType.DS18B20_EXT_TEMPERATURE
+    )) {
         value = value * 9 / 5 + 32;
         value = parseFloat(value.toFixed(5));
     }

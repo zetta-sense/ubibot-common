@@ -233,6 +233,20 @@ export class RemoteAccountService {
         );
     }
 
+    /**
+     * 将所有消息标记为read
+     *
+     * @returns {Observable<any>}
+     * @memberof RemoteAccountService
+     */
+    markAllMessagesAsRead(): Observable<any> {
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/messages/read_all`;
+        return this.http.get(url).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
 
     /**
      * Create User Account (Internal)
