@@ -167,14 +167,20 @@ export class RemoteChannelService {
      * account_key or token_id (string) - account_key  is User's account key; token_id  is obtained through login API (required).
      *
      * @param {string} channelId
+     * @param {string} signature Signature = sha256( [sha256(password), token, channelId].join('') )
      * @returns {Observable<any>}
      * @memberof RemoteChannelService
      */
-    clear(channelId: string): Observable<any> {
+    clear(channelId: string, signature: string): Observable<any> {
         if (!channelId) throw new UbiError('Channel ID is required for this API!');
+        if (!signature) throw new UbiError('Signature is required for this API!');
+
+        const params = {
+            hash_password: signature
+        };
 
         const url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/feeds`;
-        return this.http.delete(url).pipe(
+        return this.http.delete(url, { params: params }).pipe(
             map((resp: any) => {
                 return resp;
             })
@@ -190,14 +196,20 @@ export class RemoteChannelService {
      * account_key or token_id (string) - account_key  is User's account key; token_id  is obtained through login API (required).
      *
      * @param {string} channelId
+     * @param {string} signature Signature = sha256( [sha256(password), token, channelId].join('') )
      * @returns {Observable<any>}
      * @memberof RemoteChannelService
      */
-    remove(channelId: string): Observable<any> {
+    remove(channelId: string, signature: string): Observable<any> {
         if (!channelId) throw new UbiError('Channel ID is required for this API!');
+        if (!signature) throw new UbiError('Signature is required for this API!');
+
+        const params = {
+            hash_password: signature
+        };
 
         const url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/device`;
-        return this.http.delete(url).pipe(
+        return this.http.delete(url, { params: params }).pipe(
             map((resp: any) => {
                 return resp;
             })
