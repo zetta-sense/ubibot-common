@@ -7,6 +7,11 @@ import { UbiChannelDAO, UbiChannel } from '../entities/ubi-channel.entity';
 import { UbiError } from '../errors/UbiError';
 import { UbiRule, UbiRuleStatus } from '../entities/ubi-rule.entity';
 
+export interface UbiMobileServicePrice {
+    area: string,
+    price: number,
+}
+
 /**
  * A client service for remote finance service.
  *
@@ -29,10 +34,10 @@ export class RemoteFinanceService {
      * 区号可带加号或不带
      *
      * @param {string} areaCode
-     * @returns {Observable<number>}
+     * @returns {Observable<UbiMobileServicePrice>}
      * @memberof RemoteFinanceService
      */
-    getPriceSMS(areaCode: string): Observable<number> {
+    getPriceSMS(areaCode: string): Observable<UbiMobileServicePrice> {
         // 如果不是加号开头则追加，因为服务器返回的区号key带加号
         if (areaCode && !/^[+]/i.test(areaCode)) {
             areaCode = `+${areaCode}`;
@@ -41,7 +46,12 @@ export class RemoteFinanceService {
         if (this.ubibotCommonConfig.isServeCN()) { // CN
             let url = `${this.ubibotCommonConfig.EndPoint}/finance/china_sms_voice_pricing`;
             return this.http.get(url).pipe(
-                map((resp: any) => resp.sms)
+                map((resp: any) => {
+                    return {
+                        area: 'China',
+                        price: resp.sms
+                    };
+                })
             );
         } else { // IO国际
             let url = `${this.ubibotCommonConfig.EndPoint}/finance/sms_pricing`;
@@ -49,7 +59,10 @@ export class RemoteFinanceService {
                 map((resp: any) => {
                     const item = resp.sms_pricing[areaCode];
                     // console.log(item, areaCode, resp);
-                    return item ? item[2] : null;
+                    return item ? {
+                        area: item[0],
+                        price: item[2]
+                    } : null;
                 })
             );
         }
@@ -62,10 +75,10 @@ export class RemoteFinanceService {
      *
      * @param {string} areaCode
      * @param {string} phoneNumber
-     * @returns {Observable<number>}
+     * @returns {Observable<UbiMobileServicePrice>}
      * @memberof RemoteFinanceService
      */
-    getPriceVoice(areaCode: string, phoneNumber: string): Observable<number> {
+    getPriceVoice(areaCode: string, phoneNumber: string): Observable<UbiMobileServicePrice> {
         // 如果不是加号开头则追加，因为服务器返回的区号key带加号
         if (areaCode && !/^[+]/i.test(areaCode)) {
             areaCode = `+${areaCode}`;
@@ -74,7 +87,12 @@ export class RemoteFinanceService {
         if (this.ubibotCommonConfig.isServeCN()) { //  CN
             let url = `${this.ubibotCommonConfig.EndPoint}/finance/china_sms_voice_pricing`;
             return this.http.get(url).pipe(
-                map((resp: any) => resp.voice)
+                map((resp: any) => {
+                    return {
+                        area: 'China',
+                        price: resp.voice
+                    };
+                })
             );
         } else { // IO国际
             let url = `${this.ubibotCommonConfig.EndPoint}/finance/international_voice_pricing`;
@@ -84,7 +102,12 @@ export class RemoteFinanceService {
                 .set('number', combined)
                 .set('platform', 'io');
             return this.http.get(url, { params: params }).pipe(
-                map((resp: any) => resp.price)
+                map((resp: any) => {
+                    return {
+                        area: resp.country,
+                        price: resp.price,
+                    };
+                })
             );
         }
     }
