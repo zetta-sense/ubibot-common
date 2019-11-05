@@ -256,14 +256,17 @@ export abstract class UbiChannel {
     /**
      * 目前除ws1p外的能支持rs的型号都应该能自动检测
      *
+     * 2019-11-05 取消gs1系列的auto
+     * http://jira.cloudforce.cn:9000/browse/UBIAPP2-15
+     *
      * @returns
      * @memberof UbiChannel
      */
     isRS485AutoDetectSupported() {
-        if (this.isRS485Supported() &&
-            this.product_id !== EnumBasicProductId.WS1P) {
-            return true;
-        }
+        // if (this.isRS485Supported() &&
+        //     this.product_id !== EnumBasicProductId.WS1P) {
+        //     return true;
+        // }
         return false;
     }
 
