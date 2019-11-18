@@ -378,7 +378,7 @@ export class UbiUtilsService {
         } else if (err instanceof UbiError) {
             ret = this.translate.instant(`ERROR.${err.message}`, err.params || argsObj);
             ret = `${err.message} - ${ret}`;
-        } else {
+        } else if (err) {
             if (err.message) {
                 ret = `${ret}: ${err.message}`;
             } else if (typeof err === 'string') {
