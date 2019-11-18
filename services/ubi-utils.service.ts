@@ -375,11 +375,15 @@ export class UbiUtilsService {
             } else {
                 ret = this.parseError(new UbiError(EnumAppError.NETWORK_ERROR));
             }
-        }
-
-        if (err instanceof UbiError) {
+        } else if (err instanceof UbiError) {
             ret = this.translate.instant(`ERROR.${err.message}`, err.params || argsObj);
             ret = `${err.message} - ${ret}`;
+        } else {
+            if (err.message) {
+                ret = `${ret}: ${err.message}`;
+            } else if (typeof err === 'string') {
+                ret = `${ret}: ${err}`;
+            }
         }
 
         return ret;
