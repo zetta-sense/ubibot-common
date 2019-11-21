@@ -523,7 +523,7 @@ export class RemoteChannelService {
         // 临时用于解决点过多的问题
         if (!start && !end) {
             params['results'] = 500;
-        }else{
+        } else {
             params['results'] = 2000;
         }
 
