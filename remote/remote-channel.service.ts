@@ -521,9 +521,11 @@ export class RemoteChannelService {
         }
 
         // 临时用于解决点过多的问题
-        // if (!start && !end) {
-        //     params['results'] = 500;
-        // }
+        if (!start && !end) {
+            params['results'] = 500;
+        }else{
+            params['results'] = 2000;
+        }
 
         if (type === UbiFeedType.Average) {
             params['average'] = 60;
