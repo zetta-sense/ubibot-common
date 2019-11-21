@@ -381,11 +381,11 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                             // Instead, you should define the opacity in the fillColor with an rgba color definition.
                             lineWidth: 1,// tag: 如果只显示点,则设为0
                             // connectNulls: true,
-                            marker: { // 有值的点
-                                fillColor: '#3880ff',
-                                enabled: true,
-                                radius: 1, // 点大小
-                            },
+                            // marker: { // 有值的点
+                            //     fillColor: '#3880ff',
+                            //     enabled: true,
+                            //     radius: 1, // 点大小
+                            // },
                             states: {
                                 hover: {
                                     lineWidthPlus: 0

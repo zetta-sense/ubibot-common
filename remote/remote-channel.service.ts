@@ -520,6 +520,11 @@ export class RemoteChannelService {
             params['end'] = this.datePipe.transform(end, serverExpectedDateFormat);
         }
 
+        // 临时用于解决点过多的问题
+        // if (!start && !end) {
+        //     params['results'] = 500;
+        // }
+
         if (type === UbiFeedType.Average) {
             params['average'] = 60;
         }
