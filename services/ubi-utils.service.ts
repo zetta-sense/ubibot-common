@@ -414,6 +414,17 @@ export class UbiUtilsService {
         return null;
     }
 
+    isProductUrban(productId: string): boolean {
+        try {
+            let uniformed = productId.toLowerCase();
+            if (/^intlite-/.test(uniformed)) {
+                return true;
+            }
+        } catch (e) { }
+
+        return false;
+    }
+
     /**
      * SHA-256
      * 直接加到ubibot的通用库,不用dep
@@ -556,10 +567,30 @@ export class UbiUtilsService {
             const part2 = serial.substring(0, 5);
             ret = `${part1}-${part2}`;
             // ret = 'MDPS-1016';
+        } else if (productId === EnumBasicProductId.URBAN_IS1) {
+            // Intlite - IS1 - XXXXX
+            const part1 = 'Intlite-IS1';
+            const part2 = serial.substring(0, 5);
+            ret = `${part1}-${part2}`;
+        } else if (productId === EnumBasicProductId.URBAN_IT1) {
+            const part1 = 'Intlite-IT1';
+            const part2 = serial.substring(0, 5);
+            ret = `${part1}-${part2}`;
+        } else if (productId === EnumBasicProductId.URBAN_MS1) {
+            const part1 = 'Intlite-MS1';
+            const part2 = serial.substring(0, 5);
+            ret = `${part1}-${part2}`;
         }
         return ret;
     }
 
+    predictDeviceBlePassword(serial: string, productId: string): string {
+        let ret: string;
+        if (this.isProductUrban(productId)) {
+            ret = serial.slice(1, 4);
+        }
+        return ret;
+    }
 
     /**
      * 单serie解包

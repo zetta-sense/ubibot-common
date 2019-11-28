@@ -13,4 +13,8 @@ export enum EnumBasicProductId {
     DEBUG_00 = 'debug-00',
 
 
+    URBAN_IT1 = 'intlite-light1', // 灯
+    URBAN_IS1 = 'intlite-shade1', // 百叶帘
+    URBAN_MS1 = 'intlite-ms1', // 人感
+
 }

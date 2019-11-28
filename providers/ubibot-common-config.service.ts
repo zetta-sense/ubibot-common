@@ -91,6 +91,9 @@ export class UbibotCommonConfigService {
     public readonly EXPORT_DEFAULT_FILE_NAME = 'ubibot-data.%T.csv';
     public readonly EXPORT_FILE_VAR_FORMAT = 'yyyy-MM-dd';
 
+    public readonly MAX_LENGTH_NETWORK_SSID = 32;
+    public readonly MAX_LENGTH_NETWORK_PASS = 63;
+
     // tag: 常用fields, 1-10
     public readonly UbiDataFields = [
         'field1',
