@@ -94,6 +94,9 @@ export class UbibotCommonConfigService {
     public readonly MAX_LENGTH_NETWORK_SSID = 32;
     public readonly MAX_LENGTH_NETWORK_PASS = 63;
 
+    public readonly MIN_URBAN_ORIENTATION = -180;
+    public readonly MAX_URBAN_ORIENTATION = 180;
+
     // tag: 常用fields, 1-10
     public readonly UbiDataFields = [
         'field1',

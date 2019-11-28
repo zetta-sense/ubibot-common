@@ -88,4 +88,12 @@ export const UbiValidators: { [key: string]: ValidatorFn } = {
         const passed = /^[\x00-\xFF]*$/.test(control.value);
         return passed ? null : { 'requireASCIIEx': { value: control.value } };
     },
+    longitude: (control: AbstractControl): { [key: string]: any } | null => {
+        const value = parseFloat(control.value);
+        return value >= -180 && value <= 180 ? null : { 'invalidLongitude': { value: control.value } };
+    },
+    latitude: (control: AbstractControl): { [key: string]: any } | null => {
+        const value = parseFloat(control.value);
+        return value >= -90 && value <= 90 ? null : { 'invalidLatitude': { value: control.value } };
+    },
 };
