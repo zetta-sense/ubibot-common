@@ -96,4 +96,18 @@ export const UbiValidators: { [key: string]: ValidatorFn } = {
         const value = parseFloat(control.value);
         return value >= -90 && value <= 90 ? null : { 'invalidLatitude': { value: control.value } };
     },
+    time: (control: AbstractControl): { [key: string]: any } | null => {
+        const segs: string[] = control.value.split(':');
+        if (segs.length === 2) {
+            if (/^\d{1,2}$/.test(segs[0]) && /^\d{1,2}$/.test(segs[1])) {
+                const h = parseInt(segs[0], 10);
+                const m = parseInt(segs[1], 10);
+
+                if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
+                    return null;
+                }
+            }
+        }
+        return { 'invalidTime': { value: control.value } };
+    },
 };
