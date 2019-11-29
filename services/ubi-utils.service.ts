@@ -587,7 +587,7 @@ export class UbiUtilsService {
     predictDeviceBlePassword(serial: string, productId: string): string {
         let ret: string;
         if (this.isProductUrban(productId)) {
-            ret = serial.slice(1, 4);
+            ret = serial.slice(1, 5);
         }
         return ret;
     }

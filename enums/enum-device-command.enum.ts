@@ -13,4 +13,11 @@ export enum EnumDeviceCommand {
     ReadWifi        = 'ReadWifi',
     ReadMetaData    = 'ReadMetaData',
     ReadData        = 'ReadData',
+
+
+
+    // urban 命令
+    SetupConfig = 'SetupConfig',
+    SetupConfigCalculation = 'SetupConfigCalculation',
+    SetupConfigSwitch = 'SetupConfigSwitch',
 }

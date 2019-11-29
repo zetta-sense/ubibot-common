@@ -67,6 +67,8 @@ export enum EnumAppError {
     BLE_CONNECT_FAILED = '8923',
     BLE_SCAN_DEVICE_NOT_FOUND = '8924',
     BLE_SEND_COMMAND_TIMEOUT = '8925',
+    BLE_COMMAND_UNDEFINED = '8926', // ble_command 为空
+    BLE_COMMAND_UNSUPPORT = '8927', // ble_command 值不在支持的范围
 
 
     // minus error means acceptable errors
