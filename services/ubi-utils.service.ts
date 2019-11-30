@@ -414,6 +414,16 @@ export class UbiUtilsService {
         return null;
     }
 
+
+    /**
+     * 判断是否为urban的产品
+     *
+     * 不放在channel类的原因是可能有扫码时就需要判断，这时候就需要直接调用utils
+     *
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiUtilsService
+     */
     isProductUrban(productId: string): boolean {
         try {
             let uniformed = productId.toLowerCase();
