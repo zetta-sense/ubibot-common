@@ -645,22 +645,29 @@ export class UbiUtilsService {
         }
 
         // 归纳数据
+        // let tmpA = Date.now();
         for (let i = 0; i < resp.feeds.length; i++) {
             const feed = resp.feeds[i];
-            const keys: string[] = _.keys(feed);
+            // const createdAt: string = feed.created_at;
+            const createdAtTimestamp: number = feed.created_at_long;
 
-            const createdAt: string = feed.created_at;
-            keys.forEach((k) => {
+            for (let j = 0; j < fields.length; j++) {
+                const field = fields[j];
+                const k = field.key;
+                const v = feed[k];
+
                 const pack: UbiFeedPack = map[k];
-
                 // 不使用正则尽量提高performance
-                if (pack && 'created_at' !== k) {
-                    const value = ConvertValue(feed[k], pack.field, opts);
-                    const point: UbiDataChartPoint = { x: new Date(createdAt).getTime(), y: value };
+                if (pack && v) {
+                    const value = ConvertValue(v, pack.field, opts);
+                    // const point: UbiDataChartPoint = { x: new Date(createdAt).getTime(), y: value };
+                    const point: UbiDataChartPoint = { x: createdAtTimestamp, y: value };
                     pack.series[0].data.push(point);
                 }
-            });
+            }
         }
+        // let elapsed = Date.now() - tmpA;
+        // console.log(`elapsed: ${elapsed} ms`);
 
         // 排序 / 找出最大最小值 / 计算平均值
         const ret: UbiFeedPack[] = _.values(map);

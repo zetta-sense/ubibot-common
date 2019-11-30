@@ -372,12 +372,12 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     } else {
                         // @ts-ignore
                         this.chart.addSeries({
-                            type: 'area',
+                            type: 'line', // line, area
+                            // fillColor: 'rgba(127,127,127,0.1)',  // When you set an explicit fillColor, the fillOpacity is not applied.
                             id: serie.label,
                             name: serie.label,
                             data: newDataPoints,
                             color: '#a1c2fc', // 连线
-                            fillColor: 'rgba(127,127,127,0.1)',  // When you set an explicit fillColor, the fillOpacity is not applied.
                             // Instead, you should define the opacity in the fillColor with an rgba color definition.
                             lineWidth: 1,// tag: 如果只显示点,则设为0
                             // connectNulls: true,

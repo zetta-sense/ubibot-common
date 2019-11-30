@@ -40,6 +40,7 @@ export interface UbiFeedsResponse {
 
 export interface UbiFeedsItem {
     created_at: string;
+    created_at_long?: number;
 
     field1?: number;
     field2?: number;
@@ -505,12 +506,14 @@ export class RemoteChannelService {
      * @returns {Observable<UbiFeedsResponse>}
      * @memberof RemoteChannelService
      */
-    fetchFeeds(channelId: string, start?: Date, end?: Date, type: UbiFeedType = UbiFeedType.Sampling): Observable<UbiFeedsResponse> {
+    fetchFeeds(channelId: string, start?: Date, end?: Date, type: UbiFeedType = UbiFeedType.Sampling, maxFeeds?: number): Observable<UbiFeedsResponse> {
         if (!channelId) throw new UbiError('Channel ID is required for this API!');
 
         let url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/feeds`;
         const serverExpectedDateFormat = 'yyyy-MM-dd HH:mm:ss';
-        const params: any = {};
+        const params: any = {
+            created_at_long: 'milliseconds',
+        };
 
         if (start) {
             params['start'] = this.datePipe.transform(start, serverExpectedDateFormat);
@@ -521,10 +524,13 @@ export class RemoteChannelService {
         }
 
         // 临时用于解决点过多的问题
-        if (!start && !end) {
-            params['results'] = 500;
-        } else {
-            params['results'] = 2000;
+        // if (!start && !end) {
+        //     params['results'] = 500;
+        // } else {
+        //     params['results'] = 2000;
+        // }
+        if (maxFeeds) {
+            params['results'] = maxFeeds;
         }
 
         if (type === UbiFeedType.Average) {
