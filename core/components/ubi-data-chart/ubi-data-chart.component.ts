@@ -173,6 +173,15 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
      */
     @Input() minPoint: UbiDataChartPoint;
 
+
+    /**
+     * Paint a average line.
+     *
+     * @type {number}
+     * @memberof UbiDataChartComponent
+     */
+    @Input() average: number;
+
     @Input() dateFormat: string;
 
     // @Input() width = 480;
@@ -359,7 +368,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             this.ngZone.onStable.pipe(take(1)).subscribe(() => {
                 // console.log('data=', this.data);
                 this.data.forEach((serie: UbiDataChartSerie) => {
-                    let existedSerie = _.find(this.highchartsOptions.series, { name: serie.name });
+                    let existedSerie: any = _.find(this.highchartsOptions.series, { name: serie.name });
 
                     if (!serie.data) {
                         console.warn('Serie.data should not be null.');
@@ -435,6 +444,34 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 pointsToAdd.push(maxPoint);
             }
 
+            // 画平均线
+            if (this.average != null) {
+                const avgLabelPrefix = this.translate.instant('APP.COMMON.AVERAGE');
+                const unit = this.unit;
+
+                (this.highchartsOptions.yAxis as any).plotLines = [{
+                    label: {
+                        // text: 'avg.',
+                        x: -10,
+                        formatter: function () {
+                            try {
+                                return `${avgLabelPrefix} ${this.options.value.toFixed(4)} ${unit}`;
+                            } catch (e) { }
+                            return null;
+                        },
+                        style: {
+                            color: '#7044ff',
+                        },
+                    },
+                    color: '#7044ff',
+                    value: this.average, // Insert your average here
+                    width: '1',
+                    dashStyle: 'longdashdot',
+                    zIndex: 2, // To get stuck below the regular lines and below above grids.
+                }];
+            }
+
+            // 排序
             pointsToAdd.sort((a, b) => a.x - b.x);
 
             this.chart.addSeries({
