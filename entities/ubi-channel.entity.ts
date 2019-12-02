@@ -148,7 +148,10 @@ export abstract class UbiChannel {
 
     static IsSimSupported(productId: string): boolean {
         if (productId === EnumBasicProductId.WS1P
-            // || productId === EnumBasicProductId.GS1_A
+            // 不含ws1p wifi版
+            || productId === EnumBasicProductId.WS1P2G
+            || productId === EnumBasicProductId.WS1P4G
+            // 不含gs1 wifi/eth版
             || productId === EnumBasicProductId.GS1_AL2G1RS
             || productId === EnumBasicProductId.GS1_AL4G1RS) {
             return true;
@@ -191,49 +194,134 @@ export abstract class UbiChannel {
         return UbiChannel.IsEthSupported(this.product_id);
     }
 
-    static IsBleSupported(productId: string): boolean {
+    static IsBleRequired(productId: string): boolean {
         if (productId === EnumBasicProductId.SP1) {
             return true;
         }
         return false;
     }
 
-    isBleSupported() {
-        return UbiChannel.IsBleSupported(this.product_id);
+    isBleRequired() {
+        return UbiChannel.IsBleRequired(this.product_id);
     }
 
     static IsWifiSupported(productId: string): boolean {
         return productId !== EnumBasicProductId.SP1;
     }
 
+    /**
+     * 判断是否为urban的产品
+     *
+     * 不放在channel类的原因是可能有扫码时就需要判断，这时候就需要直接调用utils
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsFamilyUrban(productId: string): boolean {
+        try {
+            let uniformed = productId.toLowerCase();
+            if (/^intlite-/.test(uniformed)) {
+                return true;
+            }
+        } catch (e) { }
+
+        return false;
+    }
+
+    isFamilyUrban(): boolean {
+        return UbiChannel.IsFamilyUrban(this.product_id);
+    }
+
     isWifiSupported() {
         return UbiChannel.IsWifiSupported(this.product_id);
     }
 
+    /**
+     * 判断是否为ws1系列（包括cn结尾）
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsFamilyWS1(productId: string): boolean {
+        if (productId === EnumBasicProductId.WS1 || productId === EnumBasicProductId.WS1_CN) {
+            return true;
+        }
+        return false;
+    }
+
     isFamilyWS1(): boolean {
-        if (this.product_id === EnumBasicProductId.WS1 || this.product_id === EnumBasicProductId.WS1_CN) {
+        return UbiChannel.IsFamilyWS1(this.product_id);
+    }
+
+
+    /**
+     * 判断是否为ws1p系列
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsFamilyWS1P(productId: string): boolean {
+        if (productId === EnumBasicProductId.WS1P ||
+            productId === EnumBasicProductId.WS1PA ||
+            productId === EnumBasicProductId.WS1P2G ||
+            productId === EnumBasicProductId.WS1P4G) {
             return true;
         }
         return false;
     }
 
     isFamilyWS1P(): boolean {
-        if (this.product_id === EnumBasicProductId.WS1P) {
+        return UbiChannel.IsFamilyWS1P(this.product_id);
+    }
+
+
+    /**
+     * 判断是否为gs1系列
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsFamilyGS1(productId: string): boolean {
+        if (productId === EnumBasicProductId.GS1_A ||
+            productId === EnumBasicProductId.GS1_AETH1RS ||
+            productId === EnumBasicProductId.GS1_AL2G1RS ||
+            productId === EnumBasicProductId.GS1_AL4G1RS) {
             return true;
         }
         return false;
     }
 
     isFamilyGS1(): boolean {
-        if (this.product_id === EnumBasicProductId.GS1_A ||
-            this.product_id === EnumBasicProductId.GS1_AETH1RS ||
-            this.product_id === EnumBasicProductId.GS1_AL2G1RS ||
-            this.product_id === EnumBasicProductId.GS1_AL4G1RS) {
+        return UbiChannel.IsFamilyGS1(this.product_id);
+    }
+
+
+    /**
+     * 判断是否为sp1系列
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsFamilySP1(productId: string): boolean {
+        if (productId === EnumBasicProductId.SP1) {
             return true;
         }
         return false;
     }
 
+    isFamilySP1(): boolean {
+        return UbiChannel.IsFamilySP1(this.product_id);
+    }
 
     /**
      * 是否支持rs485 (ws1, gs1_a不支持)
@@ -244,10 +332,9 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     isRS485Supported() {
-        if (this.product_id === EnumBasicProductId.WS1P ||
-            this.product_id === EnumBasicProductId.GS1_AETH1RS ||
-            this.product_id === EnumBasicProductId.GS1_AL2G1RS ||
-            this.product_id === EnumBasicProductId.GS1_AL4G1RS) {
+        if ((this.isFamilyWS1P() || this.isFamilyGS1()) &&
+            // 除gs1a
+            this.product_id === EnumBasicProductId.GS1_A) {
             return true;
         }
         return false;
@@ -263,24 +350,21 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     isRS485AutoDetectSupported() {
-        // if (this.isRS485Supported() &&
-        //     this.product_id !== EnumBasicProductId.WS1P) {
-        //     return true;
-        // }
         return false;
     }
 
     /**
      * 是否支持LED灯
      *
+     * ws1p有
+     *
+     * ws1, gs1没有
+     *
      * @returns
      * @memberof UbiChannel
      */
     isLEDSupported() {
-        if (this.product_id === EnumBasicProductId.WS1P) {
-            return true;
-        }
-        return false;
+        return this.isFamilyWS1P();
     }
 
     // 根据 http://jira.cloudforce.cn:9000/browse/UBCONSOLE-73
@@ -294,10 +378,7 @@ export abstract class UbiChannel {
 
     // 根据 http://jira.cloudforce.cn:9000/browse/UBCONSOLE-73
     isFnExtTSupported() {
-        if (this.product_id === EnumBasicProductId.GS1_A
-            || this.product_id === EnumBasicProductId.GS1_AETH1RS
-            || this.product_id === EnumBasicProductId.GS1_AL2G1RS
-            || this.product_id === EnumBasicProductId.GS1_AL4G1RS) {
+        if (this.isFamilyGS1()) {
             return false;
         }
         return true;
@@ -310,7 +391,12 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     isMultiNetworkSupported() {
-        if (this.product_id === EnumBasicProductId.WS1P) {
+        if ((this.isFamilyWS1P() || this.isFamilyGS1()) &&
+            // 不含ws1p wifi版
+            this.product_id !== EnumBasicProductId.WS1PA &&
+            // 不含gs1 wifi/eth
+            this.product_id !== EnumBasicProductId.GS1_A &&
+            this.product_id !== EnumBasicProductId.GS1_AETH1RS) {
             return true;
         }
         return false;
@@ -350,8 +436,7 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     isSupportRuleCommand(): boolean {
-        const pattern = new RegExp(_.escapeRegExp(EnumBasicProductId.WS1P), 'i');
-        return pattern.test(this.product_id);
+        return this.isFamilyWS1P() || this.isFamilyGS1();
     }
 
     /**

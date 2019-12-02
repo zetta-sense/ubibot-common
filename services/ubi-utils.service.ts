@@ -14,7 +14,7 @@ import { AppConfig } from '../../../environments/environment';
 import { UbiUserDisplayPipe } from '../core/pipes/ubi-user-display.pipe';
 import { UbiDataChartSerie, UbiDataChartPoint } from '../core/components/ubi-data-chart/ubi-data-chart.component';
 import { UbiFeedsResponse, UbiFeedType } from '../remote/remote-channel.service';
-import { UbiChannelDAO, ConvertValue, UbiValueOptions } from '../entities/ubi-channel.entity';
+import { UbiChannelDAO, ConvertValue, UbiValueOptions, UbiChannel } from '../entities/ubi-channel.entity';
 import { UbiChannelFieldDef } from '../entities/ubi-channel-field-def.entity';
 import { UbiEventService } from './ubi-event.service';
 import { UbiLanguageDef, UbibotSupportedLanguagesService } from '../providers/ubibot-supported-languages.service';
@@ -416,26 +416,6 @@ export class UbiUtilsService {
 
 
     /**
-     * 判断是否为urban的产品
-     *
-     * 不放在channel类的原因是可能有扫码时就需要判断，这时候就需要直接调用utils
-     *
-     * @param {string} productId
-     * @returns {boolean}
-     * @memberof UbiUtilsService
-     */
-    isProductUrban(productId: string): boolean {
-        try {
-            let uniformed = productId.toLowerCase();
-            if (/^intlite-/.test(uniformed)) {
-                return true;
-            }
-        } catch (e) { }
-
-        return false;
-    }
-
-    /**
      * SHA-256
      * 直接加到ubibot的通用库,不用dep
      * @param data
@@ -596,7 +576,7 @@ export class UbiUtilsService {
 
     predictDeviceBlePassword(serial: string, productId: string): string {
         let ret: string;
-        if (this.isProductUrban(productId)) {
+        if (UbiChannel.IsFamilyUrban(productId)) {
             ret = serial.slice(1, 5);
         }
         return ret;
@@ -715,4 +695,21 @@ export class UbiUtilsService {
 
         return ret;
     }
+
+
 }
+
+
+
+export let _EAN_ = function strEmptyAsNull<T>(input: T): T {
+    /*
+     * empty, nan, null, undefined will return null
+     * 0 and others return raw input
+     */
+
+    if (typeof input === 'number' && input == 0) {
+        return input;
+    }
+
+    return !input ? null : input;
+};

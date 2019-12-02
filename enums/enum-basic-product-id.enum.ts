@@ -3,6 +3,10 @@ export enum EnumBasicProductId {
     WS1_CN = 'ubibot-ws1-cn',
     WS1P = 'ubibot-ws1p',
 
+    WS1PA = 'ubibot-ws1pa',
+    WS1P2G = 'ubibot-ws1p2g',
+    WS1P4G = 'ubibot-ws1p4g',
+
     GS1_A = 'ubibot-gs1-a',
     GS1_AETH1RS = 'ubibot-gs1-aeth1rs',
     GS1_AL2G1RS = 'ubibot-gs1-al2g1rs',
