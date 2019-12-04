@@ -7,7 +7,7 @@ import * as Highcharts from 'highcharts/highstock';
 import * as HighchartsThemeDarkUnica from 'highcharts/themes/dark-unica';
 import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
 import { TranslateService } from '@ngx-translate/core';
-import { UbiUtilsService } from '../../../services/ubi-utils.service';
+import { UbiUtilsService, _NF_ } from '../../../services/ubi-utils.service';
 import { take } from 'rxjs/operators';
 import { UbiFeedType } from 'src/modules/ubibot-common/remote/remote-channel.service';
 
@@ -184,6 +184,15 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     @Input() dateFormat: string;
 
+
+    /**
+     * Optional
+     *
+     * @type {number}
+     * @memberof UbiDataChartComponent
+     */
+    @Input() decimalPlace: number;
+
     // @Input() width = 480;
     // @Input() height = 288;
 
@@ -212,6 +221,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             this.updateTitle();
             this.updateTooltip();
             this.updateDateFormat();
+            this.updateDecimalPlace();
             // this.chart.update
 
             // FIXME: remove later
@@ -250,6 +260,10 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
             if (changes.dateFormat) {
                 this.updateDateFormat();
+            }
+
+            if (changes.decimalPlace) {
+                this.updateDecimalPlace();
             }
         }
 
@@ -306,6 +320,10 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 this.highchartsUpdateFlag = true;
             });
         }
+    }
+
+    private updateDecimalPlace() {
+        // nothing to do currently
     }
 
     private updateDateFormat() {
@@ -413,6 +431,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     private updateExtra() {
         this.ngZone.onStable.pipe(take(1)).subscribe(() => {
             const pointsToAdd = [];
+            const decimalPlace = this.decimalPlace;
             const upperLowerBoundScale: number = 0.35;
             const diff = this.maxPoint ? this.maxPoint.y - this.minPoint.y : 0; // 有max就肯定有min，所以只要判断max
 
@@ -421,7 +440,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     x: this.minPoint.x,
                     y: this.minPoint.y,
                     color: '#0f0',
-                    title: `${this.translate.instant('APP.COMMON.MIN')}: ${this.minPoint.y} ${this.unit}`,
+                    title: `${this.translate.instant('APP.COMMON.MIN')}: ${_NF_(this.minPoint.y, decimalPlace)} ${this.unit}`,
                 };
 
                 // 一般flags都在上方，不需要扩大y轴lower范围
@@ -435,7 +454,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     x: this.maxPoint.x,
                     y: this.maxPoint.y,
                     color: '#f00',
-                    title: `${this.translate.instant('APP.COMMON.MAX')}: ${this.maxPoint.y} ${this.unit}`,
+                    title: `${this.translate.instant('APP.COMMON.MAX')}: ${_NF_(this.maxPoint.y, decimalPlace)} ${this.unit}`,
                 };
 
                 // 扩大y轴upper范围
@@ -455,7 +474,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                         x: -10,
                         formatter: function () {
                             try {
-                                return `${avgLabelPrefix} ${this.options.value.toFixed(4)} ${unit}`;
+                                return `${avgLabelPrefix} ${_NF_(this.options.value, decimalPlace)} ${unit}`;
                             } catch (e) { }
                             return null;
                         },
@@ -467,7 +486,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     value: this.average, // Insert your average here
                     width: '1',
                     dashStyle: 'longdashdot',
-                    zIndex: 100, // 总在最前面
+                    zIndex: 3, // 在一般line前，但应在tooltip后面
                 }];
             }
 

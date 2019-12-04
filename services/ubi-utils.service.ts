@@ -56,6 +56,9 @@ export interface UbiServerResponseError {
 
 
 export interface UbiFeedPack {
+    index?: number; // 仅用于排序
+    visible?: boolean;
+
     key: string, // field1, ...
     title: string,
     field: UbiChannelFieldDef,
@@ -623,6 +626,9 @@ export class UbiUtilsService {
             };
 
             map[fieldKey] = {
+                index: i,
+                visible: true,
+
                 key: fieldKey,
                 field: field,
                 title: fieldName,
@@ -700,7 +706,7 @@ export class UbiUtilsService {
 }
 
 
-
+// empty as null
 export let _EAN_ = function strEmptyAsNull<T>(input: T): T {
     /*
      * empty, nan, null, undefined will return null
@@ -712,4 +718,19 @@ export let _EAN_ = function strEmptyAsNull<T>(input: T): T {
     }
 
     return !input ? null : input;
+};
+
+// number fix
+// ref: https://stackoverflow.com/questions/3612744/remove-insignificant-trailing-zeros-from-a-number
+// ref: https://stackoverflow.com/questions/12227594/which-is-better-numberx-or-parsefloatx/13676265#13676265
+export let _NF_ = function fixNumber(input: number, decimalPlace: number): string {
+    try {
+        if (decimalPlace === -1) {
+            return `${input}`;
+        } else if (decimalPlace === -2) {
+            return `${Number(input.toFixed(2))}`;
+        }
+        return input.toFixed(decimalPlace);
+    } catch (e) { }
+    return `${input}`;
 };
