@@ -467,7 +467,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     value: this.average, // Insert your average here
                     width: '1',
                     dashStyle: 'longdashdot',
-                    zIndex: 2, // To get stuck below the regular lines and below above grids.
+                    zIndex: 100, // 总在最前面
                 }];
             }
 

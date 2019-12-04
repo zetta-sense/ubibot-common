@@ -89,6 +89,20 @@ export class UbiAuthService {
     }
 
 
+    loginAsAdmin(username: string, password: string, target: string): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
+            this.remoteAccount
+                .loginAsAdmin(username, this.ubiUtils.sha256(password), target)
+                .then((resp) => {
+                    this.ubiStorage.save(this.getStorageKey(), JSON.stringify(resp));
+                    this.authenticationState.next(true);
+                    resolve(resp);
+                })
+                .catch(reject);
+        });
+    }
+
+
     /**
      * 通过本地缓存读取当前用户信息
      *

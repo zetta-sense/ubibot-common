@@ -7,6 +7,7 @@ import { UbiChannelDAO, UbiChannel } from '../entities/ubi-channel.entity';
 import { UbiError } from '../errors/UbiError';
 import { UbiRule, UbiRuleStatus } from '../entities/ubi-rule.entity';
 import * as _ from 'lodash';
+import * as moment from 'moment-timezone';
 import { DatePipe } from '@angular/common';
 
 export interface UbiCheckDeviceReponse {
@@ -521,6 +522,11 @@ export class RemoteChannelService {
 
         if (end) {
             params['end'] = this.datePipe.transform(end, serverExpectedDateFormat);
+        }
+
+        const timezone = moment.tz.guess();
+        if (timezone) {
+            params['timezone'] = timezone;
         }
 
         // 临时用于解决点过多的问题

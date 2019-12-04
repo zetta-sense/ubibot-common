@@ -67,8 +67,16 @@ export class RemoteAccountService {
         return this.http.post(url, params).toPromise();
     }
 
-    loginAsAdmin() {
+    loginAsAdmin(username: string, passwordSha256: string, target: string) {
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/admin_target_login`;
 
+        let params = new HttpParams();
+        params = params.set('username', username);
+        params = params.set('password', passwordSha256);
+        params = params.set('password_type', 'sha256');
+        params = params.set('target', target);
+
+        return this.http.post(url, params).toPromise();
     }
 
     me(): Promise<any> {
