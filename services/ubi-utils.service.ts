@@ -314,6 +314,14 @@ export class UbiUtilsService {
         return this.ubiStorage.get(this.getStorageKeyLastLogin()) || '';
     }
 
+
+    /**
+     * 对有product id和无product id的序列号进行统一
+     *
+     * @param {string} input
+     * @returns {UbiQRCodeResult}
+     * @memberof UbiUtilsService
+     */
     parseQRCode(input: string): UbiQRCodeResult {
         let serial;
         let productId;
