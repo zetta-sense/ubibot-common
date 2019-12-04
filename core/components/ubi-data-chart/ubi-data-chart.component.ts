@@ -14,6 +14,8 @@ import { UbiFeedType } from 'src/modules/ubibot-common/remote/remote-channel.ser
 // ref: https://github.com/highcharts/highcharts-angular#theme
 NoDataToDisplay(Highcharts);
 
+const MARKUP_FONT_SIZE = 14;
+
 export interface UbiDataChartPoint {
     /**
      * 日期
@@ -440,6 +442,9 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     x: this.minPoint.x,
                     y: this.minPoint.y,
                     color: '#0f0',
+                    style: {
+                        fontSize: `${MARKUP_FONT_SIZE}px`,
+                    },
                     title: `${this.translate.instant('APP.COMMON.MIN')}: ${_NF_(this.minPoint.y, decimalPlace)} ${this.unit}`,
                 };
 
@@ -454,6 +459,9 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     x: this.maxPoint.x,
                     y: this.maxPoint.y,
                     color: '#f00',
+                    style: {
+                        fontSize: `${MARKUP_FONT_SIZE}px`,
+                    },
                     title: `${this.translate.instant('APP.COMMON.MAX')}: ${_NF_(this.maxPoint.y, decimalPlace)} ${this.unit}`,
                 };
 
@@ -480,6 +488,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                         },
                         style: {
                             color: '#7044ff',
+                            fontSize: `${MARKUP_FONT_SIZE}px`,
                         },
                     },
                     color: '#7044ff',
