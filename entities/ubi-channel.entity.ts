@@ -173,7 +173,7 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     static IsAccSupported(productId: string): boolean {
-        if (productId === EnumBasicProductId.WS1 || productId === EnumBasicProductId.WS1_CN) {
+        if (UbiChannel.IsFamilyWS1(productId)) {
             return true;
         }
         return false;
@@ -334,7 +334,7 @@ export abstract class UbiChannel {
     isRS485Supported() {
         if ((this.isFamilyWS1P() || this.isFamilyGS1()) &&
             // 除gs1a
-            this.product_id === EnumBasicProductId.GS1_A) {
+            this.product_id !== EnumBasicProductId.GS1_A) {
             return true;
         }
         return false;
