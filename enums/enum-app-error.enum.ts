@@ -69,6 +69,7 @@ export enum EnumAppError {
     BLE_SEND_COMMAND_TIMEOUT = '8925',
     BLE_COMMAND_UNDEFINED = '8926', // ble_command 为空
     BLE_COMMAND_UNSUPPORT = '8927', // ble_command 值不在支持的范围
+    BLE_COMMAND_BAD_PARAMETERS = '8928', // ble_command 参数不足
 
 
     // minus error means acceptable errors
