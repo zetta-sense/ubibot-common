@@ -524,10 +524,12 @@ export class RemoteChannelService {
             params['end'] = this.datePipe.transform(end, serverExpectedDateFormat);
         }
 
-        const timezone = moment.tz.guess();
-        if (timezone) {
-            params['timezone'] = timezone;
-        }
+        try {
+            const timezone = moment.tz.guess();
+            if (timezone) {
+                params['timezone'] = timezone;
+            }
+        } catch (e) { }
 
         // 临时用于解决点过多的问题
         // if (!start && !end) {
