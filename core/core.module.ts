@@ -21,6 +21,7 @@ import { UbiIpv4InputComponent } from './components/ubi-ipv4-input/ubi-ipv4-inpu
 import { UbiUserAvatarComponent } from './components/ubi-user-avatar/ubi-user-avatar.component';
 import { NoopPipe } from './pipes/noop.pipe';
 import { EmptyPipe } from './pipes/noop.pipe copy';
+import { UbiTimezoneResolver } from './resolvers/ubi-timezone.resolver';
 
 /**
  * Core module of common module.
@@ -65,12 +66,16 @@ import { EmptyPipe } from './pipes/noop.pipe copy';
         UbiIpv4InputComponent,
     ],
     providers: [ // 用于DI
+        // pipes
         UbiUserDisplayPipe,
         ResourceUrlPipe,
         UbiSyncService,
-        UbiSyncV2Service,
-        UbiExtraPreferenceResolver,
+        UbiSyncV2Service,,
         UbiChannelDaosFilterPipe,
+        // resolvers
+        UbiExtraPreferenceResolver,
+        UbiTimezoneResolver,
+        // 一些resolver是根据path的，所以不摆进来
     ],
     imports: [
         CommonModule,

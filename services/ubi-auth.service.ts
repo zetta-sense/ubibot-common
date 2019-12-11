@@ -14,9 +14,23 @@ export interface UbiAuthConfig {
 
 export interface UbiMe {
     account: {
+        user_id: string;
+
+        username: string;
+
         mobile: string;
         email: string;
-        user_id: string;
+
+        email_status: string;
+        mobile_status: string;
+
+        balance: string;
+        timezone: string;
+        last_login_ip: string;
+
+        avatar_base: string;
+
+        backup_ip: string;
 
         [key: string]: any;
     };
@@ -30,7 +44,7 @@ export interface UbiMe {
 })
 export class UbiAuthService {
 
-    authenticationState = new BehaviorSubject(null);
+    authenticationState = new BehaviorSubject<boolean>(null);
     redirectUrl: string;
 
     constructor(
@@ -59,7 +73,7 @@ export class UbiAuthService {
         return `me-${this.ubibotCommonConfig.DeployAgent}`;
     }
 
-    isLoggedIn() {
+    isLoggedIn(): boolean {
         // return !!this.token();
         return this.authenticationState.value;
     }

@@ -3,50 +3,7 @@ import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-export interface UbiAPNListItem {
-    label: string;
-    params: {
-        apn: string;
-        user: string;
-        pwd: string;
-    }
-}
-
-export interface UbiAppVersionInfo {
-    /**
-     * 理应是sematic ver
-     *
-     * @type {string}
-     * @memberof UbiAppVersionInfo
-     */
-    version: string;
-
-    /**
-     * 注意服务器使用\n换行，所以样式要用pre
-     *
-     * @type {string}
-     * @memberof UbiAppVersionInfo
-     */
-    updateMessage: string;
-
-    /**
-     * 下载地址，目前用系统浏览器打开
-     *
-     * @type {string}
-     * @memberof UbiAppVersionInfo
-     */
-    url: string;
-}
-
-export interface UbiSearchUserResultItem {
-    avatar: string;
-    avatar_base: string;
-    email: string;
-    email_status: string;
-    user_id: string;
-    username: string;
-}
+import { UbiTimezoneMap } from '../entities/ubi-timezone.entify';
 
 @Injectable()
 export class RemoteMiscInfoService {
@@ -67,6 +24,23 @@ export class RemoteMiscInfoService {
         return this.http.get(url).pipe(
             map((resp: any) => {
                 return resp.apn_list;
+            })
+        );
+    }
+
+    /**
+     * Get available timezones from ubicloud.
+     *
+     * http://api.ubibot.cn/constants/timezones
+     *
+     * @returns {Observable<UbiTimezoneMap>}
+     * @memberof RemoteMiscInfoService
+     */
+    getTimezones(): Observable<UbiTimezoneMap> {
+        let url = `${this.ubibotCommonConfig.EndPoint}/constants/timezones`;
+        return this.http.get(url).pipe(
+            map((resp: any) => {
+                return <UbiTimezoneMap>resp.timezones;
             })
         );
     }
@@ -121,4 +95,48 @@ export class RemoteMiscInfoService {
             })
         );
     }
+}
+
+export interface UbiAPNListItem {
+    label: string;
+    params: {
+        apn: string;
+        user: string;
+        pwd: string;
+    }
+}
+
+export interface UbiAppVersionInfo {
+    /**
+     * 理应是sematic ver
+     *
+     * @type {string}
+     * @memberof UbiAppVersionInfo
+     */
+    version: string;
+
+    /**
+     * 注意服务器使用\n换行，所以样式要用pre
+     *
+     * @type {string}
+     * @memberof UbiAppVersionInfo
+     */
+    updateMessage: string;
+
+    /**
+     * 下载地址，目前用系统浏览器打开
+     *
+     * @type {string}
+     * @memberof UbiAppVersionInfo
+     */
+    url: string;
+}
+
+export interface UbiSearchUserResultItem {
+    avatar: string;
+    avatar_base: string;
+    email: string;
+    email_status: string;
+    user_id: string;
+    username: string;
 }

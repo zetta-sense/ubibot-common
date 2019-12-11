@@ -484,9 +484,9 @@ export class RemoteChannelService {
         );
     }
 
-
     /**
-     * Fetch feesd.
+     *
+     * Fetch feeds.
      *
      * http://api.datadudu.com/channels/CHANNEL_ID/feeds
      *
@@ -504,10 +504,15 @@ export class RemoteChannelService {
      * callback (string) Function name to be used for JSONP cross-domain requests (optional)
      *
      * @param {string} channelId
+     * @param {Date} [start]
+     * @param {Date} [end]
+     * @param {UbiFeedType} [type=UbiFeedType.Sampling]
+     * @param {number} [maxFeeds]
+     * @param {string} [timezone]
      * @returns {Observable<UbiFeedsResponse>}
      * @memberof RemoteChannelService
      */
-    fetchFeeds(channelId: string, start?: Date, end?: Date, type: UbiFeedType = UbiFeedType.Sampling, maxFeeds?: number): Observable<UbiFeedsResponse> {
+    fetchFeeds(channelId: string, start?: Date, end?: Date, type: UbiFeedType = UbiFeedType.Sampling, maxFeeds?: number, timezone?: string): Observable<UbiFeedsResponse> {
         if (!channelId) throw new UbiError('Channel ID is required for this API!');
 
         let url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/feeds`;
@@ -524,21 +529,10 @@ export class RemoteChannelService {
             params['end'] = this.datePipe.transform(end, serverExpectedDateFormat);
         }
 
-        // try {
-        //     const timezone = moment.tz.guess();
-        //     if (timezone) {
-        //         params['timezone'] = timezone;
-        //     }
-        // } catch (e) { }
+        if (timezone) {
+            params['timezone'] = timezone;
+        }
 
-
-
-        // 临时用于解决点过多的问题
-        // if (!start && !end) {
-        //     params['results'] = 500;
-        // } else {
-        //     params['results'] = 2000;
-        // }
         if (maxFeeds) {
             params['results'] = maxFeeds;
         }

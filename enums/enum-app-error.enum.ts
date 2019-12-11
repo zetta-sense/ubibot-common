@@ -53,6 +53,7 @@ export enum EnumAppError {
     NAVIGATION_FAILED = '2006',
     EMBED_PAGE_NOT_AVAILABLE = '2007', // iframe指定了未定义的页面
     EXTERNAL_LIB_LOAD_FAILED = '2008', // 加载外部库失败
+    TIMEZONE_NOT_SUPPORTED = '2009',
 
     EXCEED_MIN_MAX_RULE_LIMIT = '3001',
 

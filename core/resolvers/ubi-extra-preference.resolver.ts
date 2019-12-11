@@ -18,8 +18,9 @@ export class UbiExtraPreferenceResolver implements Resolve<UbiExtraPreference> {
     }
 
 
-    constructor(private http: HttpClient,
-        private remoteAccount: RemoteAccountService
+    constructor(
+        private http: HttpClient,
+        private remoteAccount: RemoteAccountService,
     ) {
 
     }

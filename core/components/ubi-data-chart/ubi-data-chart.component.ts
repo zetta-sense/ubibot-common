@@ -90,7 +90,8 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             // dateTimeLabelFormats: this.highchartsDateTimeLabelFormats
         },
         time: {
-            timezoneOffset: new Date().getTimezoneOffset(),
+            timezone: undefined,
+            timezoneOffset: new Date().getTimezoneOffset(), // 先给个默认的，当timezone更新后这个offset将被覆盖
         },
         yAxis: {
             crosshair: true,
@@ -195,6 +196,15 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
      */
     @Input() decimalPlace: number;
 
+
+    /**
+     * Optional. Default to undefined.
+     *
+     * @type {string}
+     * @memberof UbiDataChartComponent
+     */
+    @Input() timezone: string;
+
     // @Input() width = 480;
     // @Input() height = 288;
 
@@ -224,6 +234,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             this.updateTooltip();
             this.updateDateFormat();
             this.updateDecimalPlace();
+            this.updateTimezone();
             // this.chart.update
 
             // FIXME: remove later
@@ -266,6 +277,10 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
             if (changes.decimalPlace) {
                 this.updateDecimalPlace();
+            }
+
+            if (changes.timezone) {
+                this.updateTimezone();
             }
         }
 
@@ -326,6 +341,17 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     private updateDecimalPlace() {
         // nothing to do currently
+    }
+
+    private updateTimezone() {
+        if (this.chart) {
+            this.ngZone.onStable.pipe(take(1)).subscribe(() => {
+                // console.warn('update timezone', this.timezone);
+                // @ts-ignore
+                this.highchartsOptions.time.timezone = this.timezone;
+                this.highchartsUpdateFlag = true;
+            });
+        }
     }
 
     private updateDateFormat() {

@@ -56,6 +56,10 @@ export enum UbiExtraPreferenceChannelsListStyle {
     Icon = 'icon',
 }
 
+export enum UbiExtraPreferenceTimezoneSource {
+    Account = 'account',
+    Local = 'local',
+}
 
 /**
  * 以channelId作为key的用户自定义channel列表view属性
