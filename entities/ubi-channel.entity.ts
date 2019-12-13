@@ -324,6 +324,25 @@ export abstract class UbiChannel {
     }
 
     /**
+     * ubibot人感
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsFamilyMS1(productId: string): boolean {
+        if (productId === EnumBasicProductId.MS1) {
+            return true;
+        }
+        return false;
+    }
+
+    isFamilyMS1(): boolean {
+        return UbiChannel.IsFamilyMS1(this.product_id);
+    }
+
+    /**
      * 是否支持rs485 (ws1, gs1_a不支持)
      *
      * Updated for  http://jira.cloudforce.cn:9000/browse/UBCONSOLE-73
