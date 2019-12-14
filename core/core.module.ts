@@ -70,7 +70,7 @@ import { UbiTimezoneResolver } from './resolvers/ubi-timezone.resolver';
         UbiUserDisplayPipe,
         ResourceUrlPipe,
         UbiSyncService,
-        UbiSyncV2Service,,
+        UbiSyncV2Service,
         UbiChannelDaosFilterPipe,
         // resolvers
         UbiExtraPreferenceResolver,
