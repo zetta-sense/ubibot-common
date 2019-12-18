@@ -561,14 +561,7 @@ export class UbiUtilsService {
 
     predictDeviceBleName(serial: string, productId: string): string {
         let ret: string;
-        if (productId === EnumBasicProductId.SP1) {
-            // Ubibot - SP1 - XXXXX
-            // 序列号前5位
-            const part1 = 'Ubibot-SP1'; // MDPS-
-            const part2 = serial.substring(0, 5);
-            ret = `${part1}-${part2}`;
-            // ret = 'MDPS-1016';
-        } else if (productId === EnumBasicProductId.URBAN_IS1) {
+        if (productId === EnumBasicProductId.URBAN_IS1) {
             // Intlite - IS1 - XXXXX
             const part1 = 'Intlite-IS1';
             const part2 = serial.substring(0, 5);
@@ -581,6 +574,20 @@ export class UbiUtilsService {
             const part1 = 'Intlite-MS1';
             const part2 = serial.substring(0, 5);
             ret = `${part1}-${part2}`;
+        } else if (UbiChannel.IsFamilyUbibot(productId) || UbiChannel.IsFamilyUrban(productId)) {
+            // 默认蓝牙构成方式，首字母大写，接-后的
+            try {
+                const productIdLowerCase = productId.toLowerCase();
+                let part1 = productIdLowerCase.slice(0, productIdLowerCase.indexOf('-'));
+                let part2 = productIdLowerCase.slice(productIdLowerCase.indexOf('-') + 1);
+                part1 = part1.charAt(0).toUpperCase() + part1.slice(1);
+                part2 = part2.toUpperCase();
+
+                let part3 = serial.substring(0, 5);
+                ret = `${part1}-${part2}-${part3}`;
+            } catch (e) {
+                ret = `CAN NOT RECOGNIZE - ${productId}`;
+            }
         }
         return ret;
     }
@@ -588,6 +595,8 @@ export class UbiUtilsService {
     predictDeviceBlePassword(serial: string, productId: string): string {
         let ret: string;
         if (UbiChannel.IsFamilyUrban(productId)) {
+            ret = serial.slice(1, 5);
+        } else if (UbiChannel.IsFamilyMS1(productId)) {
             ret = serial.slice(1, 5);
         }
         return ret;

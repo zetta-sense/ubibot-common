@@ -234,6 +234,29 @@ export abstract class UbiChannel {
         return UbiChannel.IsFamilyUrban(this.product_id);
     }
 
+    /**
+     * 凡是ubibot-开头的都返回true
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsFamilyUbibot(productId: string): boolean {
+        try {
+            let uniformed = productId.toLowerCase();
+            if (/^ubibot-/.test(uniformed)) {
+                return true;
+            }
+        } catch (e) { }
+
+        return false;
+    }
+
+    isFamilyUbibot(): boolean {
+        return UbiChannel.IsFamilyUbibot(this.product_id);
+    }
+
     isWifiSupported() {
         return UbiChannel.IsWifiSupported(this.product_id);
     }
