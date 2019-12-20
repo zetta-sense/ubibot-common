@@ -52,6 +52,7 @@ export class RemoteAccountService {
         params = params.set('username', username);
         params = params.set('password', passwordSha256);
         params = params.set('password_type', 'sha256');
+        params = params.set('expire_in_seconds', `${365 * 24 * 60 * 60}`);
 
         return this.http.post(url, params).toPromise();
     }
