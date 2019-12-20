@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { UbiExtraPreference } from '../entities/ubi-extra-preference.entity';
 import { UbiError } from '../errors/UbiError';
 import * as lz from 'lz-string';
+import { UbiStorageService } from '../services/ubi-storage.service';
 
 export interface UbiMessage {
     body: string;
@@ -40,8 +41,11 @@ export enum UbiMessageType {
 @Injectable()
 export class RemoteAccountService {
 
-    constructor(private http: HttpClient,
-        private ubibotCommonConfig: UbibotCommonConfigService) {
+    constructor(
+        private http: HttpClient,
+        private ubibotCommonConfig: UbibotCommonConfigService,
+        private ubiStorage: UbiStorageService,
+    ) {
     }
 
     loginEncrypted(username: string, passwordSha256: string): Promise<any> {
@@ -135,7 +139,12 @@ export class RemoteAccountService {
         // console.log(lz.compress(payload);
 
         return this.http.post(url, payload).pipe(
-            map((resp: any) => resp)
+            map((resp: any) => resp),
+            switchMap((resp) => {
+                // 更新本地副本
+                this.ubiStorage.save(this.getExtraPrefKey(), payload);
+                return of(resp);
+            }),
         );
     }
 
@@ -150,20 +159,44 @@ export class RemoteAccountService {
      * 返回值例如：
      * {"result":"success","server_time":"2017-08-29T05:03:34Z","settings":"{\"asdf\":\"aa\"}"}
      *
+     * @param {boolean} [forceSync=false] 是否强制与服务器同步，不强制时则尝试从缓存读取
      * @returns {Observable<any>}
      * @memberof RemoteAccountService
      */
-    getExtraPref(): Observable<UbiExtraPreference> {
+    getExtraPref(forceSync: boolean = false): Observable<UbiExtraPreference> {
+
+        // 尝试读取本地缓存
+        if (!forceSync) {
+            try {
+                const strPref = this.ubiStorage.get(this.getExtraPrefKey());
+
+                if (strPref) {
+                    console.log('User pref => found in cache, returned.');
+
+                    const ubiExtraPref = new UbiExtraPreference(strPref);
+                    return of(ubiExtraPref);
+                }
+            } catch (e) { }
+        }
+
         let url = `${this.ubibotCommonConfig.EndPoint}/accounts/settings/get`;
         return this.http.get(url).pipe(
             map((resp: any) => {
+                console.log('User pref => loading from ubibot cloud...');
+
                 const jsonStr = resp.settings;
+
+                this.ubiStorage.save(this.getExtraPrefKey(), jsonStr);
+
                 const ubiExtraPref = new UbiExtraPreference(jsonStr);
                 return ubiExtraPref;
             })
         );
     }
 
+    private getExtraPrefKey() {
+        return `user-pref-${this.ubibotCommonConfig.DeployAgent}`;
+    }
 
 
     /**
