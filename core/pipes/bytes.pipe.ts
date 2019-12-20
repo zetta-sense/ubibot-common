@@ -7,7 +7,7 @@ export class BytesPipe implements PipeTransform {
 
     transform(bytes, precision = 1, nullLabel = '-'): any {
         if (isNaN(parseFloat(bytes)) || !isFinite(bytes) || 0 === parseFloat(bytes)) { return nullLabel; }
-        var units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'],
+        let units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'],
             number = Math.floor(Math.log(bytes) / Math.log(1024));
 
         if (bytes < 1024) {

@@ -3,8 +3,9 @@ import { UbiUtilsService } from './ubi-utils.service';
 import { RemoteAccountService } from '../remote/remote-account.service';
 import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, from } from 'rxjs';
+import { BehaviorSubject, Observable, from, of } from 'rxjs';
 import { UbiStorageService } from './ubi-storage.service';
+import { switchMap } from 'rxjs/operators';
 
 export const UBIBOT_AUTH_CONFIGURATION = new InjectionToken<UbiAuthConfig>('UBIBOT_AUTH_CONFIGURATION');
 export interface UbiAuthConfig {
@@ -136,11 +137,21 @@ export class UbiAuthService {
     /**
      * 不通过本地缓存，立即访问服务器读取当前用户信息
      *
+     * (同时更新本地account信息)
+     *
      * @returns {Observable<any>}
      * @memberof UbiAuthService
      */
     meAsync(): Observable<UbiMe> {
-        return from(this.remoteAccount.me());
+        return from(this.remoteAccount.me()).pipe(
+            switchMap((resp) => {
+                // 只更新account部分，因为发现这个api返回的resp不带token_id
+                let old = JSON.parse(this.ubiStorage.get(this.getStorageKey()));
+                old.account = resp.account;
+                this.ubiStorage.save(this.getStorageKey(), JSON.stringify(old));
+                return of(old);
+            }),
+        );
     }
 
     username() {

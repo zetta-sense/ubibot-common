@@ -46,8 +46,9 @@ export class UbiTimezoneResolver implements Resolve<UbiTimezone> {
                     // tag: 根据用户偏好选择account timezone还是local timezone
                     let useLocal = this.ubiUserPref.getPreferredTimezoneSource() === UbiExtraPreferenceTimezoneSource.Local;
 
+                    let localTimezone; // 这里不用var方便comment掉debug，var本身没问题
                     try {
-                        var localTimezone = moment.tz.guess();
+                        localTimezone = moment.tz.guess();
                     } catch (e) { }
 
                     if (useLocal && singleton.isTimezoneSupported(localTimezone)) {
@@ -58,9 +59,9 @@ export class UbiTimezoneResolver implements Resolve<UbiTimezone> {
                     } else {
                         // 因为以后需要将timezone显示到charts，所以还是填上
                         const timezone = this.ubiAuth.me().account.timezone;
-                        singleton.setPreferredTimezone(timezone); // 根据account的timezone作为default
+                        console.log(`Using account timezone(${timezone}).`); // setPreferredTimezone可能会抛2009，例如America/Toronto
 
-                        console.log(`Using account timezone(${timezone}).`);
+                        singleton.setPreferredTimezone(timezone); // 根据account的timezone作为default
                     }
 
                     // timezone.clearDefaultTimezone(); // 如果跟的是account，理论上不用设置timezone

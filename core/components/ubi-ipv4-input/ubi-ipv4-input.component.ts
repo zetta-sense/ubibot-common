@@ -111,7 +111,7 @@ export class UbiIpv4InputComponent implements ControlValueAccessor, OnInit, OnCh
         //reset errors
         this.errors = [];
         //setting, resetting error messages into an array (to loop) and adding the validation messages to show below the field area
-        for (var key in this.formControl.errors) {
+        for (let key in this.formControl.errors) {
             if (this.formControl.errors.hasOwnProperty(key)) {
                 this.errors.push(this.formControl.errors[key]);
             }
