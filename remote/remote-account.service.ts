@@ -194,6 +194,16 @@ export class RemoteAccountService {
         );
     }
 
+    /**
+     * 强制从服务器重新加载user pref
+     *
+     * @returns {Observable<UbiExtraPreference>}
+     * @memberof RemoteAccountService
+     */
+    syncExtraPref(): Observable<UbiExtraPreference> {
+        return this.getExtraPref(true);
+    }
+
     private getExtraPrefKey() {
         return `user-pref-${this.ubibotCommonConfig.DeployAgent}`;
     }
