@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
-import { Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { map, switchMap, catchError } from 'rxjs/operators';
 import { UbiExtraPreference } from '../entities/ubi-extra-preference.entity';
 import { UbiError } from '../errors/UbiError';
 import * as lz from 'lz-string';
@@ -160,25 +160,30 @@ export class RemoteAccountService {
      * {"result":"success","server_time":"2017-08-29T05:03:34Z","settings":"{\"asdf\":\"aa\"}"}
      *
      * @param {boolean} [forceSync=false] 是否强制与服务器同步，不强制时则尝试从缓存读取
+     * @param {boolean} [allowFallback=true] 服务器同步失败时是否允许使用本地副本
      * @returns {Observable<any>}
      * @memberof RemoteAccountService
      */
-    getExtraPref(forceSync: boolean = false): Observable<UbiExtraPreference> {
+    getExtraPref(forceSync: boolean = false, allowFallback: boolean = true): Observable<UbiExtraPreference> {
 
         // 尝试读取本地缓存
-        if (!forceSync) {
-            try {
-                const strPref = this.ubiStorage.get(this.getExtraPrefKey());
+        let localUbiExtrPref: UbiExtraPreference;
+        try {
+            const strPref = this.ubiStorage.get(this.getExtraPrefKey());
 
-                if (strPref) {
-                    console.log('User pref => found in cache, returned.');
+            if (strPref) {
+                console.log('User pref => found in cache, returned.');
 
-                    const ubiExtraPref = new UbiExtraPreference(strPref);
-                    return of(ubiExtraPref);
-                }
-            } catch (e) { }
+                localUbiExtrPref = new UbiExtraPreference(strPref);
+            }
+        } catch (e) { }
+
+        // 一般情况下若本地缓存可用则直接返回本地缓存
+        if (!forceSync && localUbiExtrPref) {
+            return of(localUbiExtrPref);
         }
 
+        // 与服务器同步
         let url = `${this.ubibotCommonConfig.EndPoint}/accounts/settings/get`;
         return this.http.get(url).pipe(
             map((resp: any) => {
@@ -190,7 +195,17 @@ export class RemoteAccountService {
 
                 const ubiExtraPref = new UbiExtraPreference(jsonStr);
                 return ubiExtraPref;
-            })
+            }),
+            catchError((err) => {
+                // 若服务无法返回且本地无相应副本则抛出错误
+                if (allowFallback && localUbiExtrPref) {
+                    console.log('Loading user pref from ubibot cloud failed. Fallback to local cache.');
+
+                    return of(localUbiExtrPref);
+                } else {
+                    return throwError(err);
+                }
+            }),
         );
     }
 
