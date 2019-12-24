@@ -14,7 +14,7 @@ export function UbiLog(msg?: string) {
 
         descriptor.value = function (...args: any[]) {
             // 注意这里必须是function，而不能是arrow function，这样this才会是caller（=instance）
-            // console.log(`${target.constructor.name} (${key}): ${msg}...`);
+            console.log(`${target.constructor.name} (${key}): ${msg}...`);
 
             const result: any = original.apply(this, args);
 
