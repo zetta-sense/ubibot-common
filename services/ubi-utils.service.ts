@@ -378,6 +378,9 @@ export class UbiUtilsService {
                     && ubiServerError.desp == 'sms_code is not correct') {
                     ret = `${this.parseError(new UbiError(EnumAppError.INVALID_SMS_CODE))}`;
                 } else if (ubiServerError.errorCode == 'permission_denied'
+                    && ubiServerError.desp == 'invalid user_id or password') {
+                    ret = `${this.parseError(new UbiError(EnumAppError.USERNAME_OR_PASSWORD_ERROR))}`;
+                } else if (ubiServerError.errorCode == 'permission_denied'
                     && ubiServerError.desp == 'You can not share channels to yourself') {
                     ret = `${this.parseError(new UbiError(EnumAppError.INVALID_SHARE_SELF))}`;
                 } else {

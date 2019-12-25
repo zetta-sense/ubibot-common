@@ -22,6 +22,7 @@ import { UbiUserAvatarComponent } from './components/ubi-user-avatar/ubi-user-av
 import { NoopPipe } from './pipes/noop.pipe';
 import { EmptyPipe } from './pipes/noop.pipe copy';
 import { UbiTimezoneResolver } from './resolvers/ubi-timezone.resolver';
+import { UbiObjectFilterPipe } from './pipes/ubi-object-filter.pipe';
 
 /**
  * Core module of common module.
@@ -41,6 +42,7 @@ import { UbiTimezoneResolver } from './resolvers/ubi-timezone.resolver';
         UbiChannelAvatarComponent,
         UbiLazyImgDirective,
         UbiChannelDaosFilterPipe,
+        UbiObjectFilterPipe,
         BytesPipe,
         NoopPipe,
         EmptyPipe,
@@ -57,6 +59,7 @@ import { UbiTimezoneResolver } from './resolvers/ubi-timezone.resolver';
         UbiUserDisplayPipe,
         ResourceUrlPipe,
         UbiChannelDaosFilterPipe,
+        UbiObjectFilterPipe,
         BytesPipe,
         NoopPipe,
         EmptyPipe,
@@ -72,6 +75,7 @@ import { UbiTimezoneResolver } from './resolvers/ubi-timezone.resolver';
         UbiSyncService,
         UbiSyncV2Service,
         UbiChannelDaosFilterPipe,
+        UbiObjectFilterPipe,
         // resolvers
         UbiExtraPreferenceResolver,
         UbiTimezoneResolver,

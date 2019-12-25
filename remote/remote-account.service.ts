@@ -116,6 +116,29 @@ export class RemoteAccountService {
         return this.http.post(url, params).toPromise();
     }
 
+    updateTimezone(userId: string, timezone: string, passwordSha256: string) {
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/update`;
+
+        const payload = {
+            user_id: userId,
+            timezone: timezone,
+            password: passwordSha256,
+            password_type: 'sha256',
+        };
+
+        // todo: 是否要考虑压缩，届时将需要启用新的服务器api来逐步替换
+        // console.log(lz.compress(payload);
+
+        return this.http.post(url, payload).pipe(
+            map((resp: any) => resp),
+            switchMap((resp) => {
+                // 更新本地副本
+                return of(resp);
+            }),
+            // switchMap(() => this.),
+        );
+    }
+
 
     /**
      * User Setting用户设定管理
