@@ -108,6 +108,19 @@ export abstract class UbiChannel {
     c_icon_base?: string;
     full_serial?: string;
 
+    /*
+    todo: 处理最近一次预警
+
+    triggering_rules: [{ channel_id: "5369", rule_id: "13937", rule_type: "numeric", last_result: "true", … }]
+
+    0: { channel_id: "5369", rule_id: "13937", rule_type: "numeric", last_result: "true", … }
+
+    channel_id: "5369"
+    rule_id: "13937"
+    rule_type: "numeric"
+    last_result: "true"
+    last_result_time: "2019-12-26T10:06:03Z"
+    */
 
     [key: string]: any;
 

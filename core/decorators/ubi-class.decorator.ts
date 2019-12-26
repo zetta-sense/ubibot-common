@@ -5,6 +5,8 @@ import 'reflect-metadata';
 /**
  * An Ubi decorator class for automator.
  *
+ * 在使用任意ubi decorator功能时，一般都需要先声明这个
+ *
  * @export
  * @returns
  */
@@ -37,7 +39,7 @@ export function UbiClass(_params?) {
         }
 
         // tag: 通过UbiSubscription定义的subscribers列表
-        const subscribers: string[] = Reflect.getMetadata('subscription:name', target.prototype);
+        const subscribers: string[] = Reflect.getMetadata('subscription:name', target.prototype) || []; // 注意如果没有UbiSubscription，则getMetadata返回空
 
         // override ngOnDestroy
         target.prototype[params.destroyFunc] = ngOnDestroyDecorator(target.prototype[params.destroyFunc]);
