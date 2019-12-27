@@ -48,6 +48,35 @@ export class UbiChannelMetadata {
     }
 }
 
+export interface UbiChannelTriggeringRule {
+    channel_id: string, // "5369"
+    rule_id: string, // "13937"
+
+    /**
+     * eg. 'numeric'
+     *
+     * @type {string}
+     * @memberof UbiChannelTriggeringRule
+     */
+    rule_type: string, // "numeric"
+
+    /**
+     * @type {string} eg. 'true'
+     * @memberof UbiChannelTriggeringRule
+     */
+    last_result: string, // "true"
+
+    /**
+     * eg. '2019-12-26T10:06:03Z'
+     *
+     * @type {string}
+     * @memberof UbiChannelTriggeringRule
+     */
+    last_result_time: string, // "2019-12-26T10:06:03Z"
+
+    rule_name: string,
+}
+
 /**
  * 用于接收到的channel raw数据
  *
@@ -107,6 +136,8 @@ export abstract class UbiChannel {
     net?: string;
     c_icon_base?: string;
     full_serial?: string;
+
+    triggering_rules?: UbiChannelTriggeringRule[]; // 最近触发的rules
 
     /*
     todo: 处理最近一次预警
@@ -482,6 +513,26 @@ export abstract class UbiChannel {
      */
     isOnline(): boolean {
         return this.net === "1";
+    }
+
+
+    /**
+     * 根据triggering_rules判断是否正在触发预警
+     *
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    isTriggeringRule(): boolean {
+        const triggeringRules = this.triggering_rules;
+        if (triggeringRules && triggeringRules.length) {
+            for (let i = 0; i < triggeringRules.length; i++) {
+                const trigerringRule = triggeringRules[i];
+                if (trigerringRule.last_result == 'true') {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
