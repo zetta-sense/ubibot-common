@@ -136,6 +136,7 @@ export abstract class UbiChannel {
     net?: string;
     c_icon_base?: string;
     full_serial?: string;
+    mac_address?: string;
 
     triggering_rules?: UbiChannelTriggeringRule[]; // 最近触发的rules
 
