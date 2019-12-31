@@ -525,7 +525,7 @@ export abstract class UbiChannel {
      */
     isTriggeringRule(): boolean {
         const triggeringRules = this.triggering_rules;
-        if (this.isOnline() && triggeringRules && triggeringRules.length) {
+        if (triggeringRules && triggeringRules.length) {
             for (let i = 0; i < triggeringRules.length; i++) {
                 const trigerringRule = triggeringRules[i];
                 if (trigerringRule.last_result == 'true') {
