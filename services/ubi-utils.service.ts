@@ -653,8 +653,8 @@ export class UbiUtilsService {
                 field: field,
                 title: fieldName,
                 series: [serie_1],
-                start: new Date(start),
-                end: new Date(end),
+                start: new Date(start), // 注意，目前服务器返回的x数据已修改为long，这里用的Date，混用虽然目前未发现问题，但不排除以后
+                end: new Date(end), // 注意，目前服务器返回的x数据已修改为long，这里用的Date，混用虽然目前未发现问题，但不排除以后
 
                 feedType: type || UbiFeedType.Sampling,
             };
@@ -696,12 +696,14 @@ export class UbiUtilsService {
 
             const first = _.first(data);
             // console.log(!!start, !_.find(data, { x: start }), (!first || first.x > start));
+            // tag: 插入开始点
             if (!isNaN(start) && !_.find(data, { x: start }) && (!first || first.x > start) && data.length) {
                 // console.log('adding first point');
                 data.unshift({ x: start, y: null });
             }
 
             const last = _.last(data);
+            // tag: 插入结束点
             if (!isNaN(end) && !_.find(data, { x: end }) && (!last || last.x < end) && data.length) {
                 // console.log('adding last point');
                 data.push({ x: end, y: null });
