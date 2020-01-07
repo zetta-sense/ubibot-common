@@ -5,6 +5,8 @@ import { Observable, of, from, combineLatest } from 'rxjs';
 import { map, switchMap, mergeAll, combineAll, concatMap, tap, zipAll, withLatestFrom, take, takeLast } from 'rxjs/operators';
 import { UbiChannelDAO, UbiChannel } from '../entities/ubi-channel.entity';
 import { UbiError } from '../errors/UbiError';
+import { UbiTriggerLog } from '../entities/ubi-trigger-log.entity';
+import { UbiAccessLog } from '../entities/ubi-access-log.entity';
 import * as _ from 'lodash';
 
 export interface UbiLogsResponse<T> {
@@ -16,78 +18,14 @@ export interface UbiLogsResponse<T> {
     data: T[];
 }
 
-export interface UbiTriggerLogsResponse extends UbiLogsResponse<UbiLogItemTrigger> {
+export interface UbiTriggerLogsResponse extends UbiLogsResponse<UbiTriggerLog> {
 
 }
 
-export interface UbiAccessLogsResponse extends UbiLogsResponse<UbiLogItemAccess> {
+export interface UbiAccessLogsResponse extends UbiLogsResponse<UbiAccessLog> {
 
 }
 
-export class UbiLogItemTrigger {
-    action_frequency: string;
-    channel_id: string;
-    created_at: string;
-    finished_at: string;
-    full_log: string;
-    log: string;
-    rule_id: string;
-    rule_name: string;
-    rule_type: string;
-    status: string;
-    t_action_frequency: string;
-    t_rule_name: string;
-    t_rule_type: string;
-    trigger_field: string;
-    trigger_id: string;
-    trigger_type: string;
-    user_id: string;
-    value: any; // 据观察，服务器一般返回string
-
-    // 追加parse后的
-    parsedFullLog: any;
-    parsedLog: any;
-
-    constructor(raw: any) {
-        Object.assign(this, raw);
-        Object.setPrototypeOf(this, UbiLogItemTrigger.prototype);
-
-        this.parsedFullLog = this.getParsedFullLog();
-        this.parsedLog = this.getParsedLog();
-    }
-
-    getParsedFullLog(): any {
-        let ret = null;
-        try {
-            ret = JSON.parse(this.full_log);
-        } catch (e) { }
-        return ret;
-    }
-
-    getParsedLog(): any {
-        let ret = null;
-        try {
-            ret = JSON.parse(this.log);
-        } catch (e) { }
-        return ret;
-    }
-}
-
-export class UbiLogItemAccess {
-    // todo: 暂时没仔细写类型，只是根据服务器返回的类型
-    access_id: string;
-    access_type: string;
-    channel_id: string;
-    created_at: string;
-    size: string;
-    sub_type: string;
-    voltage: string;
-
-    constructor(raw: any) {
-        Object.assign(this, raw);
-        Object.setPrototypeOf(this, UbiLogItemAccess.prototype);
-    }
-}
 
 @Injectable()
 export class RemoteLogsService {
@@ -106,12 +44,12 @@ export class RemoteLogsService {
      * @returns {Observable<any>}
      * @memberof RemoteLogsService
      */
-    listTriggerLogs(channelId: string, page: number = 0): Observable<UbiTriggerLogsResponse> {
-        if (!channelId) throw new UbiError('Channel ID is required for this API!');
+    listTriggerLogs(channel: UbiChannel, page: number = 0): Observable<UbiTriggerLogsResponse> {
+        if (!channel) throw new UbiError('Channel is required for this API!');
 
         let url = `${this.ubibotCommonConfig.EndPoint}/triggers`;
         const params = {};
-        params['channel_id'] = channelId;
+        params['channel_id'] = channel.channel_id;
         params['itemsPerPage'] = this.ubibotCommonConfig.DefaultItemsPerPage;
 
         if (page) {
@@ -121,7 +59,7 @@ export class RemoteLogsService {
         return this.http.get(url, { params: params }).pipe(
             map((r: any) => {
                 const resp = r as UbiTriggerLogsResponse;
-                resp.data = _.map(r.triggers, (x) => new UbiLogItemTrigger(x));
+                resp.data = _.map(r.triggers, (x) => new UbiTriggerLog(x, channel));
                 resp.itemsPerPage = parseFloat(r.itemsPerPage);
                 resp.pageNumber = parseFloat(r.pageNumber);
                 return resp;
@@ -140,16 +78,16 @@ export class RemoteLogsService {
      * itemsPerPage (string): number of items page page (optional)
      * access_type (string): in 或 out
      *
-     * @param {string} channelId
+     * @param {UbiChannel} channel
      * @param {number} [page=0]
      * @returns {Observable<UbiLogsResponse>}
      * @memberof RemoteLogsService
      */
-    private listAccessLogs(channelId: string, type: 'in' | 'out', page: number = 0): Observable<UbiAccessLogsResponse> {
-        if (!channelId) throw new UbiError('Channel ID is required for this API!');
+    private listAccessLogs(channel: UbiChannel, type: 'in' | 'out', page: number = 0): Observable<UbiAccessLogsResponse> {
+        if (!channel) throw new UbiError('Channel is required for this API!');
         if (!type) throw new UbiError('Type is required for this API!');
 
-        let url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/access_logs`;
+        let url = `${this.ubibotCommonConfig.EndPoint}/channels/${channel.channel_id}/access_logs`;
         const params = {};
         params['itemsPerPage'] = this.ubibotCommonConfig.DefaultItemsPerPage;
         params['access_type'] = type;
@@ -161,7 +99,7 @@ export class RemoteLogsService {
         return this.http.get(url, { params: params }).pipe(
             map((r: any) => {
                 const resp = r as UbiAccessLogsResponse;
-                resp.data = _.map(r.access_logs, (x) => new UbiLogItemAccess(x));
+                resp.data = _.map(r.access_logs, (x) => new UbiAccessLog(x, channel));
                 resp.itemsPerPage = parseFloat(r.itemsPerPage);
                 resp.pageNumber = parseFloat(r.pageNumber);
                 return resp;
@@ -173,25 +111,25 @@ export class RemoteLogsService {
     /**
      * List download logs by channel.
      *
-     * @param {string} channelId
+     * @param {UbiChannel} channel
      * @param {number} [page]
      * @returns {Observable<UbiLogsResponse>}
      * @memberof RemoteLogsService
      */
-    listDownloadLogs(channelId: string, page?: number): Observable<UbiAccessLogsResponse> {
-        return this.listAccessLogs(channelId, 'out', page);
+    listDownloadLogs(channel: UbiChannel, page?: number): Observable<UbiAccessLogsResponse> {
+        return this.listAccessLogs(channel, 'out', page);
     }
 
 
     /**
      * List upload logs by channel.
      *
-     * @param {string} channelId
+     * @param {UbiChannel} channel
      * @param {number} [page]
      * @returns {Observable<UbiLogsResponse>}
      * @memberof RemoteLogsService
      */
-    listUploadLogs(channelId: string, page?: number): Observable<UbiAccessLogsResponse> {
-        return this.listAccessLogs(channelId, 'in', page);
+    listUploadLogs(channel: UbiChannel, page?: number): Observable<UbiAccessLogsResponse> {
+        return this.listAccessLogs(channel, 'in', page);
     }
 }
