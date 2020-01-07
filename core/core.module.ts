@@ -23,6 +23,7 @@ import { NoopPipe } from './pipes/noop.pipe';
 import { EmptyPipe } from './pipes/noop.pipe copy';
 import { UbiTimezoneResolver } from './resolvers/ubi-timezone.resolver';
 import { UbiObjectFilterPipe } from './pipes/ubi-object-filter.pipe';
+import { UbiTrimDirective } from './directives/ubi-paste-trim/ubi-trim.directive';
 
 /**
  * Core module of common module.
@@ -48,6 +49,7 @@ import { UbiObjectFilterPipe } from './pipes/ubi-object-filter.pipe';
         EmptyPipe,
         UbiVarDirective,
         UbiFieldValueDirective,
+        UbiTrimDirective,
         UbiIpv4InputComponent,
     ],
     exports: [
@@ -66,6 +68,7 @@ import { UbiObjectFilterPipe } from './pipes/ubi-object-filter.pipe';
         UbiVarDirective,
         UbiLazyImgDirective,
         UbiFieldValueDirective,
+        UbiTrimDirective,
         UbiIpv4InputComponent,
     ],
     providers: [ // 用于DI
