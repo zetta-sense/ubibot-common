@@ -77,13 +77,21 @@ export class UbiFieldValueDirective implements OnInit, OnChanges {
 
     private parse(raw: string): number | string {
         const value = parseFloat(raw);
-        const ret = ConvertValueReverse(value, this.ubiFieldValue.field, this.ubiFieldValue.options);
-        return isNaN(ret) ? raw : ret;
+        if (this.ubiFieldValue.field) {
+            const ret = ConvertValueReverse(value, this.ubiFieldValue.field, this.ubiFieldValue.options);
+            return isNaN(ret) ? raw : ret;
+        } else {
+            return raw;
+        }
     }
 
     private format(raw: number): string {
-        const ret = ConvertValue(raw, this.ubiFieldValue.field, this.ubiFieldValue.options);
-        return `${ret}`;
+        if (this.ubiFieldValue.field) {
+            const ret = ConvertValue(raw, this.ubiFieldValue.field, this.ubiFieldValue.options);
+            return `${ret}`;
+        } else {
+            return `${raw}`;
+        }
     }
 
 }

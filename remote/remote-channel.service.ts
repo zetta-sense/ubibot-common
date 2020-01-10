@@ -600,6 +600,10 @@ export class RemoteChannelService {
         return this.update(channelId, payload);
     }
 
+    updateTimezone(channelId: string, timezone: string): Observable<any> {
+        return this.update(channelId, { timezone: timezone });
+    }
+
     updateLatLng(channelId: string, lat: number, lng: number): Observable<any> {
         return this.update(channelId, { latitude: lat, longitude: lng });
     }

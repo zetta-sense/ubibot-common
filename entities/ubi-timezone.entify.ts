@@ -76,4 +76,15 @@ export class UbiTimezone {
         // 能够set到preferredTimezone就代表是有效的
         return timezone;
     }
+
+
+    /**
+     * Return a timezone map copy.
+     *
+     * @returns {UbiTimezoneMap}
+     * @memberof UbiTimezone
+     */
+    getTimezones(): UbiTimezoneMap {
+        return Object.assign({}, this.remoteCache);
+    }
 }
