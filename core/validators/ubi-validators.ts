@@ -39,6 +39,13 @@ export const UbiValidators: { [key: string]: ValidatorFn } = {
         let passed = pattern.test(control.value);
         return passed ? null : { 'invalidChannelName': { value: control.value } };
     },
+    fieldName: (control: AbstractControl): { [key: string]: any } | null => {
+        if (!control.value) return null;
+
+        const pattern = /^[^<|>]{1,20}$/i;
+        let passed = pattern.test(control.value);
+        return passed ? null : { 'invalidFieldName': { value: control.value } };
+    },
     email: (control: AbstractControl): { [key: string]: any } | null => {
         if (!control.value) return null;
 

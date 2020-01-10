@@ -590,6 +590,16 @@ export class RemoteChannelService {
         );
     }
 
+    updateFieldName(channelId: string, fieldKey: string, newFieldName: string): Observable<any> {
+        if (!/^field\d+$/i.test(fieldKey)) {
+            throw new UbiError('Field should be in pattern fieldXX');
+        }
+
+        const payload = {};
+        payload[fieldKey] = newFieldName;
+        return this.update(channelId, payload);
+    }
+
     updateLatLng(channelId: string, lat: number, lng: number): Observable<any> {
         return this.update(channelId, { latitude: lat, longitude: lng });
     }
