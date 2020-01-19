@@ -17,6 +17,8 @@ export enum EnumAppConstant {
     RESET_LOGIN_PAGE = 'ubi::reset_login_page',
 
     DIALOG_CUSTOM_LIST_VIEW_SINGLETON_ID = 'ubi_dialog_custom_list_view_singleton',
+
+    STORAGE_APP_EXECUTED = 'ubi_app_executed',
 }
 
 

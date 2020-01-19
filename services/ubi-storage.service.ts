@@ -1,6 +1,7 @@
 import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 import * as _ from 'lodash';
 import { Observable, of } from 'rxjs';
+import { EnumAppConstant } from '../enums/enum-app-constant.enum';
 
 export const UBIBOT_STORAGE_AGENT = new InjectionToken<UbiStorageAgent>('UBIBOT_UTILS_DIALOG_AGENT');
 
@@ -58,7 +59,13 @@ export class UbiStorageService {
     }
 
     clear(): void {
+        const appExecuted = this.get(EnumAppConstant.STORAGE_APP_EXECUTED);
+
         this.storageAgent.clear();
+
+        if (appExecuted != null) {
+            this.save(EnumAppConstant.STORAGE_APP_EXECUTED, appExecuted);
+        }
     }
 
     remove(key: string): void {
