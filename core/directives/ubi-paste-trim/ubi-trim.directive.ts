@@ -85,11 +85,12 @@ export class UbiTrimDirective implements ControlValueAccessor {
 
     /**
      * Updates the value on the input event.
+     * 于ios使用中文ime时有bug
      */
-    @HostListener("input", ["$event.type", "$event.target.value"])
-    onInput(event: string, value: string): void {
-        this.updateValue(event, value);
-    }
+    // @HostListener("input", ["$event.type", "$event.target.value"])
+    // onInput(event: string, value: string): void {
+    //     this.updateValue(event, value);
+    // }
 
     onChange = (_: any) => { };
 
