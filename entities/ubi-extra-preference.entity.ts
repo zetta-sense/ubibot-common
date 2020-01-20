@@ -11,6 +11,12 @@ export enum UbiExtraPreferenceDateTimeFormat {
      */
     STYLE_2 = 'MM/dd/yyyy HH:mm:ss',
 
+
+    /**
+     * 英国
+     */
+    STYLE_3 = 'dd/MM/yyyy HH:mm:ss',
+
 }
 
 /**
