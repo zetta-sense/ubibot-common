@@ -674,7 +674,7 @@ export class UbiUtilsService {
 
                 const pack: UbiFeedPack = map[k];
                 // 不使用正则尽量提高performance
-                if (pack && v) {
+                if (pack && v != null) {
                     const value = ConvertValue(v, pack.field, opts);
                     // const point: UbiDataChartPoint = { x: new Date(createdAt).getTime(), y: value };
                     const point: UbiDataChartPoint = { x: createdAtTimestamp, y: value };
