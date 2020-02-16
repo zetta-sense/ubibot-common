@@ -653,8 +653,8 @@ export class UbiUtilsService {
                 field: field,
                 title: fieldName,
                 series: [serie_1],
-                start: new Date(start), // 注意，目前服务器返回的x数据已修改为long，这里用的Date，混用虽然目前未发现问题，但不排除以后
-                end: new Date(end), // 注意，目前服务器返回的x数据已修改为long，这里用的Date，混用虽然目前未发现问题，但不排除以后
+                start: new Date(start), // 注意，这里是Date类型，feeds里面是number
+                end: new Date(end), // 注意，这里是Date类型，feeds里面是number
 
                 feedType: type || UbiFeedType.Sampling,
             };

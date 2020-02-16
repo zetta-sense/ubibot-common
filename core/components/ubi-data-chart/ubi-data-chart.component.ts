@@ -8,7 +8,7 @@ import * as HighchartsThemeDarkUnica from 'highcharts/themes/dark-unica';
 import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
 import { TranslateService } from '@ngx-translate/core';
 import { UbiUtilsService, _NF_ } from '../../../services/ubi-utils.service';
-import { take } from 'rxjs/operators';
+import { take, delay } from 'rxjs/operators';
 import { UbiFeedType } from 'src/modules/ubibot-common/remote/remote-channel.service';
 
 // ref: https://github.com/highcharts/highcharts-angular#theme
@@ -77,6 +77,12 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     highchartsOptions: Highcharts.Options = {
         chart: {
             type: 'line',
+            animation: false,
+        },
+        plotOptions: {
+            series: {
+                animation: false,
+            },
         },
         title: {},
         subtitle: {},
@@ -411,7 +417,10 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     private updateData() {
         if (this.chart && this.data) {
             // tag: 避免changed after check
-            this.ngZone.onStable.pipe(take(1)).subscribe(() => {
+            this.ngZone.onStable.pipe(
+                take(1),
+                // delay(5000),
+            ).subscribe(() => {
                 // console.log('data=', this.data);
                 this.data.forEach((serie: UbiDataChartSerie) => {
                     let existedSerie: any = _.find(this.highchartsOptions.series, { name: serie.name });
@@ -425,12 +434,14 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     if (existedSerie) {
                         existedSerie.data = newDataPoints;
                     } else {
+                        // console.log(newDataPoints);
                         // @ts-ignore
                         this.chart.addSeries({
                             type: 'line', // line, area
                             // fillColor: 'rgba(127,127,127,0.1)',  // When you set an explicit fillColor, the fillOpacity is not applied.
                             id: serie.label,
                             name: serie.label,
+                            turboThreshold: 100,
                             data: newDataPoints,
                             color: '#a1c2fc', // 连线
                             // Instead, you should define the opacity in the fillColor with an rgba color definition.

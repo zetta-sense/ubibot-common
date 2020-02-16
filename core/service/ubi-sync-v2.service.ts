@@ -14,6 +14,11 @@ export interface UbiSyncV2Mixer<T> {
     merge: (t: T) => Observable<T>;
 }
 
+export interface UbiMakeSyncResult<T> {
+    data: Observable<T>,
+    error: Observable<any>,
+}
+
 @Injectable()
 export class UbiSyncV2Service implements OnDestroy {
 
@@ -23,7 +28,7 @@ export class UbiSyncV2Service implements OnDestroy {
 
     private refreshed$ = new Subject<void>();
 
-    private error$ = new Subject<any>();
+    // private error$ = new Subject<any>();
 
     constructor(
         private ubiUtils: UbiUtilsService,
@@ -54,7 +59,7 @@ export class UbiSyncV2Service implements OnDestroy {
      * @param {number} [syncDelay=500]
      * @param {number} [syncInterval=5 * 60 * 1000]
      * @param {boolean} [syncNoErrors=false]
-     * @returns {Observable<T>}
+     * @returns {UbiMakeSyncResult<T>}
      * @memberof UbiSyncV2Service
      */
     makeSync<T>(
@@ -62,8 +67,9 @@ export class UbiSyncV2Service implements OnDestroy {
         syncDelay: number = 500,
         syncInterval: number = 5 * 60 * 1000,
         syncNoErrors: boolean = false,
-    ): Observable<T> {
-        return merge(
+    ): UbiMakeSyncResult<T> {
+        const error$ = new Subject<any>();
+        const data$ = merge(
             // 按时pull的信号，如果pause了则不产生
             timer(syncDelay, syncInterval).pipe(
                 switchMap((x) => {
@@ -87,7 +93,7 @@ export class UbiSyncV2Service implements OnDestroy {
                     catchError((err) => {
                         // 如果syncNoErrors = true则忽略错误
                         if (!syncNoErrors) {
-                            this.error$.next(err);
+                            error$.next(err);
                         }
                         return EMPTY;
                     }),
@@ -99,7 +105,7 @@ export class UbiSyncV2Service implements OnDestroy {
                     catchError((err) => {
                         // 如果syncNoErrors = true则忽略错误
                         if (!syncNoErrors) {
-                            this.error$.next(err);
+                            error$.next(err);
                         }
                         return EMPTY;
                     }),
@@ -107,10 +113,15 @@ export class UbiSyncV2Service implements OnDestroy {
             }),
             tap(() => this.refreshed$.next()),
             finalize(() => {
-                console.log('SyncMixer observable complete!');
-                this.error$.complete();
+                // console.log('SyncMixer observable complete!');
+                error$.complete();
             }),
         );
+
+        return {
+            data: data$,
+            error: error$,
+        };
     }
 
 
@@ -147,9 +158,9 @@ export class UbiSyncV2Service implements OnDestroy {
      * @returns {Observable<any>}
      * @memberof UbiSyncV2Service
      */
-    onError(): Observable<any> {
-        return this.error$;
-    }
+    // onError(): Observable<any> {
+    //     return this.error$;
+    // }
 
     ngOnDestroy() {
         console.log(`UbiSyncV2Service destroyed...`);
