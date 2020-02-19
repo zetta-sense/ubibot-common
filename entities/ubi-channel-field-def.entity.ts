@@ -67,6 +67,46 @@ export enum UbiChannelFieldDefScaleType {
      * DS18B20外接探头温度
      */
     DS18B20_EXT_TEMPERATURE = '14',
+
+    /**
+     * 智能开关功率状态
+     */
+    SWITCH_STATE = '16',
+
+    /**
+     * 智能开关功率电流
+     */
+    SWITCH_FLOW = '17',
+
+    /**
+     * 智能开关功率
+     */
+    SWITCH_POWER = '18',
+
+    /**
+     * 智能开关功率累计用电量
+     */
+    SWITCH_ACCUMULATED_CONSUMPTION = '19',
+
+    /**
+     * CO2外接
+     */
+    CO2_EXT = '20',
+
+    /**
+     * 风速
+     */
+    WIND_VELOCITY = '21',
+
+    /**
+     * 人感变动
+     */
+    HUMAN_DETECTION_PULSE = '22',
+
+    /**
+     * 人感状态
+     */
+    HUMAN_DETECTION = '30',
 }
 
 export class UbiChannelFieldDef {

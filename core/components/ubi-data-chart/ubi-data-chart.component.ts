@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import * as Highcharts from 'highcharts/highstock';
 import * as HighchartsThemeDarkUnica from 'highcharts/themes/dark-unica';
 import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
+import HighchartsBoost from 'highcharts/modules/boost';
 import { TranslateService } from '@ngx-translate/core';
 import { UbiUtilsService, _NF_ } from '../../../services/ubi-utils.service';
 import { take, delay } from 'rxjs/operators';
@@ -13,6 +14,7 @@ import { UbiFeedType } from 'src/modules/ubibot-common/remote/remote-channel.ser
 
 // ref: https://github.com/highcharts/highcharts-angular#theme
 NoDataToDisplay(Highcharts);
+HighchartsBoost(Highcharts);
 
 const MARKUP_FONT_SIZE = 14;
 
@@ -75,6 +77,12 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     };
 
     highchartsOptions: Highcharts.Options = {
+        boost: {
+            debug: {
+                timeSeriesProcessing: true,
+                showSkipSummary: true,
+            }
+        },
         chart: {
             type: 'line',
             animation: false,
@@ -82,6 +90,14 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         plotOptions: {
             series: {
                 animation: false,
+                // turboThreshold: 100,
+                boostThreshold: 1,
+                softThreshold: false,
+                threshold: 0,
+                // dataGrouping: {
+                //     groupAll: true,
+                //     groupPixelWidth: 10,
+                // },
             },
         },
         title: {},
@@ -117,6 +133,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             }
         },
         tooltip: {
+            // useHTML: true,
             // xDateFormat: '%Y-%m-%d %H:%M:%S',
         },
         legend: {
@@ -434,14 +451,15 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     if (existedSerie) {
                         existedSerie.data = newDataPoints;
                     } else {
-                        // console.log(newDataPoints);
+                        // console.log(newDataPoints.length);
                         // @ts-ignore
                         this.chart.addSeries({
                             type: 'line', // line, area
                             // fillColor: 'rgba(127,127,127,0.1)',  // When you set an explicit fillColor, the fillOpacity is not applied.
                             id: serie.label,
                             name: serie.label,
-                            turboThreshold: 100,
+                            // turboThreshold: 20,
+                            // softThreshold: true,
                             data: newDataPoints,
                             color: '#a1c2fc', // 连线
                             // Instead, you should define the opacity in the fillColor with an rgba color definition.
@@ -502,8 +520,8 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     title: `${this.translate.instant('APP.COMMON.MAX')}: ${_NF_(this.maxPoint.y, decimalPlace)} ${this.unit}`,
                 };
 
-                // 扩大y轴upper范围
-                (this.highchartsOptions.yAxis as any).max = this.maxPoint.y + Math.abs(diff * upperLowerBoundScale);
+                // 扩大y轴upper范围，如果min==max则取1，让y轴位于0-1
+                (this.highchartsOptions.yAxis as any).max = this.maxPoint.y + Math.abs((diff * upperLowerBoundScale || 1));
 
                 pointsToAdd.push(maxPoint);
             }
