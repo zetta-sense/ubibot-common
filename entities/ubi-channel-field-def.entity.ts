@@ -68,6 +68,9 @@ export enum UbiChannelFieldDefScaleType {
      */
     DS18B20_EXT_TEMPERATURE = '14',
 
+
+    // tag: The following is updated according to UBIAPP2-58
+
     /**
      * 智能开关功率状态
      */
