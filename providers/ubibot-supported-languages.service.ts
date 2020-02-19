@@ -25,6 +25,9 @@ export class UbibotSupportedLanguagesService {
         }, {
             label: 'English',
             key: 'en-GB',
+        }, {
+            label: '日本語',
+            key: 'ja-JP',
         }];
     }
 
