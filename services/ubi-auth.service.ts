@@ -174,6 +174,12 @@ export class UbiAuthService {
         return this.me() && this.me().account.user_id;
     }
 
+    /**
+     * return current token
+     *
+     * @returns
+     * @memberof UbiAuthService
+     */
     token() {
         try {
             let resp = JSON.parse(this.ubiStorage.get(this.getStorageKey()));
