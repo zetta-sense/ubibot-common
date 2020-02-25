@@ -22,8 +22,8 @@ export interface UbiMe {
         mobile: string;
         email: string;
 
-        email_status: string;
-        mobile_status: string;
+        email_status: string; // live,pending
+        mobile_status: string; // live,pending
 
         balance: string;
         timezone: string;
