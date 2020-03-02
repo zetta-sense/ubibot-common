@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { UbiExtraPreferenceTempScale } from "./ubi-extra-preference.entity";
 import { EnumBasicProductId } from "../enums/enum-basic-product-id.enum";
 import { Subject } from "rxjs";
+import { UbiChannelVConfig } from "./ubi-channel-vconfig.entity";
 
 export interface UbiValueOptions {
     tempScale?: UbiExtraPreferenceTempScale,
@@ -595,6 +596,8 @@ export class UbiChannelDAO extends UbiChannel {
 
     private onChanged$: Subject<UbiChannelDAO> = new Subject();
 
+    private vconfigParsed: UbiChannelVConfig;
+
     constructor(channel: UbiChannel) {
         super();
 
@@ -638,6 +641,10 @@ export class UbiChannelDAO extends UbiChannel {
             }
         });
 
+        // 构建vconfigParsed
+        const vconfig: UbiChannelVConfig = UbiChannelVConfig.FromString(this.vconfig);
+        this.vconfigParsed = vconfig;
+
         this.onChanged$.next(this);
     }
 
@@ -651,6 +658,16 @@ export class UbiChannelDAO extends UbiChannel {
 
     private __extractFields(): UbiChannelFields<UbiChannelFieldDef> {
         return UbiChannelFields.ConvertFromChannel(this);
+    }
+
+    /**
+     * 返回一个稳定的vconfig parsed
+     *
+     * @returns {UbiChannelVConfig}
+     * @memberof UbiChannelDAO
+     */
+    getParsedVConfig(): UbiChannelVConfig {
+        return this.vconfigParsed;
     }
 
 

@@ -554,6 +554,22 @@ export class RemoteChannelService {
         );
     }
 
+    sendCommand(channelId: string, command: string, position?: number): Observable<any> {
+        if (!channelId) throw new UbiError('Channel ID is required for this API!');
+
+        let formData: FormData = new FormData();
+        formData.append('command_string', command);
+        if (position != null) {
+            formData.append('position', `${position}`);
+        }
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/commands`;
+        return this.http.post(url, formData).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
 
 
     /**

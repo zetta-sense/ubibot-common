@@ -47,6 +47,7 @@ export enum EnumAppError {
     SERVER_DATA_SYNC_ERROR = '1481',
     RETRIEVE_USER_PREFERENCE_ERROR = '1482',
     CHANNEL_NOT_RESOLVED = '1483',
+    MQTT_INIT_FAILED = '1484',
 
     SERVICE_NOT_AVAILABLE = '2000', // 一般内部使用，不需要翻译
     UNKNOWN_TYPE = '2001', // 一般内部使用，不需要翻译

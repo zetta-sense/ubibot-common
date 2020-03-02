@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -44,7 +44,7 @@ export class UbibotCommonConfigService {
     public readonly UsbReadMaxRetry = 30; // 重试次数
     public readonly UsbReadInterval = 500; // 30 * 0.5 s,稍微频发点读取加快响应时间
     public readonly UsbReadIntervalTimeout = 60 * 60 * 1000; // 每次on data的超时限制,一般只有read data时才需要限制,
-                                                             // 当然这个值必须大于 2*read interval + UsbReadOKMinInterval
+    // 当然这个值必须大于 2*read interval + UsbReadOKMinInterval
     public readonly UsbReadDelay = 100;
     public readonly UsbSendCommandTimeout = 5 * 1000;
     public readonly UsbReadOKMinInterval = 1000; // 要判断为读取结束时最后输入离现在的最少间隔
@@ -188,4 +188,7 @@ export class UbibotCommonConfigService {
         return this.DeployAgent === 'cn';
     }
 
+    getMqttEndPoint(): string {
+        return this.EndPoint.replace(/https:\/\/api\./, 'ws://mqtt.') + ':8083/mqtt';
+    }
 }

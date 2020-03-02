@@ -9,6 +9,13 @@ export enum VConfigItemHidden {
     No = '0'
 }
 
+
+/**
+ * Field 1 ~ N with {VConfigItem}
+ *
+ * @export
+ * @class UbiChannelVConfig
+ */
 export class UbiChannelVConfig {
 
     [fieldX: string]: VConfigItem;;
