@@ -383,6 +383,9 @@ export class UbiUtilsService {
                 } else if (ubiServerError.errorCode == 'permission_denied'
                     && ubiServerError.desp == 'You can not share channels to yourself') {
                     ret = `${this.parseError(new UbiError(EnumAppError.INVALID_SHARE_SELF))}`;
+                } else if (ubiServerError.errorCode == 'permission_denied'
+                    && ubiServerError.desp == 'Incorrect email_code') {
+                    ret = `${this.parseError(new UbiError(EnumAppError.INVALID_EMAIL_CODE))}`;
                 } else {
                     ret = `server: ${ubiServerError.desp}`;
                 }

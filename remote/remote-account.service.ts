@@ -396,7 +396,7 @@ export class RemoteAccountService {
      * @memberof RemoteAccountService
      */
     registerByMobile(mobile: string, sms_code: string, username: string, password: string): Observable<any> {
-        if (!mobile) throw new UbiError('Email is required for this API!');
+        if (!mobile) throw new UbiError('Mobile is required for this API!');
         if (!sms_code) throw new UbiError('sms_code is required for this API!');
         if (!username) throw new UbiError('Username is required for this API!');
         if (!password) throw new UbiError('Password is required for this API!');
@@ -430,13 +430,141 @@ export class RemoteAccountService {
      * @memberof RemoteAccountService
      */
     sendSMSRegisterCode(mobile: string): Observable<any> {
-        if (!mobile) throw new UbiError('Email is required for this API!');
+        if (!mobile) throw new UbiError('Mobile is required for this API!');
 
         const params = {
             mobile: mobile,
         };
 
         let url = `${this.ubibotCommonConfig.EndPoint}/accounts/create_mobile_step1`;
+        return this.http.post(url, params).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
+
+
+    /**
+     * Add Email Address and Send Verify Code (Internal)
+     * 适用于短信或其他注册方式，后添加邮箱绑定。
+     * send an HTTP GET/POST request to http://api.ubibot.cn/accounts/verify/add_email_send_verify
+     *
+     *
+     * 如果账户已经绑定邮箱(email_status是live)，不能通过此种接口来修改邮箱。如果email_status是pending, 可以用此接口改其他邮箱。
+     * Valid request parameters:
+     * account_key or token_id (string) - account_key  is User's account key; token_id  is obtained through login API (required).
+     * email   (string) – (required): new email address
+     *
+     * @param {string} email
+     * @returns {Observable<any>}
+     * @memberof RemoteAccountService
+     */
+    addEmailSendVerify(email: string): Observable<any> {
+        if (!email) throw new UbiError('Email is required for this API!');
+
+        let formData: FormData = new FormData();
+        formData.append('email', email);
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/verify/add_email_send_verify`;
+        return this.http.post(url, formData).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
+
+
+    /**
+     * Verify Email Address  First Time (Internal)
+     * 注册后首次进行邮箱验证
+     * send an HTTP GET/POST request to http://api.ubibot.cn/accounts/verify/email_verify
+     *
+     *
+     * Valid request parameters:
+     * email (string) - (required).
+     * email_code (string) – (required)
+     *
+     * @param {string} email
+     * @param {string} code
+     * @returns {Observable<any>}
+     * @memberof RemoteAccountService
+     */
+    verifyEmail(email: string, code: string): Observable<any> {
+        if (!email) throw new UbiError('Email is required for this API!');
+        if (!code) throw new UbiError('Code is required for this API!');
+
+        let formData: FormData = new FormData();
+        formData.append('email', email);
+        formData.append('email_code', code);
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/verify/email_verify`;
+        return this.http.post(url, formData).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
+
+
+    /**
+     * 手机添加绑定-第1步：仅限于账户未绑定过任何手机号
+     * send an HTTP GET/POST to http://api.ubibot.cn/accounts/bind_mobile_step1
+     * Valid request parameters:
+     *
+     * account_key or token_id (string) - account_key  is User's account key; token_id  is obtained through login API (required).
+     *
+     * JSON Body FIELDS:
+     * mobile
+     *
+     * @param {string} mobile
+     * @returns {Observable<any>}
+     * @memberof RemoteAccountService
+     */
+    addMobileSendVerify(mobile: string): Observable<any> {
+        if (!mobile) throw new UbiError('Mobile is required for this API!');
+
+        let params = {
+            mobile: mobile,
+        };
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/bind_mobile_step1`;
+        return this.http.post(url, params).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
+
+    /**
+     * 手机添加绑定-第2步：仅限于账户未绑定过任何手机号
+     * send an HTTP GET/POST to http://api.ubibot.cn/accounts/bind_mobile_step2
+     *
+     * Valid request parameters:
+     *
+     * account_key or token_id (string) - account_key  is User's account key; token_id  is obtained through login API (required).
+     *
+     *
+     * JSON Body FIELDS:
+     *
+     * mobile, sms_code
+     * sms_code为用户收到短信
+     *
+     * @param {string} mobile
+     * @param {string} code
+     * @returns {Observable<any>}
+     * @memberof RemoteAccountService
+     */
+    verifyMobile(mobile: string, code: string): Observable<any> {
+        if (!mobile) throw new UbiError('Mobile is required for this API!');
+        if (!code) throw new UbiError('Code is required for this API!');
+
+        let params = {
+            mobile: mobile,
+            sms_code: code,
+        };
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/bind_mobile_step2`;
         return this.http.post(url, params).pipe(
             map((resp: any) => {
                 return resp;
