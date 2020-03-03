@@ -5,16 +5,20 @@ import {
     Inject,
     Input,
     Optional,
-    Renderer2
+    Renderer2,
+    NgZone
 } from "@angular/core";
 import {
     COMPOSITION_BUFFER_MODE,
     ControlValueAccessor,
-    NG_VALUE_ACCESSOR
+    NG_VALUE_ACCESSOR,
+    NgControl,
 } from "@angular/forms";
 
 /**
  * 用于对特定event进行trim input
+ *
+ * 注意必须要用formControl
  *
  * Ref: https://github.com/anein/angular2-trim-directive
  *
@@ -24,9 +28,9 @@ import {
  */
 @Directive({
     selector: "input[ubi-trim], textarea[ubi-trim]",
-    providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: UbiTrimDirective, multi: true }]
+    // providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: UbiTrimDirective, multi: true }]
 })
-export class UbiTrimDirective implements ControlValueAccessor {
+export class UbiTrimDirective {
 
     @Input()
     set type(value: string) {
@@ -61,27 +65,52 @@ export class UbiTrimDirective implements ControlValueAccessor {
     // Source services to modify elements.
     private _sourceRenderer: Renderer2;
     private _sourceElementRef: ElementRef;
+    private _sourceControl: NgControl;
 
     /**
      * Updates the value on the blur event.
      */
-    @HostListener("blur", ["$event.type", "$event.target.value"])
+    @HostListener("change", ["$event.type", "$event.target.value"])
     onBlur(event: string, value: string): void {
-        // console.log('it;s blur...');
+        console.log('it change...');
 
-        this.updateValue(event, value);
+        // console.log(this);
+
+        // (this._sourceElementRef.nativeElement as HTMLInputElement).value = value.trim();
+
+        // this.updateValue(event, value);
+
+        console.log(this._sourceControl);
+        // (this._sourceElementRef.nativeElement as HTMLInputElement).value = value.trim();
+        this._sourceControl.control.setValue(value.trim());
+        this._sourceControl.control.updateValueAndValidity();
+
         this.onTouched();
     }
 
     // tag: paste event的target value有延迟问题，目前不能实现
-    // @HostListener("paste", ["$event.type", "$event.target.value", "$event"])
-    // onPaste(event: string, value: string, e): void {
-    //     // console.log('it;s paste...');
-    //     console.log('safdsf??  ', value, e.target.value);
+    @HostListener("paste", ["$event.type", "$event.target.value", "$event"])
+    onPaste(event: string, value: string, e): void {
+        // let content = e.clipboardData.getData('text/plain');
+        // console.log('it paste...', content);
 
-    //     this.updateValue(event, value);
-    //     this.onTouched();
-    // }
+        // this._sourceControl.control.setValue(content.trim());
+        // this._sourceControl.control.markAsDirty();
+        // this._sourceControl.control.updateValueAndValidity();
+
+
+        // this.onTouched();
+
+        setTimeout(() => { // 必须用setTimeout, ngZone都不行
+            let v = this._sourceControl.value;
+            console.log('it paste...');
+
+            this._sourceControl.control.setValue(v.trim());
+            this._sourceControl.control.updateValueAndValidity();
+
+            this.onTouched();
+        });
+    }
 
     /**
      * Updates the value on the input event.
@@ -99,10 +128,13 @@ export class UbiTrimDirective implements ControlValueAccessor {
     constructor(
         @Inject(Renderer2) renderer: Renderer2,
         @Inject(ElementRef) elementRef: ElementRef,
+        @Inject(NgControl) control: NgControl,
+        private ngZone: NgZone,
         @Optional() @Inject(COMPOSITION_BUFFER_MODE) compositionMode: boolean
     ) {
         this._sourceRenderer = renderer;
         this._sourceElementRef = elementRef;
+        this._sourceControl = control;
     }
 
     registerOnChange(fn: (_: any) => void): void { this.onChange = fn; }
@@ -207,5 +239,9 @@ export class UbiTrimDirective implements ControlValueAccessor {
 
         // write the cursor position
         this.setCursorPointer(cursorPosition, hasTypedSymbol);
+
+
+        // this._sourceControl.control.markAsDirty();
+        this._sourceControl.control.updateValueAndValidity();
     }
 }
