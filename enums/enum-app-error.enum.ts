@@ -44,6 +44,7 @@ export enum EnumAppError {
     DEVICE_SHARE_ID_NOT_FOUND = '1420',
     INVALID_EMAIL_CODE = '1421', // 邮箱验证码
     SOMETHING_WRONG_WITH_MOBILE = '1422',
+    INVALID_PHONE_FORMAT = '1423', // 电话格式错误，目前由页面直接处理错误信息，不交由parseError处理
 
     SERVER_ACCESS_TIMEOUT = '1480',
     SERVER_DATA_SYNC_ERROR = '1481',

@@ -80,7 +80,7 @@ export class UbiTrimDirective {
 
         // this.updateValue(event, value);
 
-        console.log(this._sourceControl);
+        // console.log(this._sourceControl);
         // (this._sourceElementRef.nativeElement as HTMLInputElement).value = value.trim();
         this._sourceControl.control.setValue(value.trim());
         this._sourceControl.control.updateValueAndValidity();

@@ -1,4 +1,5 @@
 import { ValidatorFn, AbstractControl } from "@angular/forms";
+import { parsePhoneNumberFromString, PhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 
 export const UbiValidators: { [key: string]: ValidatorFn } = {
     positiveInteger: (control: AbstractControl): { [key: string]: any } | null => {
@@ -79,7 +80,11 @@ export const UbiValidators: { [key: string]: ValidatorFn } = {
 
         const pattern = /^[+]\d{6,}$/i;
         const passed = pattern.test(control.value);
-        return passed ? null : { 'invalidPhoneIO': { value: control.value } };
+
+        let passed2 = false;
+        try { passed2 = !!parsePhoneNumber(control.value) } catch (e) { };
+
+        return passed && passed2 ? null : { 'invalidPhoneIO': { value: control.value } };
     },
     ascii: (control: AbstractControl): { [key: string]: any } | null => {
         if (!control.value) return null;
