@@ -1,4 +1,4 @@
-import { ValidatorFn, AbstractControl } from "@angular/forms";
+import { ValidatorFn, AbstractControl, FormArray } from "@angular/forms";
 import { parsePhoneNumberFromString, PhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 
 export const UbiValidators: { [key: string]: ValidatorFn } = {
@@ -154,4 +154,19 @@ export const UbiValidators: { [key: string]: ValidatorFn } = {
         } catch (e) { }
         return { 'invalidTime': { value: control.value } };
     },
+    formArrayDuplicated: (control: FormArray) => {
+        const values: string[] = control.value;
+
+        const vMap: { [key: string]: number } = {};
+        values.forEach((v) => {
+            if (v != null && v.trim() != '') {
+                vMap[v] = vMap[v] + 1 || 1;
+            }
+        });
+
+        const duplicatedArray = values.filter((v) => vMap[v] > 1);
+        const duplicatedCount = duplicatedArray.length;
+
+        return !duplicatedCount ? null : { 'duplicated': duplicatedArray };
+    }
 };
