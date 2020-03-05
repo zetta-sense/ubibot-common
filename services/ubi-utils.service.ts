@@ -19,6 +19,7 @@ import { UbiChannelFieldDef } from '../entities/ubi-channel-field-def.entity';
 import { UbiEventService } from './ubi-event.service';
 import { UbiLanguageDef, UbibotSupportedLanguagesService } from '../providers/ubibot-supported-languages.service';
 import { UbiStorageService } from './ubi-storage.service';
+import { UbiFeedsConverterEngine, UbiFeedPack } from './base/ubi-feeds-converter.engine';
 
 export const UBIBOT_UTILS_DIALOG_AGENT = new InjectionToken<UbibotUtilsDialogAgent>('UBIBOT_UTILS_DIALOG_AGENT');
 
@@ -56,32 +57,12 @@ export interface UbiServerResponseError {
 }
 
 
-export interface UbiFeedPack {
-    index?: number; // 仅用于排序
-    visible?: boolean;
-
-    key: string, // field1, ...
-    title: string,
-    field: UbiChannelFieldDef,
-    series: UbiDataChartSerie[],
-
-    feedType: UbiFeedType,
-
-    maxPoint?: UbiDataChartPoint,
-    minPoint?: UbiDataChartPoint,
-
-    avg?: number,
-    sum?: number,
-
-    start: Date, // 整个resp数据的开始日期
-    end: Date,  // 整个resp数据的结束日期
-}
-
-
 @Injectable({
     providedIn: 'root'
 })
 export class UbiUtilsService {
+
+    private feedsConverterEngine: UbiFeedsConverterEngine = new UbiFeedsConverterEngine();
 
     constructor(
         private commonConfigService: UbibotCommonConfigService,
@@ -623,115 +604,7 @@ export class UbiUtilsService {
      * @memberof UbiUtilsService
      */
     extractFeeds(resp: UbiFeedsResponse, opts?: UbiValueOptions, type?: UbiFeedType): UbiFeedPack[] {
-        const channel: UbiChannelDAO = new UbiChannelDAO(resp.channel);
-        const fields: UbiChannelFieldDef[] = channel.getFields().getEnabledFieldDefs()
-
-        // 追加头尾两端的端点
-        // tag: 必须要转换为number, 如果是string, 可能由于带有zone time的关系导致比较错误
-        const start: number = new Date(resp.start).getTime();
-        const end: number = new Date(resp.end).getTime();
-
-        const map: { [key: string]: UbiFeedPack } = {};
-
-        // 构建每个field的pack
-        for (let i = 0; i < fields.length; i++) {
-            const field: UbiChannelFieldDef = fields[i];
-            const fieldKey = field.key;
-            const fieldName = field.label;
-
-            const data: UbiDataChartPoint[] = [];
-
-            // tag: mock data to debug
-            // resp.feeds = [
-            //     { created_at: '2019-05-22T21:30:39+08:00', field1: 1 },
-            //     { created_at: '2019-05-22T21:30:39+08:05', field1: 2.1 },
-            //     { created_at: '2019-05-22T21:30:39+08:09', field1: 1.4 },
-            //     { created_at: '2019-05-22T21:30:39+08:15', field1: 1.8 },
-            // ];
-
-            const serie_1: UbiDataChartSerie = {
-                name: fieldKey,
-                label: fieldName,
-                data: data,
-            };
-
-            map[fieldKey] = {
-                index: i,
-                visible: true,
-
-                key: fieldKey,
-                field: field,
-                title: fieldName,
-                series: [serie_1],
-                start: new Date(start), // 注意，这里是Date类型，feeds里面是number
-                end: new Date(end), // 注意，这里是Date类型，feeds里面是number
-
-                feedType: type || UbiFeedType.Sampling,
-            };
-        }
-
-        // 归纳数据
-        // let tmpA = Date.now();
-        for (let i = 0; i < resp.feeds.length; i++) {
-            const feed = resp.feeds[i];
-            // const createdAt: string = feed.created_at;
-            const createdAtTimestamp: number = feed.created_at_long;
-
-            for (let j = 0; j < fields.length; j++) {
-                const field = fields[j];
-                const k = field.key;
-                const v = feed[k];
-
-                const pack: UbiFeedPack = map[k];
-                // 不使用正则尽量提高performance
-                if (pack && v != null) {
-                    const value = ConvertValue(v, pack.field, opts);
-                    // const point: UbiDataChartPoint = { x: new Date(createdAt).getTime(), y: value };
-                    const point: UbiDataChartPoint = { x: createdAtTimestamp, y: value };
-                    pack.series[0].data.push(point);
-                }
-            }
-        }
-        // let elapsed = Date.now() - tmpA;
-        // console.log(`elapsed: ${elapsed} ms`);
-
-        // 排序 / 找出最大最小值 / 计算平均值
-        const ret: UbiFeedPack[] = _.values(map);
-        for (let i = 0; i < ret.length; i++) {
-            const pack = ret[i];
-            const data = pack.series[0].data;
-
-            // asc sort
-            data.sort((a, b) => a.x - b.x);
-
-            const first = _.first(data);
-            // console.log(!!start, !_.find(data, { x: start }), (!first || first.x > start));
-            // tag: 插入开始点
-            if (!isNaN(start) && !_.find(data, { x: start }) && (!first || first.x > start) && data.length) {
-                // console.log('adding first point');
-                data.unshift({ x: start, y: null });
-            }
-
-            const last = _.last(data);
-            // tag: 插入结束点
-            if (!isNaN(end) && !_.find(data, { x: end }) && (!last || last.x < end) && data.length) {
-                // console.log('adding last point');
-                data.push({ x: end, y: null });
-            }
-
-
-            const dataFiltered = _.filter(data, (o: UbiDataChartPoint) => o.y != null); // 去除y空值点
-            const maxPoint = _.maxBy(dataFiltered, (o: UbiDataChartPoint) => o.y);
-            const minPoint = _.minBy(dataFiltered, (o: UbiDataChartPoint) => o.y);
-            pack.maxPoint = maxPoint;
-            pack.minPoint = minPoint;
-            const sum = dataFiltered.length ? _.reduce(dataFiltered, (sum: number, o: UbiDataChartPoint) => sum + o.y, 0) : null;
-            const avg = dataFiltered.length ? sum / dataFiltered.length : null;
-            pack.sum = sum;
-            pack.avg = avg;
-        }
-
-        return ret;
+        return this.feedsConverterEngine.extractFeeds(resp, opts, type);
     }
 
 

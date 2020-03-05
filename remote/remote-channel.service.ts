@@ -57,6 +57,13 @@ export interface UbiFeedsItem {
     field12?: number;
 }
 
+
+/**
+ * 表示数据类型(平均/采样)
+ *
+ * @export
+ * @enum {number}
+ */
 export enum UbiFeedType {
     Sampling = 'sampling',
     Average = 'average',

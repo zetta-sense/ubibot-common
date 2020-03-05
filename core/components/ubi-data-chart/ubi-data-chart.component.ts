@@ -4,17 +4,20 @@ import * as _ from 'lodash';
 
 // highcharts lib
 import * as Highcharts from 'highcharts/highstock';
-import * as HighchartsThemeDarkUnica from 'highcharts/themes/dark-unica';
+// import * as HighchartsThemeDarkUnica from 'highcharts/themes/dark-unica';
 import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
 import HighchartsBoost from 'highcharts/modules/boost';
+import HighchartsXRange from 'highcharts/modules/xrange';
 import { TranslateService } from '@ngx-translate/core';
 import { UbiUtilsService, _NF_ } from '../../../services/ubi-utils.service';
 import { take, delay } from 'rxjs/operators';
 import { UbiFeedType } from 'src/modules/ubibot-common/remote/remote-channel.service';
+import { UbiFeedsChartType } from '../../../services/base/ubi-feeds-converter.engine';
 
 // ref: https://github.com/highcharts/highcharts-angular#theme
 NoDataToDisplay(Highcharts);
 HighchartsBoost(Highcharts);
+HighchartsXRange(Highcharts);
 
 const MARKUP_FONT_SIZE = 14;
 
@@ -30,6 +33,13 @@ export interface UbiDataChartPoint {
     y: any;
 }
 
+export interface UbiDataChartPointForXRange extends UbiDataChartPoint {
+    x: number;
+    x2: number;
+
+    y: any;
+}
+
 /**
  * Use name to map existed serie.
  *
@@ -39,7 +49,8 @@ export interface UbiDataChartPoint {
 export interface UbiDataChartSerie {
     name: string;
     label: string;
-    data: UbiDataChartPoint[],
+    data: UbiDataChartPoint[];
+    color?: string;
 }
 
 type UbiHighchartsPoint = any[2];
@@ -183,6 +194,14 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
 
     /**
+     * Chart type.
+     *
+     * @type {UbiFeedsChartType}
+     * @memberof UbiDataChartComponent
+     */
+    @Input() chartType: UbiFeedsChartType;
+
+    /**
      * Paint max if not null.
      *
      * @type {UbiDataChartPoint}
@@ -267,6 +286,10 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     }
 
     ngOnInit() {
+        this.highchartsOptions.chart.type = this.chartType;
+        if (this.chartType == UbiFeedsChartType.XRange) {
+            (<any>this.highchartsOptions.yAxis).categories = ['State'];
+        }
     }
 
     ngAfterViewInit(): void {
@@ -439,46 +462,68 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 // delay(5000),
             ).subscribe(() => {
                 // console.log('data=', this.data);
-                this.data.forEach((serie: UbiDataChartSerie) => {
-                    let existedSerie: any = _.find(this.highchartsOptions.series, { name: serie.name });
 
-                    if (!serie.data) {
-                        console.warn('Serie.data should not be null.');
-                    }
+                if (this.chartType === UbiFeedsChartType.XRange) {
+                    this.chart.series.forEach((s) => s.remove());
 
-                    let newDataPoints: UbiHighchartsPoint[] = this.convertUbiDataToHighchartsData(_.concat([], serie.data));
+                    this.data.forEach((serie: UbiDataChartSerie) => {
+                        const newDataPoints: UbiDataChartPointForXRange[] = serie.data as UbiDataChartPointForXRange[];
 
-                    if (existedSerie) {
-                        existedSerie.data = newDataPoints;
-                    } else {
-                        // console.log(newDataPoints.length);
-                        // @ts-ignore
-                        this.chart.addSeries({
-                            type: 'line', // line, area
-                            // fillColor: 'rgba(127,127,127,0.1)',  // When you set an explicit fillColor, the fillOpacity is not applied.
-                            id: serie.label,
-                            name: serie.label,
-                            // turboThreshold: 20,
-                            // softThreshold: true,
-                            data: newDataPoints,
-                            color: '#a1c2fc', // 连线
-                            // Instead, you should define the opacity in the fillColor with an rgba color definition.
-                            lineWidth: 1,// tag: 如果只显示点,则设为0
-                            // connectNulls: true,
-                            // marker: { // 有值的点
-                            //     fillColor: '#3880ff',
-                            //     enabled: true,
-                            //     radius: 1, // 点大小
-                            // },
-                            states: {
-                                hover: {
-                                    lineWidthPlus: 0
+                        let segmentData: any = { data: [] };
+                        for (let i = 0; i < newDataPoints.length; i++) {
+                            const segment: UbiDataChartPointForXRange = newDataPoints[i];
+                            const segmentForHighchart = {
+                                x: segment.x,
+                                x2: segment.x2,
+                                y: 0,
+                                color: segment.y == 1 ? '#ddfddb' : '#fddbdd',
+                            };
+                            segmentData.data.push(segmentForHighchart);
+                        }
+                        this.chart.addSeries(segmentData);
+                    });
+                } else {
+                    this.data.forEach((serie: UbiDataChartSerie) => {
+                        let existedSerie: any = _.find(this.highchartsOptions.series, { name: serie.name });
+
+                        if (!serie.data) {
+                            console.warn('Serie.data should not be null.');
+                        }
+
+                        let newDataPoints: UbiHighchartsPoint[] = this.convertUbiDataToHighchartsData(_.concat([], serie.data));
+
+                        if (existedSerie) {
+                            existedSerie.data = newDataPoints;
+                        } else {
+                            // console.log(newDataPoints.length);
+                            // @ts-ignore
+                            this.chart.addSeries({
+                                // type: 'line', // line, area
+                                // fillColor: 'rgba(127,127,127,0.1)',  // When you set an explicit fillColor, the fillOpacity is not applied.
+                                id: serie.label,
+                                name: serie.label,
+                                // turboThreshold: 20,
+                                // softThreshold: true,
+                                data: newDataPoints,
+                                color: serie.color || '#a1c2fc', // 连线
+                                // Instead, you should define the opacity in the fillColor with an rgba color definition.
+                                lineWidth: 1,// tag: 如果只显示点,则设为0
+                                // connectNulls: true,
+                                // marker: { // 有值的点
+                                //     fillColor: '#3880ff',
+                                //     enabled: true,
+                                //     radius: 1, // 点大小
+                                // },
+                                states: {
+                                    hover: {
+                                        lineWidthPlus: 0
+                                    }
                                 }
-                            }
-                        }, false);
+                            }, false);
 
-                    }
-                });
+                        }
+                    });
+                }
 
                 this.highchartsUpdateFlag = true;
             })
