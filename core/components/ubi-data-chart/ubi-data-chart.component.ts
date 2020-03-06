@@ -53,6 +53,8 @@ export interface UbiDataChartSerie {
     color?: string;
 }
 
+export type UbiDataChartValueFormatter = (value: any) => string;
+
 type UbiHighchartsPoint = any[2];
 
 
@@ -95,7 +97,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             }
         },
         chart: {
-            type: 'line',
+            // type: 'line', // ngOnInit根据pack的chartType初始化此项
             animation: false,
         },
         plotOptions: {
@@ -132,6 +134,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             title: {
                 text: null,// remove side label - Values
             },
+            labels: {},
         },
         lang: {
             noData: "",
@@ -239,6 +242,9 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     @Input() decimalPlace: number;
 
 
+    @Input() valueFormatter: UbiDataChartValueFormatter;
+
+
     /**
      * Optional. Default to undefined.
      *
@@ -286,9 +292,20 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     }
 
     ngOnInit() {
-        this.highchartsOptions.chart.type = this.chartType;
-        if (this.chartType == UbiFeedsChartType.XRange) {
-            (<any>this.highchartsOptions.yAxis).categories = ['State'];
+        const opts: any = this.highchartsOptions;
+
+        if (this.chartType == UbiFeedsChartType.XRange || this.chartType == UbiFeedsChartType.XRangeReversedColor) {
+            opts.chart.type = 'xrange';
+
+            // ref: https://api.highcharts.com/highcharts/yAxis.labels.rotation
+            opts.yAxis.categories = [`${this.translate.instant('APP.COMMON.STATE')}`]; // yAxis的label
+            opts.yAxis.labels.rotation = -90;
+
+            opts.yAxis.crosshair = false;
+            opts.xAxis.crosshair = false;
+
+        } else {
+            opts.chart.type = 'line';
         }
     }
 
@@ -462,27 +479,71 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 // delay(5000),
             ).subscribe(() => {
                 // console.log('data=', this.data);
+                const _self = this;
 
-                if (this.chartType === UbiFeedsChartType.XRange) {
+                if (this.chartType === UbiFeedsChartType.XRange || this.chartType === UbiFeedsChartType.XRangeReversedColor) { // tag: XRange chart
                     this.chart.series.forEach((s) => s.remove());
 
                     this.data.forEach((serie: UbiDataChartSerie) => {
                         const newDataPoints: UbiDataChartPointForXRange[] = serie.data as UbiDataChartPointForXRange[];
 
-                        let segmentData: any = { data: [] };
+                        let segmentData: any = {
+                            name: this.translate.instant('APP.COMMON.STATE'),
+                            borderColor: '#aaa',
+                            borderWidth: 1,
+                            borderRadius: 3,
+                            tooltip: {
+                                // ref: https://api.highcharts.com/highcharts/series.xrange.tooltip.pointFormatter
+                                // ref: https://api.highcharts.com/class-reference/Highcharts
+                                pointFormatter: function () {
+                                    try {
+                                        // console.log(this);
+                                        const stateLabel = this.series.name;
+                                        const yValue = this.custom.y;
+                                        const color = this.color;
+
+                                        let convertedValue: any = yValue;
+                                        if (_self.valueFormatter && typeof _self.valueFormatter === 'function') {
+                                            convertedValue = _self.valueFormatter(yValue);
+                                        }
+
+                                        return `<span style="color:${color}">●</span> ${stateLabel}: <b>${convertedValue}</b><br/>`;
+                                    } catch (e) { }
+                                    return null;
+                                },
+                            },
+                            data: [],
+                        };
+
                         for (let i = 0; i < newDataPoints.length; i++) {
                             const segment: UbiDataChartPointForXRange = newDataPoints[i];
-                            const segmentForHighchart = {
-                                x: segment.x,
-                                x2: segment.x2,
-                                y: 0,
-                                color: segment.y == 1 ? '#ddfddb' : '#fddbdd',
-                            };
-                            segmentData.data.push(segmentForHighchart);
+                            const yValue = segment.y;
+
+                            // (this.highchartsOptions.yAxis as any).max = this.maxPoint.y + Math.abs((diff * upperLowerBoundScale || 1));
+
+                            const greenStateValue = this.chartType == UbiFeedsChartType.XRange ? 1 : 0;
+
+                            if (yValue != null) {
+                                const segmentForHighchart = {
+                                    x: segment.x,
+                                    x2: segment.x2,
+                                    y: 0,
+                                    custom: segment, // 用custom保留segment数据供formatter使用
+                                    color: yValue == greenStateValue ? 'rgba(170, 253, 179, 0.6)' : 'rgba(253, 192, 194, 0.6)', // 开/关, #ddfddb
+                                };
+
+                                segmentData.data.push(segmentForHighchart);
+                            }
+
+                            if (i == 0) {
+                                (this.highchartsOptions.xAxis as any).min = segment.x;
+                            } else if (i == newDataPoints.length - 1) {
+                                (this.highchartsOptions.xAxis as any).max = segment.x2;
+                            }
                         }
                         this.chart.addSeries(segmentData);
                     });
-                } else {
+                } else { // tag: Line chart
                     this.data.forEach((serie: UbiDataChartSerie) => {
                         let existedSerie: any = _.find(this.highchartsOptions.series, { name: serie.name });
 
@@ -518,7 +579,26 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                                     hover: {
                                         lineWidthPlus: 0
                                     }
-                                }
+                                },
+                                tooltip: {
+                                    // ref: https://api.highcharts.com/highcharts/series.line.tooltip.pointFormat
+                                    pointFormatter: function () {
+                                        try {
+                                            // console.log(this);
+                                            const stateLabel = this.series.name;
+                                            const yValue = this.y;
+                                            const color = this.color;
+
+                                            let convertedValue: any = yValue;
+                                            if (_self.valueFormatter && typeof _self.valueFormatter === 'function') {
+                                                convertedValue = _self.valueFormatter(yValue);
+                                            }
+
+                                            return `<span style="color:${color}">●</span> ${stateLabel}: <b>${convertedValue}</b><br/>`;
+                                        } catch (e) { }
+                                        return null;
+                                    },
+                                },
                             }, false);
 
                         }

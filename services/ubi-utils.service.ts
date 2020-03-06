@@ -15,7 +15,7 @@ import { UbiUserDisplayPipe } from '../core/pipes/ubi-user-display.pipe';
 import { UbiDataChartSerie, UbiDataChartPoint } from '../core/components/ubi-data-chart/ubi-data-chart.component';
 import { UbiFeedsResponse, UbiFeedType } from '../remote/remote-channel.service';
 import { UbiChannelDAO, ConvertValue, UbiValueOptions, UbiChannel } from '../entities/ubi-channel.entity';
-import { UbiChannelFieldDef } from '../entities/ubi-channel-field-def.entity';
+import { UbiChannelFieldDef, UbiChannelFieldDefScaleType } from '../entities/ubi-channel-field-def.entity';
 import { UbiEventService } from './ubi-event.service';
 import { UbiLanguageDef, UbibotSupportedLanguagesService } from '../providers/ubibot-supported-languages.service';
 import { UbiStorageService } from './ubi-storage.service';
@@ -604,7 +604,11 @@ export class UbiUtilsService {
      * @memberof UbiUtilsService
      */
     extractFeeds(resp: UbiFeedsResponse, opts?: UbiValueOptions, type?: UbiFeedType): UbiFeedPack[] {
-        return this.feedsConverterEngine.extractFeeds(resp, opts, type);
+        let packArray = this.feedsConverterEngine.extractFeeds(resp, opts, type);
+
+        // console.log(packArray);
+
+        return packArray;
     }
 
 

@@ -1,7 +1,7 @@
 import { UbiFeedsResponse, UbiFeedType } from "../../remote/remote-channel.service";
 import { UbiValueOptions, UbiChannelDAO, ConvertValue } from "../../entities/ubi-channel.entity";
 import { UbiChannelFieldDef, UbiChannelFieldDefScaleType } from "../../entities/ubi-channel-field-def.entity";
-import { UbiDataChartSerie, UbiDataChartPoint, UbiDataChartPointForXRange } from "../../core/components/ubi-data-chart/ubi-data-chart.component";
+import { UbiDataChartSerie, UbiDataChartPoint, UbiDataChartPointForXRange, UbiDataChartValueFormatter } from "../../core/components/ubi-data-chart/ubi-data-chart.component";
 import * as _ from 'lodash';
 
 export interface UbiFeedPack {
@@ -25,11 +25,14 @@ export interface UbiFeedPack {
     end: Date,  // 整个resp数据的结束日期
 
     chartType?: UbiFeedsChartType,
+
+    valueFormatter?: UbiDataChartValueFormatter;
 }
 
 export enum UbiFeedsChartType {
     Line = 'line',
     XRange = 'xrange',
+    XRangeReversedColor = 'xrange2',
 }
 
 export class UbiFeedsConverterEngine {
@@ -80,6 +83,21 @@ export class UbiFeedsConverterEngine {
                 data: data,
             };
 
+            // determine chart type
+            let chartType;
+            switch (fieldScaleType) {
+                case UbiChannelFieldDefScaleType.SWITCH_STATE:
+                    chartType = UbiFeedsChartType.XRange;
+                    break;
+                case UbiChannelFieldDefScaleType.HUMAN_DETECTION:
+                    chartType = UbiFeedsChartType.XRangeReversedColor;
+                    break;
+                default:
+                    chartType = UbiFeedsChartType.Line;
+                    break;
+            }
+
+
             // feet pack init
             map[fieldKey] = {
                 index: i,
@@ -96,7 +114,7 @@ export class UbiFeedsConverterEngine {
                 feedType: type || UbiFeedType.Sampling,
 
                 // 决定chart类型
-                chartType: fieldScaleType == UbiChannelFieldDefScaleType.SWITCH_STATE ? UbiFeedsChartType.XRange : UbiFeedsChartType.Line,
+                chartType: chartType,
             };
         }
 
@@ -172,10 +190,21 @@ export class UbiFeedsConverterEngine {
 
             const dataConverted: UbiDataChartPoint[] = [];
             let lastPointXRange: UbiDataChartPointForXRange;
-            if (chartType === UbiFeedsChartType.XRange) {
+            if (chartType === UbiFeedsChartType.XRange || chartType === UbiFeedsChartType.XRangeReversedColor) {
                 let pointXRange: UbiDataChartPointForXRange;
                 for (let j = 0; j < data.length; j++) {
                     const point: UbiDataChartPoint = data[j];
+
+                    // tag: debug, 前null值测试 -->
+                    // if (j == 0) {
+                    //     let tmp = {
+                    //         x: point.x - 1000 * 60 * 60 * 6,
+                    //         x2: point.x,
+                    //         y: null,
+                    //     };
+                    //     dataConverted.push(tmp);
+                    // }
+                    // tag-end
 
                     if (lastPointXRange && point.y == lastPointXRange.y) {
                         pointXRange.x2 = point.x;
@@ -194,6 +223,17 @@ export class UbiFeedsConverterEngine {
                             lastPointXRange.x2 = point.x;
                         }
                     }
+
+                    // tag: debug, 后null值测试 -->
+                    // if (j == data.length - 1) {
+                    //     let tmp = {
+                    //         x: point.x,
+                    //         x2: point.x + 1000 * 60 * 60 * 6,
+                    //         y: null,
+                    //     };
+                    //     dataConverted.push(tmp);
+                    // }
+                    // tag-end
                 }
 
                 // replace with converted data
@@ -203,6 +243,12 @@ export class UbiFeedsConverterEngine {
                 pack.avg = undefined;
                 pack.maxPoint = undefined;
                 pack.minPoint = undefined;
+
+                // tag: debug, 中间null值测试 -->
+                // if (dataConverted.length > 3) {
+                //     dataConverted[2].y = null;
+                // }
+                // tag-end
 
                 // console.log(dataConverted);
             }
