@@ -71,17 +71,18 @@ export enum UbiExtraPreferenceTimezoneSource {
  * 以channelId作为key的用户自定义channel列表view属性
  * value为一个properties数组
  *
+ * @depreacated from v4, replaced by channel's vpref
  * @export
  * @interface UbiExtraPreferenceChannelsListItemCustomize
  */
-export interface UbiExtraPreferenceChannelsListItemCustomize {
-    [channelId: string]: UbiExtraPreferenceChannelsListItemCustomizeProperties[];
-}
-export interface UbiExtraPreferenceChannelsListItemCustomizeProperties {
-    key: string;
-    index: number; // 排序
-    visible: boolean; // 用户自定义，默认应为true
-}
+// export interface UbiExtraPreferenceChannelsListItemCustomize {
+//     [channelId: string]: UbiExtraPreferenceChannelsListItemCustomizeProperties[];
+// }
+// export interface UbiExtraPreferenceChannelsListItemCustomizeProperties {
+//     key: string;
+//     index: number; // 排序
+//     visible: boolean; // 用户自定义，默认应为true
+// }
 
 
 export class UbiExtraPreference {
@@ -95,10 +96,43 @@ export class UbiExtraPreference {
 
     channels_list_style: UbiExtraPreferenceChannelsListStyle;
 
-    channels_list_item_customize: UbiExtraPreferenceChannelsListItemCustomize;
+    decimal_place: number;
+    timezone_source: UbiExtraPreferenceTimezoneSource;
+
+    /**
+     * 移除无效的属性
+     *
+     * @memberof UbiExtraPreference
+     */
+    normalize(): void {
+        const propsList: string[] = [
+            'v',
+            'datetime_format', 'group_charts_fields_state',
+            'invoice_info', 'temp_scale',
+            'channels_list_style',
+            'decimal_place',
+            'timezone_source',
+        ]; // todo: 以后用decorator处理这个问题
+
+        const props = Object.keys(this);
+        props.forEach((k) => {
+            if (propsList.indexOf(k) == -1) { // invalid or deprecated prop
+                delete this[k];
+            }
+        });
+        // console.log(this);
+    }
+
+    /**
+     *
+     * @depreacated from v4, replaced by channel's vpref
+     * @type {UbiExtraPreferenceChannelsListItemCustomize}
+     * @memberof UbiExtraPreference
+     */
+    // channels_list_item_customize: UbiExtraPreferenceChannelsListItemCustomize;
 
     // tag: 未定义，可能于将来定义新的
-    [key: string]: any;
+    // [key: string]: any;
 
     constructor(data?: string | UbiExtraPreference) {
         try {
@@ -112,6 +146,9 @@ export class UbiExtraPreference {
     }
 
     toString(): string {
-        return JSON.stringify(this);
+        const ret = Object.assign({}, this);
+        // const props = Object.getOwnPropertyNames(this);
+        // console.log('props=', props, ret);
+        return JSON.stringify(ret);
     }
 }

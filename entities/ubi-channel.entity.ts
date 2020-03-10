@@ -6,6 +6,7 @@ import { UbiExtraPreferenceTempScale } from "./ubi-extra-preference.entity";
 import { EnumBasicProductId } from "../enums/enum-basic-product-id.enum";
 import { Subject } from "rxjs";
 import { UbiChannelVConfig } from "./ubi-channel-vconfig.entity";
+import { UbiChannelVPref, UbiChannelVPrefFieldProperties } from "./ubi-channel-vpref.entity";
 
 export interface UbiValueOptions {
     tempScale?: UbiExtraPreferenceTempScale,
@@ -78,6 +79,8 @@ export interface UbiChannelTriggeringRule {
     rule_name: string,
 }
 
+
+
 /**
  * 用于接收到的channel raw数据
  *
@@ -133,6 +136,7 @@ export abstract class UbiChannel {
     bill_end?: string;
     last_values?: string;
     vconfig?: string;
+    vpref?: string;
     battery?: number;
     net?: string;
     c_icon_base?: string;
@@ -598,6 +602,8 @@ export class UbiChannelDAO extends UbiChannel {
 
     private vconfigParsed: UbiChannelVConfig;
 
+    private vprefParsed: UbiChannelVPref;
+
     constructor(channel: UbiChannel) {
         super();
 
@@ -645,6 +651,10 @@ export class UbiChannelDAO extends UbiChannel {
         const vconfig: UbiChannelVConfig = UbiChannelVConfig.FromString(this.vconfig);
         this.vconfigParsed = vconfig;
 
+        // 构建vprefParsed
+        const vpref: UbiChannelVPref = UbiChannelVPref.FromString(this.vpref);
+        this.vprefParsed = vpref;
+
         this.onChanged$.next(this);
     }
 
@@ -668,6 +678,20 @@ export class UbiChannelDAO extends UbiChannel {
      */
     getParsedVConfig(): UbiChannelVConfig {
         return this.vconfigParsed;
+    }
+
+    getParsedVPref(): UbiChannelVPref {
+        return this.vprefParsed;
+    }
+
+    getUserPreferredFields(): UbiChannelVPrefFieldProperties[] {
+        const vpref = this.getParsedVPref();
+        return vpref.fields;
+    }
+
+    setUserPreferredFields(newPreferredFields: UbiChannelVPrefFieldProperties[]): void {
+        const vpref = this.getParsedVPref();
+        vpref.fields = newPreferredFields;
     }
 
 

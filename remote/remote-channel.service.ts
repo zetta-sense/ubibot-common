@@ -9,6 +9,7 @@ import { UbiRule, UbiRuleStatus } from '../entities/ubi-rule.entity';
 import * as _ from 'lodash';
 import * as moment from 'moment-timezone';
 import { DatePipe } from '@angular/common';
+import { UbiChannelVPref } from '../entities/ubi-channel-vpref.entity';
 
 export interface UbiCheckDeviceReponse {
     device: {
@@ -637,5 +638,41 @@ export class RemoteChannelService {
 
     updateChannelName(channelId: string, name: string): Observable<any> {
         return this.update(channelId, { name: name });
+    }
+
+
+    /**
+     * Update Channel Prefs 更改Channel外部设置信息
+     * 用于被分享者更新显示相关设置等
+     *
+     * POST to http://api.ubibot.cn/channels/CHANNEL_ID/prefs/update, replacing CHANNEL_ID with the ID of your channel
+     *
+     * Valid request parameters:
+     *
+     * account_key or token_id (string) - account_key  is User's account key; token_id  is obtained through login API (required).
+     * Request Payload Body needs to be in JSON format:
+     * vpref: (string) 图表相关显示设置，json string形式。 如果是输入”null”则将重置空值。
+     *
+     * @param {string} channelId
+     * @param {UbiChannelVPref} vpref null to reset
+     * @returns {Observable<any>}
+     * @memberof RemoteChannelService
+     */
+    updateVPref(channelId: string, vpref?: UbiChannelVPref): Observable<any> {
+        if (!channelId) throw new UbiError('Channel ID is required for this API!');
+
+        const params: any = {
+            vpref: vpref ? vpref.toString() : 'null',
+        };
+
+        // const params: HttpParams = new HttpParams();
+        // params.set('vpref', vpref ? vpref.toString() : 'null');
+
+        const url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/prefs/update`;
+        return this.http.post(url, params).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
     }
 }
