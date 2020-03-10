@@ -1,3 +1,4 @@
+import { UbiEntity, UbiPersistent } from "../core/decorators/ubi-entity.decorator";
 
 export interface UbiChannelVPref {
     v: number; // 版本
@@ -25,10 +26,11 @@ export const CURRENT_VPREF_VERSION = 1;
  * @export
  * @class UbiChannelVConfig
  */
+@UbiEntity()
 export class UbiChannelVPref {
 
-    v: number; // 版本
-    fields: UbiChannelVPrefFieldProperties[];
+    @UbiPersistent() v: number; // 版本
+    @UbiPersistent() fields: UbiChannelVPrefFieldProperties[];
 
     static FromString(rawStr: string): UbiChannelVPref {
 
@@ -41,7 +43,13 @@ export class UbiChannelVPref {
 
             if (!(ret.v >= CURRENT_VPREF_VERSION)) {
                 // 低版本的vpref如有需要，转换为高ver
-                // ...
+                const propList: string[] = this['props'];
+
+                Object.keys(ret).forEach((k) => {
+                    if (propList.indexOf(k) == -1) {
+                        delete ret[k];
+                    }
+                });
             }
 
             if (ret.fields == null) {

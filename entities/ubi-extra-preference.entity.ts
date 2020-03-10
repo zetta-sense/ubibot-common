@@ -1,3 +1,4 @@
+import { UbiEntity, UbiPersistent } from "../core/decorators/ubi-entity.decorator";
 
 
 export enum UbiExtraPreferenceDateTimeFormat {
@@ -84,20 +85,20 @@ export enum UbiExtraPreferenceTimezoneSource {
 //     visible: boolean; // 用户自定义，默认应为true
 // }
 
-
+@UbiEntity()
 export class UbiExtraPreference {
 
-    v: number; // 版本
+    @UbiPersistent() v: number; // 版本
 
-    datetime_format: UbiExtraPreferenceDateTimeFormat;
-    group_charts_fields_state: { [groupId: number]: UbiExtraPreferenceGroupChartsFieldsState };
-    invoice_info: UbiExtraPreferenceInvoiceInfo;
-    temp_scale: UbiExtraPreferenceTempScale;
+    @UbiPersistent() datetime_format: UbiExtraPreferenceDateTimeFormat;
+    @UbiPersistent() group_charts_fields_state: { [groupId: number]: UbiExtraPreferenceGroupChartsFieldsState };
+    @UbiPersistent() invoice_info: UbiExtraPreferenceInvoiceInfo;
+    @UbiPersistent() temp_scale: UbiExtraPreferenceTempScale;
 
-    channels_list_style: UbiExtraPreferenceChannelsListStyle;
+    @UbiPersistent() channels_list_style: UbiExtraPreferenceChannelsListStyle;
 
-    decimal_place: number;
-    timezone_source: UbiExtraPreferenceTimezoneSource;
+    @UbiPersistent() decimal_place: number;
+    @UbiPersistent() timezone_source: UbiExtraPreferenceTimezoneSource;
 
     /**
      * 移除无效的属性
@@ -105,14 +106,7 @@ export class UbiExtraPreference {
      * @memberof UbiExtraPreference
      */
     normalize(): void {
-        const propsList: string[] = [
-            'v',
-            'datetime_format', 'group_charts_fields_state',
-            'invoice_info', 'temp_scale',
-            'channels_list_style',
-            'decimal_place',
-            'timezone_source',
-        ]; // todo: 以后用decorator处理这个问题
+        const propsList: string[] = this['_props'];
 
         const props = Object.keys(this);
         props.forEach((k) => {
