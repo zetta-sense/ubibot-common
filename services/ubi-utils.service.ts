@@ -330,6 +330,12 @@ export class UbiUtilsService {
         };
     }
 
+    isValidSerial(serial: string): boolean {
+        if (!serial) return false;
+        const hasInvalidChar = /[:/]/.test(serial);
+        return !hasInvalidChar;
+    }
+
     parseError(err: Error, argsObj?: any): string {
         let ret = 'Unknown Error';
 
