@@ -520,6 +520,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
                                         let convertedValue: any = yValue;
                                         if (_self.valueFormatter && typeof _self.valueFormatter === 'function') {
+                                            // console.log(yValue, _self.valueFormatter);
                                             convertedValue = _self.valueFormatter(yValue);
                                         }
 
