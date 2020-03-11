@@ -51,7 +51,7 @@ export const UbiValidators: { [key: string]: ValidatorFn } = {
         if (!control.value) return null;
 
         const pattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,10}$/i;
-        const passed = pattern.test(control.value);
+        const passed = pattern.test(control.value) && control.value.length <= 100;
         return passed ? null : { 'invalidEmail': { value: control.value } };
     },
     username: (control: AbstractControl): { [key: string]: any } | null => {
