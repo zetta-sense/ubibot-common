@@ -1,4 +1,5 @@
 import { UbiEntity, UbiPersistent } from "../core/decorators/ubi-entity.decorator";
+import { UbiChannelFieldViewOption } from './ubi-channel-field-view-option.entity';
 
 
 export enum UbiExtraPreferenceDateTimeFormat {
@@ -31,6 +32,7 @@ export interface UbiExtraPreferenceGroupChartsFieldsState {
     [key: string]: boolean;
 }
 
+export declare type UbiExtraPreferenceSensorsSettings = { [key: string]: UbiChannelFieldViewOption }
 
 /**
  * 发票信息
@@ -97,8 +99,10 @@ export class UbiExtraPreference {
 
     @UbiPersistent() channels_list_style: UbiExtraPreferenceChannelsListStyle;
 
-    @UbiPersistent() decimal_place: number;
+    // @UbiPersistent() decimal_place: number;
     @UbiPersistent() timezone_source: UbiExtraPreferenceTimezoneSource;
+
+    @UbiPersistent() sensors_settings: { [key: string]: UbiChannelFieldViewOption };
 
     /**
      * 移除无效的属性

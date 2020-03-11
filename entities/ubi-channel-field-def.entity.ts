@@ -110,6 +110,101 @@ export enum UbiChannelFieldDefScaleType {
      * 人感状态
      */
     HUMAN_DETECTION = '30',
+
+}
+
+export enum UbiChannelFieldDefScaleTypeGroup {
+    Temperature = 1,
+    Humidity = 2,
+    Signal = 3,
+    Switch = 4,
+    Misc = 100,
+}
+
+export declare type UbiChannelFieldDefScaleTypeGroupMap = { [groupKey: string]: string[] };
+
+
+/**
+ * Generate scale type groups according to scale type keys input.
+ *
+ * @export
+ * @param {string[]} scaleTypeKeys
+ * @returns {UbiChannelFieldDefScaleTypeGroupMap} {groupKey: [scaleTypeKey, string, string, ...]}
+ */
+export function GenerateScaleTypeGroupMap(scaleTypeKeys: string[]): UbiChannelFieldDefScaleTypeGroupMap {
+    if (!scaleTypeKeys) return {};
+
+    const map: UbiChannelFieldDefScaleTypeGroupMap = {};
+    scaleTypeKeys.forEach((typeKey: string) => {
+        const groupKey = WhichGroupOfScaleType(typeKey);
+        map[groupKey] = map[groupKey] || [];
+        map[groupKey].push(typeKey);
+        // map[groupKey].push(UbiChannelFieldDefScaleType[typeKey]);
+    });
+
+    return map;
+}
+
+export function FilterTwoDimensionScaleTypes(scaleTypeKeys: string[]): string[] {
+    return scaleTypeKeys.filter((scaleTypeKey) => {
+        switch (UbiChannelFieldDefScaleType[scaleTypeKey]) {
+            case UbiChannelFieldDefScaleType.SWITCH_STATE:
+            case UbiChannelFieldDefScaleType.HUMAN_DETECTION:
+                return false;
+        }
+        return true;
+    });
+}
+
+export function FindScaleTypeKeyByValue(value: UbiChannelFieldDefScaleType): string {
+    const scaleTypeKeys = Object.keys(UbiChannelFieldDefScaleType);
+    for (let i = 0; i < scaleTypeKeys.length; i++) {
+        const key = scaleTypeKeys[i];
+        if (UbiChannelFieldDefScaleType[key] == value) {
+            return key;
+        }
+    }
+    return null;
+}
+
+
+/**
+ * Classify scale type to group via scale type key input.
+ *
+ * @export
+ * @param {string} scaleTypeKey
+ * @returns {UbiChannelFieldDefScaleTypeGroup}
+ */
+export function WhichGroupOfScaleType(scaleTypeKey: string): UbiChannelFieldDefScaleTypeGroup {
+    let ret: UbiChannelFieldDefScaleTypeGroup;
+
+    switch (UbiChannelFieldDefScaleType[scaleTypeKey]) {
+        case UbiChannelFieldDefScaleType.TEMPERATURE:
+        case UbiChannelFieldDefScaleType.RS485_EXT_TEMPERATURE:
+        case UbiChannelFieldDefScaleType.DS18B20_EXT_TEMPERATURE:
+            ret = UbiChannelFieldDefScaleTypeGroup.Temperature;
+            break;
+        case UbiChannelFieldDefScaleType.HUMIDITY:
+        case UbiChannelFieldDefScaleType.ABSOLUTE_HUMIDITY:
+        case UbiChannelFieldDefScaleType.RS485_EXT_HUMIDITY:
+            ret = UbiChannelFieldDefScaleTypeGroup.Humidity;
+            break;
+        case UbiChannelFieldDefScaleType.DBM:
+        case UbiChannelFieldDefScaleType.GSM:
+            ret = UbiChannelFieldDefScaleTypeGroup.Signal;
+            break;
+        case UbiChannelFieldDefScaleType.SWITCH_STATE:
+        case UbiChannelFieldDefScaleType.SWITCH_FLOW:
+        case UbiChannelFieldDefScaleType.SWITCH_POWER:
+        case UbiChannelFieldDefScaleType.SWITCH_ACCUMULATED_CONSUMPTION:
+            ret = UbiChannelFieldDefScaleTypeGroup.Switch;
+            break;
+        default:
+            ret = UbiChannelFieldDefScaleTypeGroup.Misc;
+            break;
+    }
+
+    return ret;
 }
 
 export class UbiChannelFieldDef {

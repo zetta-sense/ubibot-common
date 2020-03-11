@@ -13,6 +13,8 @@ import { UbiUtilsService, _NF_ } from '../../../services/ubi-utils.service';
 import { take, delay } from 'rxjs/operators';
 import { UbiFeedType } from 'src/modules/ubibot-common/remote/remote-channel.service';
 import { UbiFeedsChartType } from '../../../services/base/ubi-feeds-converter.engine';
+import { UbiExtraPreferenceSensorsSettings } from '../../../entities/ubi-extra-preference.entity';
+import { UbiChannelFieldViewOption } from '../../../entities/ubi-channel-field-view-option.entity';
 
 // ref: https://github.com/highcharts/highcharts-angular#theme
 NoDataToDisplay(Highcharts);
@@ -236,10 +238,14 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     /**
      * Optional
      *
+     * @deprecated
+     *
      * @type {number}
      * @memberof UbiDataChartComponent
      */
-    @Input() decimalPlace: number;
+    // @Input() decimalPlace: number;
+
+    @Input() viewOption: UbiChannelFieldViewOption;
 
 
     @Input() valueFormatter: UbiDataChartValueFormatter;
@@ -293,6 +299,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     ngOnInit() {
         const opts: any = this.highchartsOptions;
+        const _self = this;
 
         if (this.chartType == UbiFeedsChartType.XRange || this.chartType == UbiFeedsChartType.XRangeReversedColor) {
             opts.chart.type = 'xrange';
@@ -306,6 +313,15 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
         } else {
             opts.chart.type = 'line';
+
+            opts.yAxis.labels.formatter = function () {
+                // console.log(this);
+                let convertedValue: any = this.value;
+                if (_self.valueFormatter && typeof _self.valueFormatter === 'function') {
+                    convertedValue = _self.valueFormatter(convertedValue);
+                }
+                return convertedValue;
+            };
         }
     }
 
@@ -610,10 +626,17 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         }
     }
 
+    private determineDecimalPlace(): number {
+        // console.log(this.viewOption);
+        if (this.viewOption == null || this.viewOption.decimal == null) return -2; // defualt auto
+        // console.log('deterimine=', this.viewOption.decimal);
+        return this.viewOption.decimal
+    }
+
     private updateExtra() {
         this.ngZone.onStable.pipe(take(1)).subscribe(() => {
             const pointsToAdd = [];
-            const decimalPlace = this.decimalPlace;
+            const decimalPlace = this.determineDecimalPlace();
             const upperLowerBoundScale: number = 0.35;
             const diff = this.maxPoint ? this.maxPoint.y - this.minPoint.y : 0; // 有max就肯定有min，所以只要判断max
 
@@ -678,6 +701,17 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     zIndex: 3, // 在一般line前，但应在tooltip后面
                 }];
             }
+
+            const yAxisMax = this.viewOption && this.viewOption.yAxisMax;
+            const yAxisMin = this.viewOption && this.viewOption.yAxisMin;
+            // console.log(this.viewOption);
+            if (yAxisMax != null) {
+                (this.highchartsOptions.yAxis as any).max = yAxisMax;
+            }
+            if (yAxisMin != null) {
+                (this.highchartsOptions.yAxis as any).min = yAxisMin;
+            }
+            // console.log(this.highchartsOptions);
 
             // 排序
             pointsToAdd.sort((a, b) => a.x - b.x);
