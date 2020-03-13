@@ -27,7 +27,37 @@ export class UbibotSupportedLanguagesService {
             key: 'en-GB',
         }, {
             label: '日本語',
-            key: 'ja-JP',
+            key: 'ja',
+        }, {
+            label: 'العربية',
+            key: 'ar',
+        }, {
+            label: 'Deutsch',
+            key: 'de',
+        }, {
+            label: 'Española',
+            key: 'es',
+        }, {
+            label: 'Français',
+            key: 'fr',
+        }, {
+            label: 'Italiano',
+            key: 'it',
+        }, {
+            label: '한국어',
+            key: 'ko',
+        }, {
+            label: 'Nederlands',
+            key: 'nl',
+        }, {
+            label: 'Polskie',
+            key: 'pl',
+        }, {
+            label: 'Português',
+            key: 'pt-PT',
+        }, {
+            label: 'Русский',
+            key: 'ru',
         }];
     }
 

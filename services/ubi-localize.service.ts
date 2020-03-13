@@ -9,11 +9,7 @@ import * as _ from 'lodash';
     providedIn: 'root'
 })
 export class UbiLocalizeService implements OnDestroy {// tag: 特别注意service只有OnDestroy的lifecycle event
-    EnumLanguages: Array<any> = [
-        { key: 'en-GB', label: 'English' },
-        { key: 'zh-CN', label: '中文(简体)' },
-        { key: 'ja-JP', label: '日本語' }
-    ];
+    EnumLanguages: Array<any>;
 
     constructor(
         private translate: TranslateService,
@@ -21,6 +17,8 @@ export class UbiLocalizeService implements OnDestroy {// tag: 特别注意servic
         private commonConfigService: UbibotCommonConfigService,
         private ubiUtils: UbiUtilsService
     ) {
+        this.EnumLanguages = this.ubiUtils.getLanguageDef();
+
         // 默认情况下使用用户上次使用的语言
         // 正常情况下的启动流程:
         // agentKey = deploy agent(第一次启动) / last agent(除第一次外)
