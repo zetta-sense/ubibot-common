@@ -199,6 +199,46 @@ export class RemoteChannelService {
 
 
     /**
+     * Clear a Channel Through Verification Code
+     * To clear all feed data from a channel, send an HTTP DELETE to http://api.ubibot.cn/channels/ CHANNEL_ID/feeds/clear, replacing CHANNEL_ID with the ID of your channel
+     *
+     * Valid request parameters:
+     *
+     * account_key or token_id (string) - account_key  is User's account key; token_id  is obtained through login API (required).
+     * email_code: 调用账户操作验证码索取(邮件形式)  (http://api.ubibot.io/identify/action/email)
+     *
+     * @param {string} channelId
+     * @param {string} code
+     * @returns {Observable<any>}
+     * @memberof RemoteChannelService
+     */
+    clearByEmail(channelId: string, code: string): Observable<any> {
+        if (!channelId) throw new UbiError('Channel ID is required for this API!');
+        if (!code) throw new UbiError('Code is required for this API!');
+
+        const params = {
+            email_code: code,
+        };
+
+        const url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/feeds/clear`;
+        return this.http.delete(url, { params: params }).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
+
+    requestEmailCodeForClearData() {
+        const url = `${this.ubibotCommonConfig.EndPoint}/identify/action/email`;
+        return this.http.delete(url).pipe(
+            map((resp: any) => {
+                return resp;
+            })
+        );
+    }
+
+
+    /**
      * Delete a Channel and Associated Device (若channel和device有关联，必须用这个删除)
      *
      * To delete a channel and clear all feed data from a channel, send an HTTP DELETE to http://api.ubibot.cn/channels/ CHANNEL_ID/device, replacing CHANNEL_ID with the ID of your channel

@@ -374,6 +374,9 @@ export class UbiUtilsService {
                 } else if (ubiServerError.errorCode == 'permission_denied'
                     && ubiServerError.desp == 'Incorrect email_code') {
                     ret = `${this.parseError(new UbiError(EnumAppError.INVALID_EMAIL_CODE))}`;
+                } else if (ubiServerError.errorCode == 'permission_denied'
+                    && ubiServerError.desp == 'email_code is not correct') {
+                    ret = `${this.parseError(new UbiError(EnumAppError.INVALID_EMAIL_CODE))}`;
                 } else if (ubiServerError.errorCode == null) {
                     ret = `${this.parseError(new UbiError(EnumAppError.SOMETHING_WRONG_WITH_MOBILE))}`;
                 } else {
