@@ -83,7 +83,7 @@ export class UbiRule {
         // attach channel to rule
         this.extra = {
             channel: channel
-        }
+        };
     }
 
     merge(data: any) {

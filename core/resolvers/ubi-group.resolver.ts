@@ -10,6 +10,8 @@ import { UbiUtilsService } from "../../services/ubi-utils.service";
 import { UbiGroup } from "../../entities/ubi-group.entity";
 import { RemoteGroupService } from "../../remote/remote-group.service";
 import * as _ from 'lodash';
+import { UbiError } from "../../errors/UbiError";
+import { EnumAppError } from "../../enums/enum-app-error.enum";
 
 @Injectable()
 export class UbiGroupResolver implements Resolve<UbiGroup> {
@@ -22,8 +24,19 @@ export class UbiGroupResolver implements Resolve<UbiGroup> {
                 return _.find(groups, { group_id: groupId });
             }),
             catchError((err) => {
-                this.ubiUtils.error('A fatal error occured. Group could not be resolved.');
-                return throwError(err);
+                let retErr;
+                // console.log(err);
+
+                // 仅当500时交由统一解析，一般情况下是维护
+                if (err && err.name === 'HttpErrorResponse' && err.status === 500) {
+                    const errMsg = this.ubiUtils.parseError(err);
+                    retErr = err;
+                    this.ubiUtils.error(errMsg);
+                } else {
+                    retErr = new UbiError(EnumAppError.GROUP_NOT_RESOLVED);
+                    this.ubiUtils.error(retErr);
+                }
+                return throwError(retErr);
             }),
         );//.pipe(delay(5000))
     }

@@ -3,23 +3,40 @@ import { Injectable } from "@angular/core";
 import { UbiExtraPreference } from "../../entities/ubi-extra-preference.entity";
 import { HttpClient } from "@angular/common/http";
 import { RemoteAccountService } from "../../remote/remote-account.service";
-import { Observable, throwError } from "rxjs";
-import { delay, map, catchError } from "rxjs/operators";
+import { Observable, throwError, of } from "rxjs";
+import { delay, map, catchError, switchMap } from "rxjs/operators";
 import { RemoteChannelService } from "../../remote/remote-channel.service";
 import { UbiRule } from "../../entities/ubi-rule.entity";
 import { UbiUtilsService } from "../../services/ubi-utils.service";
 import { UbiError } from "../../errors/UbiError";
+import { UbiScheduler } from "../../entities/ubi-scheduler.entity";
+import { RemoteSchedulerService } from "../../remote/remote-scheduler.service";
 import { EnumAppError } from "../../enums/enum-app-error.enum";
 
 @Injectable()
-export class UbiRuleResolver implements Resolve<UbiRule> {
+export class UbiSchedulerResolver implements Resolve<UbiScheduler> {
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<UbiRule> {
-        const channelId = route.paramMap.get('channelId');
-        const ruleId = route.paramMap.get('ruleId');
+    constructor(
+        private http: HttpClient,
+        private router: Router,
+        private ubiUtils: UbiUtilsService,
+        private remoteChannel: RemoteChannelService,
+        private remoteScheduler: RemoteSchedulerService,
+    ) {
 
-        return this.remoteChannel.getRule(channelId, ruleId).pipe(
-            map((rule: UbiRule) => rule),
+    }
+
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<UbiScheduler> {
+        const channelId = route.parent.paramMap.get('channelId');
+        const schedulerId = route.paramMap.get('schedulerId');
+
+        // console.log(route, channelId, schedulerId);
+
+        return this.remoteScheduler.list(channelId).pipe(
+            switchMap((schedulers: UbiScheduler[]) => {
+                let filtered = schedulers.filter(x => x.s_id == schedulerId);
+                return filtered.length ? of(filtered[0]) : throwError(EnumAppError.SCHEDULER_NOT_RESOLVED);
+            }),
             catchError((err) => {
                 let retErr;
                 // console.log(err);
@@ -30,22 +47,11 @@ export class UbiRuleResolver implements Resolve<UbiRule> {
                     retErr = err;
                     this.ubiUtils.error(errMsg);
                 } else {
-                    retErr = new UbiError(EnumAppError.RULE_NOT_RESOLVED);
+                    retErr = new UbiError(EnumAppError.SCHEDULER_NOT_RESOLVED);
                     this.ubiUtils.error(retErr);
                 }
                 return throwError(retErr);
             }),
         );//.pipe(delay(5000))
     }
-
-
-    constructor(
-        private http: HttpClient,
-        private router: Router,
-        private ubiUtils: UbiUtilsService,
-        private remoteChannel: RemoteChannelService
-    ) {
-
-    }
-
 }
