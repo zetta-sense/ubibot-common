@@ -85,6 +85,7 @@ export enum EnumAppError {
     BLE_COMMAND_UNSUPPORT = '8927', // ble_command 值不在支持的范围
     BLE_COMMAND_BAD_PARAMETERS = '8928', // ble_command 参数不足
 
+    PARAMETER_SCHEDULER_S_REPEAT_EMPTY = '12001',
 
     // minus error means acceptable errors
     USB_NO_RECV_DATA_BUT_WOULD_WAIT_NEXT = '-500',

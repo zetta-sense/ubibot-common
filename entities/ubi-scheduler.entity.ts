@@ -110,9 +110,25 @@ export class UbiScheduler {
         return this.parsedAction2;
     }
 
+    getChannel(): UbiChannel {
+        return this.extra.channel;
+    }
+
     // isEnabled() {
     //     return this.rule_status === UbiRuleStatus.ENABLED;
     // }
+
+    toPersistentObject(): any {
+        let obj = Object.assign({}, this);
+        delete obj.user_id;
+        delete obj.channel_id;
+        delete obj.s_id;
+        delete obj.extra;
+        delete obj.parsedAction1;
+        delete obj.parsedAction2;
+
+        return obj;
+    }
 }
 
 
