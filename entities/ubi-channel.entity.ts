@@ -893,6 +893,7 @@ export function ConvertValue(value: number, fieldDef: UbiChannelFieldDef, opts: 
     // 仅当为温度时，且偏好非celsius则转换值
     if (!UseCelsius(opts.tempScale) && value != null && (
         fieldDef.scaleType === UbiChannelFieldDefScaleType.TEMPERATURE ||
+        fieldDef.scaleType === UbiChannelFieldDefScaleType.ABSOLUTE_TEMPERATURE ||
         fieldDef.scaleType === UbiChannelFieldDefScaleType.RS485_EXT_TEMPERATURE ||
         fieldDef.scaleType === UbiChannelFieldDefScaleType.DS18B20_EXT_TEMPERATURE
     )) {
@@ -914,7 +915,12 @@ export function ConvertValue(value: number, fieldDef: UbiChannelFieldDef, opts: 
  */
 export function ConvertValueReverse(value: number, fieldDef: UbiChannelFieldDef, opts: UbiValueOptions = {}) {
     // 仅当为温度时，且偏好非celsius则转换值
-    if (fieldDef.scaleType === UbiChannelFieldDefScaleType.TEMPERATURE && !UseCelsius(opts.tempScale) && value != null) {
+    if (!UseCelsius(opts.tempScale) && value != null && (
+        fieldDef.scaleType === UbiChannelFieldDefScaleType.TEMPERATURE ||
+        fieldDef.scaleType === UbiChannelFieldDefScaleType.ABSOLUTE_TEMPERATURE ||
+        fieldDef.scaleType === UbiChannelFieldDefScaleType.RS485_EXT_TEMPERATURE ||
+        fieldDef.scaleType === UbiChannelFieldDefScaleType.DS18B20_EXT_TEMPERATURE
+    )) {
         value = (value - 32) * 5 / 9;
         value = parseFloat(value.toFixed(5));
     }

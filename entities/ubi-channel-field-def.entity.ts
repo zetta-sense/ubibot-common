@@ -69,6 +69,12 @@ export enum UbiChannelFieldDefScaleType {
     DS18B20_EXT_TEMPERATURE = '14',
 
 
+    /**
+     * 土壤温度
+     */
+    ABSOLUTE_TEMPERATURE = '15',
+
+
     // tag: The following is updated according to UBIAPP2-58
 
     /**
@@ -180,6 +186,7 @@ export function WhichGroupOfScaleType(scaleTypeKey: string): UbiChannelFieldDefS
 
     switch (UbiChannelFieldDefScaleType[scaleTypeKey]) {
         case UbiChannelFieldDefScaleType.TEMPERATURE:
+        case UbiChannelFieldDefScaleType.ABSOLUTE_TEMPERATURE:
         case UbiChannelFieldDefScaleType.RS485_EXT_TEMPERATURE:
         case UbiChannelFieldDefScaleType.DS18B20_EXT_TEMPERATURE:
             ret = UbiChannelFieldDefScaleTypeGroup.Temperature;
