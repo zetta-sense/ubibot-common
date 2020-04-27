@@ -73,6 +73,7 @@ export class UbiScheduler {
     private extra: UbiSchedulerExtra;
     private parsedAction1: UbiSchedulerAction;
     private parsedAction2: UbiSchedulerAction;
+    private parsedFinalAction: UbiSchedulerAction;
 
 
     constructor(raw: any = {}, channel) {
@@ -96,18 +97,47 @@ export class UbiScheduler {
         } catch (e) {
             this.parsedAction2 = {};
         }
+
+
+        try {
+            this.parsedFinalAction = JSON.parse(this.final_action);
+        } catch (e) {
+            this.parsedFinalAction = {};
+        }
     }
 
     merge(data: any) {
         Object.assign(this, data);
     }
 
+    /**
+     * If null, return empty obj.
+     *
+     * @returns {UbiSchedulerAction}
+     * @memberof UbiScheduler
+     */
     getParsedAction1(): UbiSchedulerAction {
         return this.parsedAction1;
     }
 
+    /**
+     * If null, return empty obj.
+     *
+     * @returns {UbiSchedulerAction}
+     * @memberof UbiScheduler
+     */
     getParsedAction2(): UbiSchedulerAction {
         return this.parsedAction2;
+    }
+
+    /**
+     * If null, return empty obj.
+     *
+     * @returns {UbiSchedulerAction}
+     * @memberof UbiScheduler
+     */
+    getParsedFinalAction(): UbiSchedulerAction {
+        return this.parsedFinalAction;
     }
 
     getChannel(): UbiChannel {
