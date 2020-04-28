@@ -204,7 +204,8 @@ export class RemoteSchedulerService {
         if (!channelId) throw new UbiError('Channel ID is required for this API!');
         if (!scheduler) throw new UbiError('UbiScheduler is required for this API!');
 
-        if (!scheduler.s_repeat) return throwError(new UbiError(EnumAppError.PARAMETER_SCHEDULER_S_REPEAT_EMPTY));
+        // 除了 count_down 不需要判断s_repeat
+        if (!scheduler.s_repeat && scheduler.s_type != 'count_down') return throwError(new UbiError(EnumAppError.PARAMETER_SCHEDULER_S_REPEAT_EMPTY));
 
         const payload = scheduler.toPersistentObject();
 

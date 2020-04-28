@@ -58,5 +58,27 @@ export class RemoteUtilitiesService {
         );
     }
 
+    getServerTime(): Observable<string> {
+        const url = `${this.ubibotCommonConfig.EndPoint}/utilities/time`;
+        return this.http.get(url).pipe(
+            map((resp: any) => resp.server_time)
+        );
+    }
+
+    /**
+     * 返回服务器与客户端的时间校准值 in ms
+     *
+     * @returns {Observable<number>} delta = server - client
+     * @memberof RemoteUtilitiesService
+     */
+    getDeltaTime(): Observable<number> {
+        return this.getServerTime().pipe(
+            switchMap(x => {
+                const serverTime = new Date(x).getTime();
+                const clientTime = new Date().getTime();
+                return of(serverTime - clientTime);
+            }),
+        );
+    }
 
 }
