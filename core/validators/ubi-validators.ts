@@ -9,6 +9,14 @@ export const UbiValidators: { [key: string]: ValidatorFn } = {
         const passed = pattern.test(control.value);
         return passed ? null : { 'invalidPositiveInteger': { value: control.value } };
     },
+    // 含0正整数
+    naturalInteger: (control: AbstractControl): { [key: string]: any } | null => {
+        if (!control.value) return null;
+
+        const pattern = /^[0-9]*$/i;
+        const passed = pattern.test(control.value);
+        return passed ? null : { 'invalidNaturalInteger': { value: control.value } };
+    },
     integer: (control: AbstractControl): { [key: string]: any } | null => {
         if (!control.value) return null;
 

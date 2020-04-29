@@ -17,7 +17,9 @@ export enum UbiRuleStatus {
 
 export enum UbiRuleActionFrequency {
     CHANGE_ONLY = 'change_only',
-    ALWAYS = 'always'
+    ALWAYS = 'always',
+    CHANGE_ONLY_DELAYED = 'change_only_delayed',
+    ALWAYS_DELAYED = 'always_delayed',
 }
 
 export enum UbiRuleCriteria {
