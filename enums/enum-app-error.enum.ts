@@ -85,6 +85,7 @@ export enum EnumAppError {
     BLE_COMMAND_UNSUPPORT = '8927', // ble_command 值不在支持的范围
     BLE_COMMAND_BAD_PARAMETERS = '8928', // ble_command 参数不足
     BLE_MTU_FAILED = '8929', // request MTU failed
+    BLE_EMPTY_RESPONSE = '8930', // empty response
 
     PARAMETER_SCHEDULER_S_REPEAT_EMPTY = '12001',
 
