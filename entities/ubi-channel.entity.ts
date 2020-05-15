@@ -197,6 +197,14 @@ export abstract class UbiChannel {
         return this.getStaus().usb === '1';
     }
 
+    /**
+     * sim入网
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
     static IsSimSupported(productId: string): boolean {
         if (productId === EnumBasicProductId.WS1P
             // 不含ws1p wifi版
@@ -204,7 +212,9 @@ export abstract class UbiChannel {
             || productId === EnumBasicProductId.WS1P4G
             // 不含gs1 wifi/eth版
             || productId === EnumBasicProductId.GS1_AL2G1RS
-            || productId === EnumBasicProductId.GS1_AL4G1RS) {
+            || productId === EnumBasicProductId.GS1_AL4G1RS
+            // sp1
+            || productId === EnumBasicProductId.SP1) {
             return true;
         }
         return false;
@@ -212,6 +222,22 @@ export abstract class UbiChannel {
 
     isSimSupported() {
         return UbiChannel.IsSimSupported(this.product_id);
+    }
+
+    /**
+     * sim 自动入网
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsSimAutoSupported(productId: string): boolean {
+        const simSupported = UbiChannel.IsSimSupported(productId);
+        if (productId === EnumBasicProductId.SP1) { // exclude sp1
+            return false;
+        };
+        return simSupported;
     }
 
     /**
@@ -256,8 +282,17 @@ export abstract class UbiChannel {
         return UbiChannel.IsBleRequired(this.product_id);
     }
 
+    /**
+     * wifi入网
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
     static IsWifiSupported(productId: string): boolean {
-        return productId !== EnumBasicProductId.SP1;
+        // return productId !== EnumBasicProductId.SP1;
+        return true;
     }
 
     /**

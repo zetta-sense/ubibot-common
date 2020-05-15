@@ -19,6 +19,7 @@ export enum EnumAppError {
     DEVICE_RETURN_ERROR_AP_NOT_FOUND = '514',
     DEVICE_RETURN_ERROR_AP_AUTH_FAILED = '515',
     DEVICE_RETURN_ERROR_AP_CONN_FAILED = '516',
+    DEVICE_RETURN_ERROR_CELLULAR_SIM_CHECK_FAILED = '517',
     NETWORK_ERROR = '600', // network error
     GEO_LOCATE_ERROR = '601', // geo-locate error
     INTERRUPTED_BY_USER = '801', // interrupted coz user aborted
