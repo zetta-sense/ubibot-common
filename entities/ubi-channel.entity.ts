@@ -7,6 +7,7 @@ import { EnumBasicProductId } from "../enums/enum-basic-product-id.enum";
 import { Subject } from "rxjs";
 import { UbiChannelVConfig } from "./ubi-channel-vconfig.entity";
 import { UbiChannelVPref, UbiChannelVPrefFieldProperties } from "./ubi-channel-vpref.entity";
+import { UbiChannelCalibrate } from "./ubi-channel-calibrate.entity";
 
 export interface UbiValueOptions {
     tempScale?: UbiExtraPreferenceTempScale,
@@ -126,7 +127,7 @@ export abstract class UbiChannel {
     activated_at?: string;
     serial?: string;
     full_dump_limit?: string;
-    cali?: string;
+    cali?: string; // 校准值, in json string
     size_out?: string;
     size_storage?: string;
     plan_code?: string;
@@ -706,6 +707,8 @@ export class UbiChannelDAO extends UbiChannel {
 
     private vprefParsed: UbiChannelVPref;
 
+    private caliParsed: UbiChannelCalibrate;
+
     constructor(channel: UbiChannel) {
         super();
 
@@ -757,6 +760,10 @@ export class UbiChannelDAO extends UbiChannel {
         const vpref: UbiChannelVPref = UbiChannelVPref.FromString(this.vpref);
         this.vprefParsed = vpref;
 
+        // 构建caliParsed
+        const cali: UbiChannelCalibrate = UbiChannelCalibrate.FromString(this.cali);
+        this.caliParsed = cali;
+
         this.onChanged$.next(this);
     }
 
@@ -784,6 +791,10 @@ export class UbiChannelDAO extends UbiChannel {
 
     getParsedVPref(): UbiChannelVPref {
         return this.vprefParsed;
+    }
+
+    getParsedCali(): UbiChannelCalibrate {
+        return this.caliParsed;
     }
 
     getUserPreferredFields(): UbiChannelVPrefFieldProperties[] {

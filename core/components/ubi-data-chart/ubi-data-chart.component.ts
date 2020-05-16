@@ -234,6 +234,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     @Input() dateFormat: string;
 
+    @Input() hideMarkers: boolean;
 
     /**
      * Optional
@@ -346,7 +347,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 this.updateTooltip();
             }
 
-            if (changes.maxPoint || changes.minPoint) {
+            if (changes.maxPoint || changes.minPoint || changes.hideMarkers) {
                 this.updateExtra();
             }
 
@@ -676,7 +677,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             }
 
             // 画平均线
-            if (this.average != null) {
+            if (this.average != null && !this.hideMarkers) {
                 const avgLabelPrefix = this.translate.instant('APP.COMMON.AVERAGE');
                 const unit = this.unit;
 
@@ -701,6 +702,9 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     dashStyle: 'longdashdot',
                     zIndex: 3, // 在一般line前，但应在tooltip后面
                 }];
+            } else {
+                // clear avaerage
+                (this.highchartsOptions.yAxis as any).plotLines = [];
             }
 
             const yAxisMax = this.viewOption && this.viewOption.yAxisMax;
@@ -717,10 +721,19 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             // 排序
             pointsToAdd.sort((a, b) => a.x - b.x);
 
-            this.chart.addSeries({
-                type: 'flags',
-                data: pointsToAdd,
-            }, false);
+            // clear max/min
+            let flags = this.chart.series.filter(s => s.type == 'flags');
+            flags.forEach(s => s.remove());
+
+            // 画 max/min
+            if (!this.hideMarkers) {
+                this.chart.addSeries({
+                    type: 'flags',
+                    data: pointsToAdd,
+                }, false);
+            } else {
+                // DO NOT show markers
+            }
 
             this.highchartsUpdateFlag = true;
         });
