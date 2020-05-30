@@ -212,13 +212,21 @@ export class RemoteChannelService {
      * @returns {Observable<any>}
      * @memberof RemoteChannelService
      */
-    clearByEmail(channelId: string, code: string): Observable<any> {
+    clearByEmail(channelId: string, code: string, begin?: Date, end?: Date): Observable<any> {
         if (!channelId) throw new UbiError('Channel ID is required for this API!');
         if (!code) throw new UbiError('Code is required for this API!');
 
         const params = {
             email_code: code,
         };
+
+        if (begin) {
+            params['start'] = Math.floor(begin.getTime() / 1000);
+        }
+
+        if (end) {
+            params['end'] = Math.floor(end.getTime() / 1000);
+        }
 
         const url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}/feeds/clear`;
         return this.http.delete(url, { params: params }).pipe(
