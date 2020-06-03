@@ -30,5 +30,3 @@ export class UbiError extends Error {
         Object.setPrototypeOf(this, new.target.prototype); // restore prototype chain
     }
 }
-
-(<any>window).er = UbiError;
