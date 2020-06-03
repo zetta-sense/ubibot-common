@@ -15,7 +15,7 @@ export class UbibotCommonConfigService {
     public readonly DatabaseVersion = 1;
     public readonly DatabaseName = 'UbiDatabase';
     public EndPoint = '';
-    public _EndPoint = 'https://api.ubibot.cn'; // raw to copy and convert domain
+    public _EndPoint = 'https://api-cdn.ubibot.cn'; // raw to copy and convert domain
     public WebLinkAboutUs = '';
     public _WebLinkAboutUs = 'https://www.ubibot.cn/aboutus/'; // raw to copy and convert domain
     // public readonly DownloadDriverCH341SER = 'https://www.ubibot.io/setup/';
