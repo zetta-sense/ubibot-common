@@ -25,6 +25,7 @@ import { EmptyPipe } from './pipes/noop.pipe copy';
 import { UbiTimezoneResolver } from './resolvers/ubi-timezone.resolver';
 import { UbiObjectFilterPipe } from './pipes/ubi-object-filter.pipe';
 import { UbiTrimDirective } from './directives/ubi-paste-trim/ubi-trim.directive';
+import { UbiProfileTableResolver } from './resolvers/ubi-profile-tablel.resolver';
 
 /**
  * Core module of common module.
@@ -86,6 +87,7 @@ import { UbiTrimDirective } from './directives/ubi-paste-trim/ubi-trim.directive
         // resolvers
         UbiExtraPreferenceResolver,
         UbiTimezoneResolver,
+        UbiProfileTableResolver,
         // 一些resolver是根据path的，所以不摆进来
     ],
     imports: [

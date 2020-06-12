@@ -4,6 +4,7 @@ import { UbibotCommonConfigService } from '../providers/ubibot-common-config.ser
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { UbiTimezoneMap } from '../entities/ubi-timezone.entify';
+import { UbiProfileTable } from '../entities/ubi-profile-table.entity';
 
 @Injectable()
 export class RemoteMiscInfoService {
@@ -41,6 +42,24 @@ export class RemoteMiscInfoService {
         return this.http.get(url).pipe(
             map((resp: any) => {
                 return <UbiTimezoneMap>resp.timezones;
+            })
+        );
+    }
+
+    /**
+     * 返回products以及sensors的profiles
+     *
+     * ref: https://jira.cloudforce.cn/projects/UBIAPP2/issues/UBIAPP2-74?filter=allopenissues
+     *
+     * @returns {Observable<UbiProfileTable>}
+     * @memberof RemoteMiscInfoService
+     */
+    getUbibotProfiles(): Observable<UbiProfileTable> {
+        let url = `${this.ubibotCommonConfig.EndPoint}/configs/product-profiles/all`;
+        return this.http.get(url).pipe(
+            map((resp: any) => {
+                let ret = new UbiProfileTable(resp);
+                return ret;
             })
         );
     }

@@ -577,14 +577,27 @@ export class UbiUtilsService {
             const part1 = 'Intlite-MS1';
             const part2 = serial.substring(0, 5);
             ret = `${part1}-${part2}`;
-        } else if (UbiChannel.IsFamilyUbibot(productId) || UbiChannel.IsFamilyUrban(productId)) {
-            // 默认蓝牙构成方式，首字母大写，接-后的
+        } else if (UbiChannel.IsFamilyUrban(productId)) {
+            // urban蓝牙构成方式，首字母大写，接-后的
             try {
                 const productIdLowerCase = productId.toLowerCase();
                 let part1 = productIdLowerCase.slice(0, productIdLowerCase.indexOf('-'));
                 let part2 = productIdLowerCase.slice(productIdLowerCase.indexOf('-') + 1);
                 part1 = part1.charAt(0).toUpperCase() + part1.slice(1);
                 part2 = part2.toUpperCase();
+
+                let part3 = serial.substring(0, 5);
+                ret = `${part1}-${part2}-${part3}`;
+            } catch (e) {
+                ret = `CAN NOT RECOGNIZE - ${productId}`;
+            }
+        } else if (UbiChannel.IsFamilyUbibot(productId)) {
+            // ubibot蓝牙构成方式，首字母大写，接-后的，除首字母大写，一律按原来的
+            try {
+                let part1 = productId.slice(0, productId.indexOf('-'));
+                let part2 = productId.slice(productId.indexOf('-') + 1);
+                part1 = part1.charAt(0).toUpperCase() + part1.slice(1);
+                part2 = part2;
 
                 let part3 = serial.substring(0, 5);
                 ret = `${part1}-${part2}-${part3}`;
