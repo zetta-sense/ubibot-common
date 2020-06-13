@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { UbiTimezoneMap } from '../entities/ubi-timezone.entify';
 import { UbiProfileTable } from '../entities/ubi-profile-table.entity';
 
@@ -60,7 +60,12 @@ export class RemoteMiscInfoService {
             map((resp: any) => {
                 let ret = new UbiProfileTable(resp);
                 return ret;
-            })
+            }),
+            // catchError((err) => {
+            //     console.warn('Fetch product profile failed. Fall back to empty.');
+            //     let ret: UbiProfileTable = new UbiProfileTable({});
+            //     return of(ret);
+            // }),
         );
     }
 

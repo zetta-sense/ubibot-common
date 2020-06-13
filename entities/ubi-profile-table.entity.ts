@@ -32,21 +32,25 @@ export class UbiProfileTable {
     constructor(raw: any) {
         // init product profiles
         this.productProfiles = {};
-        let productProfileKeys = Object.keys(raw['product-profiles']);
-        productProfileKeys.forEach(k => {
-            let productId = k as EnumBasicProductId;
-            let profileRaw = raw['product-profiles'][productId];
-            this.productProfiles[productId] = new UbiProductProfile(productId, profileRaw);
-        });
+        try {
+            let productProfileKeys = Object.keys(raw['product-profiles']);
+            productProfileKeys.forEach(k => {
+                let productId = k as EnumBasicProductId;
+                let profileRaw = raw['product-profiles'][productId];
+                this.productProfiles[productId] = new UbiProductProfile(productId, profileRaw);
+            });
+        } catch (e) { }
 
         // init sensor profiles
         this.sensorProfiles = {};
-        let sensorProfileKeys = Object.keys(raw['sensor-profiles']);
-        sensorProfileKeys.forEach(k => {
-            let sensorKey = k;
-            let sensorRaw = raw['sensor-profiles'][sensorKey];
-            this.sensorProfiles[sensorKey] = new UbiSensorProfile(sensorKey, sensorRaw);
-        });
+        try {
+            let sensorProfileKeys = Object.keys(raw['sensor-profiles']);
+            sensorProfileKeys.forEach(k => {
+                let sensorKey = k;
+                let sensorRaw = raw['sensor-profiles'][sensorKey];
+                this.sensorProfiles[sensorKey] = new UbiSensorProfile(sensorKey, sensorRaw);
+            });
+        } catch (e) { }
     }
 
     /**

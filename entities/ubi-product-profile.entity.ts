@@ -15,12 +15,14 @@
 import { UbiProductPowerConstant } from "./ubi-product-power-constant.entity";
 import { EnumProductProfileFeature } from "../enums/enum-product-profile-feature.enum";
 import { EnumBasicProductId } from "../enums/enum-basic-product-id.enum";
+import { UbiSensorsMapping } from "./ubi-sensors-mapping.entity";
 
 interface UbiProductProfileRaw {
     "slots-available": string[];
     "slots-alterable": string[];
     "slots-supported": string[];
     "features": string[];
+    "sensors-mapping": { [key: string]: number };
     "power-constants": { [key: string]: number };
 }
 
@@ -40,6 +42,9 @@ export class UbiProductProfile {
     private _features: EnumProductProfileFeature[]; // 特性，影响可设置项
     get features(): EnumProductProfileFeature[] { return Object.assign([], this._features); }
 
+    private _sensorsMapping: UbiSensorsMapping; // 默认sensors与field对应关系
+    get sensorsMapping(): UbiSensorsMapping { return this._sensorsMapping; }
+
     private _powerConstants: UbiProductPowerConstant; // 耗电量常数
     get powerConstants(): UbiProductPowerConstant { return this._powerConstants; }
 
@@ -52,15 +57,16 @@ export class UbiProductProfile {
      * {
       "slots-available": ["field1", "field2", "field3", "field4", "field5"],
       "slots-alterable": ["field5"],
-      "slots-supported": ["sw_t", "sw_h"],
+      "slots-supported": ["sw_s", "sw_v"],
+      "sensors-mapping": {"sw_s": 1, "sw_v": 2}
       "features": ["noNetFn", "fnBattery"],
       "power-constants": {
-        "耗电量常数1": 1,
-        "耗电量常数2": 2,
-        "耗电量常数3": 3,
-        "耗电量常数4": 4
+        "c1": 1,
+        "c2": 2,
+        "c3": 3,
+        "c4": 4
       }
-    },
+     }
      *
      * @memberof UbiProductProfile
      */
@@ -72,6 +78,8 @@ export class UbiProductProfile {
         this._slotsSupported = Object.assign([], raw["slots-supported"]);
 
         this._features = Object.assign([], raw.features);
+
+        this._sensorsMapping = new UbiSensorsMapping(raw["sensors-mapping"]);
 
         let powerConstantsRaw = raw["power-constants"];
         this._powerConstants = new UbiProductPowerConstant(
