@@ -74,4 +74,8 @@ export class UbiProfileTable {
     getSensorProfile(sensorKey: string): UbiSensorProfile {
         return this.sensorProfiles[sensorKey];
     }
+
+    getAllSensorProfiles(): UbiSensorProfile[] {
+        return Object.values(this.sensorProfiles);
+    }
 }

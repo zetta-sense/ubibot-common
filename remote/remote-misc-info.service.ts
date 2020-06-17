@@ -90,7 +90,7 @@ export class RemoteMiscInfoService {
                     'sw_v': { 'u': 61, 'name': 'Switch Voltage' },
                     'sw_c': { 'u': 62, 'name': 'Switch I' },
                     'sw_p': { 'u': 63, 'name': 'Switch P' },
-                    'sw_pc': { 'u': 54, 'name': 'Switch PC' },
+                    'sw_pc': { 'u': 64, 'name': 'Switch PC' },
                 };
 
                 let ret = new UbiProfileTable(resp);

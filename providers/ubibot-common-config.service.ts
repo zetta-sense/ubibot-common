@@ -189,6 +189,6 @@ export class UbibotCommonConfigService {
     }
 
     getMqttEndPoint(): string {
-        return this.EndPoint.replace(/https:\/\/api\./, 'ws://mqtt.') + ':8083/mqtt';
+        return this.EndPoint.replace(/(https|http):\/\/(api|api-cdn)\./, 'ws://mqtt.') + ':8083/mqtt';
     }
 }
