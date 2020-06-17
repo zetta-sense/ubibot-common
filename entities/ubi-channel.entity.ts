@@ -8,6 +8,7 @@ import { Subject } from "rxjs";
 import { UbiChannelVConfig } from "./ubi-channel-vconfig.entity";
 import { UbiChannelVPref, UbiChannelVPrefFieldProperties } from "./ubi-channel-vpref.entity";
 import { UbiChannelCalibrate } from "./ubi-channel-calibrate.entity";
+import { UbiSensorsMapping } from "./ubi-sensors-mapping.entity";
 
 export interface UbiValueOptions {
     tempScale?: UbiExtraPreferenceTempScale,
@@ -138,6 +139,8 @@ export abstract class UbiChannel {
     last_values?: string;
     vconfig?: string;
     vpref?: string;
+    sensors?: string;
+    sensors_mapping?: string;
     battery?: number;
     net?: string;
     c_icon_base?: string;
@@ -707,6 +710,10 @@ export class UbiChannelDAO extends UbiChannel {
 
     private vprefParsed: UbiChannelVPref;
 
+    private sensorsParsed: UbiSensorsMapping;
+
+    private sensorsMappingParsed: UbiSensorsMapping;
+
     private caliParsed: UbiChannelCalibrate;
 
     constructor(channel: UbiChannel) {
@@ -760,6 +767,16 @@ export class UbiChannelDAO extends UbiChannel {
         const vpref: UbiChannelVPref = UbiChannelVPref.FromString(this.vpref);
         this.vprefParsed = vpref;
 
+        // 构建sensors
+        const sensors: UbiSensorsMapping = new UbiSensorsMapping(this.sensors);
+        // const sensors: UbiSensorsMapping = new UbiSensorsMapping(''); // debug
+        this.sensorsParsed = sensors;
+
+        // 构建sensors mapping
+        const sensorsMapping: UbiSensorsMapping = new UbiSensorsMapping(this.sensors_mapping);
+        // const sensorsMapping: UbiSensorsMapping = new UbiSensorsMapping(''); // debug
+        this.sensorsMappingParsed = sensorsMapping;
+
         // 构建caliParsed
         const cali: UbiChannelCalibrate = UbiChannelCalibrate.FromString(this.cali);
         this.caliParsed = cali;
@@ -793,6 +810,14 @@ export class UbiChannelDAO extends UbiChannel {
         return this.vprefParsed;
     }
 
+    getParsedSensors(): UbiSensorsMapping {
+        return this.sensorsParsed;
+    }
+
+    getParsedSensorsMapping(): UbiSensorsMapping {
+        return this.sensorsMappingParsed;
+    }
+
     getParsedCali(): UbiChannelCalibrate {
         return this.caliParsed;
     }
@@ -805,6 +830,12 @@ export class UbiChannelDAO extends UbiChannel {
     setUserPreferredFields(newPreferredFields: UbiChannelVPrefFieldProperties[]): void {
         const vpref = this.getParsedVPref();
         vpref.fields = newPreferredFields;
+    }
+
+    isSensorsSyncFinished(): boolean {
+        let expectedSensors = this.getParsedSensorsMapping();
+        let currentSensors = this.getParsedSensors();
+        return _.isEqual(currentSensors, expectedSensors);
     }
 
 
@@ -1008,7 +1039,9 @@ export function ConvertValue(value: number, fieldDef: UbiChannelFieldDef, opts: 
         fieldDef.scaleType === UbiChannelFieldDefScaleType.TEMPERATURE ||
         fieldDef.scaleType === UbiChannelFieldDefScaleType.ABSOLUTE_TEMPERATURE ||
         fieldDef.scaleType === UbiChannelFieldDefScaleType.RS485_EXT_TEMPERATURE ||
-        fieldDef.scaleType === UbiChannelFieldDefScaleType.DS18B20_EXT_TEMPERATURE
+        fieldDef.scaleType === UbiChannelFieldDefScaleType.DS18B20_EXT_TEMPERATURE ||
+        fieldDef.scaleType === UbiChannelFieldDefScaleType.RS485_PROBE_TEMPERATURE ||
+        fieldDef.scaleType === UbiChannelFieldDefScaleType.RS485_CO2_PROBE_TEMPERATURE
     )) {
         value = value * 9 / 5 + 32;
         value = parseFloat(value.toFixed(5));
@@ -1032,7 +1065,9 @@ export function ConvertValueReverse(value: number, fieldDef: UbiChannelFieldDef,
         fieldDef.scaleType === UbiChannelFieldDefScaleType.TEMPERATURE ||
         fieldDef.scaleType === UbiChannelFieldDefScaleType.ABSOLUTE_TEMPERATURE ||
         fieldDef.scaleType === UbiChannelFieldDefScaleType.RS485_EXT_TEMPERATURE ||
-        fieldDef.scaleType === UbiChannelFieldDefScaleType.DS18B20_EXT_TEMPERATURE
+        fieldDef.scaleType === UbiChannelFieldDefScaleType.DS18B20_EXT_TEMPERATURE ||
+        fieldDef.scaleType === UbiChannelFieldDefScaleType.RS485_PROBE_TEMPERATURE ||
+        fieldDef.scaleType === UbiChannelFieldDefScaleType.RS485_CO2_PROBE_TEMPERATURE
     )) {
         value = (value - 32) * 5 / 9;
         value = parseFloat(value.toFixed(5));

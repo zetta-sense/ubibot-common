@@ -55,9 +55,44 @@ export class RemoteMiscInfoService {
      * @memberof RemoteMiscInfoService
      */
     getUbibotProfiles(): Observable<UbiProfileTable> {
-        let url = `${this.ubibotCommonConfig.EndPoint}/configs/product-profiles/all`;
+        // let url = `${this.ubibotCommonConfig.EndPoint}/configs/product-profiles/all`;
+        let url = `https:/api.ubibot.io/configs/product-profiles/all`; // fixme: 暂时用io的作为debug
         return this.http.get(url).pipe(
             map((resp: any) => {
+                // fixme: debug, remove later
+                resp['product-profiles']['ubibot-gs1-a'] = {
+                    "slots-available": ["field1", "field2", "field3", "field4"],
+                    "slots-alterable": ["field3", "field4"],
+                    "features": ["fnTH", "fnLight"],
+                    "power-constants": { "c1": 1, "c2": 2, "c3": 3, "c4": 4 }
+                };
+
+                resp['sensor-profiles'] = {
+                    'th_t': { 'u': 1, 'name': 'Termperature' },
+                    'th_h': { 'u': 3, 'name': 'Humidity' },
+                    'volt': { 'u': 5, 'name': 'Voltage' },
+                    'rssi_w': { 'u': 6, 'name': 'WiFi RSSI' },
+                    'rssi_g': { 'u': 11, 'name': 'GSM RSSI' },
+                    'light': { 'u': 4, 'name': 'Light' },
+                    'r1_light': { 'u': 23, 'name': 'RS485 Light' },
+                    'r1_th_t': { 'u': 12, 'name': 'RS485 Temperature' },
+                    'r1_th_h': { 'u': 13, 'name': 'RS485 Humidity' },
+                    'r1_sth_t': { 'u': 10, 'name': 'RS485 Soli T' },
+                    'r1_sth_h': { 'u': 15, 'name': 'RS485 Soli H' },
+                    'e1_t': { 'u': 14, 'name': 'DS18B20 T' },
+                    'r1_t': { 'u': 41, 'name': 'RS485 T' },
+                    'r1_ws': { 'u': 21, 'name': 'Wind Velocity' },
+                    'r1_co2': { 'u': 20, 'name': 'RS485 CO2' },
+                    'r1_co2_t': { 'u': 51, 'name': 'RS485 CO2 T' },
+                    'r1_co2_h': { 'u': 52, 'name': 'RS485 CO2 H' },
+
+                    'sw_s': { 'u': 60, 'name': 'Switch State' },
+                    'sw_v': { 'u': 61, 'name': 'Switch Voltage' },
+                    'sw_c': { 'u': 62, 'name': 'Switch I' },
+                    'sw_p': { 'u': 63, 'name': 'Switch P' },
+                    'sw_pc': { 'u': 54, 'name': 'Switch PC' },
+                };
+
                 let ret = new UbiProfileTable(resp);
                 return ret;
             }),

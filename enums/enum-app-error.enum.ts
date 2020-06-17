@@ -72,6 +72,7 @@ export enum EnumAppError {
     PERIODS_CONVERT_FAILED = '2010',
 
     EXCEED_MIN_MAX_RULE_LIMIT = '3001',
+    SPECIFIED_FIELD_NOT_DEFINED_IN_DEVICE_SENSORS = '3002',
 
     FCM_NOT_UNUSABLE = '8908',
     PUSH_SERVICE_NOT_SUPPORTED_BY_UBIBOT = '8909', // 推送服务无法绑定，通常是ubibot服务器bind接口调用失败

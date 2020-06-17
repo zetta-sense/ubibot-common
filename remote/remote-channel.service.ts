@@ -684,6 +684,24 @@ export class RemoteChannelService {
         return this.update(channelId, { metadata: metadata });
     }
 
+    updateSensors(channelId: string, sensorsMapping: any, vconfig: any, extra: any = {}): Observable<any> {
+        // eg. in json string
+        // sensors:
+        // {
+        // "th_t":1,"th_h":2,"volt":3,"rssi_w":4,"rssi_g":5,"light":6,"r1_light":6,
+        // "r1_th_t":7,"r1_th_h":8,"r1_sth_t":9,"r1_sth_h":10,"e1_t":9,"r1_t":9,"r1_ws":11,
+        // "r1_co2":12,"r1_co2_t":19,"r1_co2_h":20
+        // }
+        //
+        // vconfig:
+        // {"field1":{"h":"0","u":"1"},"field2":{"h":"0","u":"3"},"field3":{"h":"0","u":"5"},"field4":{"h":"0","u":"6"}}
+
+        return this.update(channelId, Object.assign({
+            sensors_mapping: sensorsMapping,
+            vconfig: vconfig,
+        }, extra));
+    }
+
     updateChannelName(channelId: string, name: string): Observable<any> {
         return this.update(channelId, { name: name });
     }

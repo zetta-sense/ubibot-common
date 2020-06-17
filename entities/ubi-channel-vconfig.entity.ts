@@ -33,5 +33,4 @@ export class UbiChannelVConfig {
 
         return ret;
     }
-
 }

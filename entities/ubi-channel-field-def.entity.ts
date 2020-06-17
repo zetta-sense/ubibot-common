@@ -1,5 +1,23 @@
 import { UbiChannelVConfig, VConfigItemHidden } from "./ubi-channel-vconfig.entity";
 
+/**
+ * 值是string形式，因此做as转换时，如果是number则必须转为string
+ *
+ * 如果更新了这个文件的enum，注意还要更新以下文件
+ *
+ * ubi-field-icon.ts
+ * ubi-channel-field-unit.pipe.ts
+ *
+ * 以及本文件的
+ * WhichGroupOfScaleType
+ *
+ * 以及ubi-channel.entity.ts的
+ * ConvertValue
+ * ConvertValueReverse
+ *
+ * @export
+ * @enum {number}
+ */
 export enum UbiChannelFieldDefScaleType {
     // vconfig值, 值域一般为1, 3, 4, 5, 6, 7, 8, 9
 
@@ -80,27 +98,32 @@ export enum UbiChannelFieldDefScaleType {
     /**
      * 智能开关功率状态
      */
-    SWITCH_STATE = '16',
+    SWITCH_STATE = '60',
+
+    /**
+     * 插座电压
+     */
+    SWITCH_VOLTAGE = '61',
 
     /**
      * 智能开关功率电流
      */
-    SWITCH_FLOW = '17',
+    SWITCH_FLOW = '62',
 
     /**
      * 智能开关功率
      */
-    SWITCH_POWER = '18',
+    SWITCH_POWER = '63',
 
     /**
      * 智能开关功率累计用电量
      */
-    SWITCH_ACCUMULATED_CONSUMPTION = '19',
+    SWITCH_ACCUMULATED_CONSUMPTION = '64',
 
     /**
-     * CO2外接
+     * RS485 CO2外接
      */
-    CO2_EXT = '20',
+    RS485_CO2_PROBE = '20',
 
     /**
      * 风速
@@ -113,9 +136,30 @@ export enum UbiChannelFieldDefScaleType {
     HUMAN_DETECTION_PULSE = '22',
 
     /**
+     * 外接RS485光照
+     */
+    RS485_EXT_BRIGHTNESS = '23',
+
+    /**
      * 人感状态
      */
     HUMAN_DETECTION = '30',
+
+
+    /**
+     * 外接RS485温度探头
+     */
+    RS485_PROBE_TEMPERATURE = '41',
+
+    /**
+     * 外接RS485 CO2温度
+     */
+    RS485_CO2_PROBE_TEMPERATURE = '51',
+
+    /**
+     * 外接RS485 CO2湿度
+     */
+    RS485_CO2_PROBE_HUMIDITY = '52',
 
 }
 
@@ -124,6 +168,7 @@ export enum UbiChannelFieldDefScaleTypeGroup {
     Humidity = 2,
     Signal = 3,
     Switch = 4,
+    Light = 5,
     Misc = 100,
 }
 
@@ -189,20 +234,28 @@ export function WhichGroupOfScaleType(scaleTypeKey: string): UbiChannelFieldDefS
         case UbiChannelFieldDefScaleType.ABSOLUTE_TEMPERATURE:
         case UbiChannelFieldDefScaleType.RS485_EXT_TEMPERATURE:
         case UbiChannelFieldDefScaleType.DS18B20_EXT_TEMPERATURE:
+        case UbiChannelFieldDefScaleType.RS485_PROBE_TEMPERATURE:
+        case UbiChannelFieldDefScaleType.RS485_CO2_PROBE_TEMPERATURE:
             ret = UbiChannelFieldDefScaleTypeGroup.Temperature;
             break;
         case UbiChannelFieldDefScaleType.HUMIDITY:
         case UbiChannelFieldDefScaleType.ABSOLUTE_HUMIDITY:
         case UbiChannelFieldDefScaleType.RS485_EXT_HUMIDITY:
+        case UbiChannelFieldDefScaleType.RS485_CO2_PROBE_HUMIDITY:
             ret = UbiChannelFieldDefScaleTypeGroup.Humidity;
             break;
         case UbiChannelFieldDefScaleType.DBM:
         case UbiChannelFieldDefScaleType.GSM:
             ret = UbiChannelFieldDefScaleTypeGroup.Signal;
             break;
+        case UbiChannelFieldDefScaleType.BRIGHTNESS:
+        case UbiChannelFieldDefScaleType.RS485_EXT_BRIGHTNESS:
+            ret = UbiChannelFieldDefScaleTypeGroup.Light;
+            break;
         case UbiChannelFieldDefScaleType.SWITCH_STATE:
         case UbiChannelFieldDefScaleType.SWITCH_FLOW:
         case UbiChannelFieldDefScaleType.SWITCH_POWER:
+        case UbiChannelFieldDefScaleType.SWITCH_VOLTAGE:
         case UbiChannelFieldDefScaleType.SWITCH_ACCUMULATED_CONSUMPTION:
             ret = UbiChannelFieldDefScaleTypeGroup.Switch;
             break;

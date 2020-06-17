@@ -16,17 +16,26 @@ import { UbiProductPowerConstant } from "./ubi-product-power-constant.entity";
 import { EnumProductProfileFeature } from "../enums/enum-product-profile-feature.enum";
 import { EnumBasicProductId } from "../enums/enum-basic-product-id.enum";
 import { UbiSensorsMapping } from "./ubi-sensors-mapping.entity";
+import * as _ from 'lodash';
 
 interface UbiProductProfileRaw {
     "slots-available": string[];
     "slots-alterable": string[];
-    "slots-supported": string[];
     "features": string[];
-    "sensors-mapping": { [key: string]: number };
     "power-constants": { [key: string]: number };
 }
 
 export class UbiProductProfile {
+
+    static EMPTY = (productId) => {
+        return new UbiProductProfile(productId, {
+            'slots-available': [],
+            'slots-alterable': [],
+            'features': [],
+            'power-constants': {},
+        });
+    };
+
     private _productId: EnumBasicProductId; // 使用具体的product id，例如 ubibot-sp1-4g
     get productId(): EnumBasicProductId { return this._productId; }
 
@@ -36,14 +45,8 @@ export class UbiProductProfile {
     private _slotsAlterable: string[]; // 可修改sensor的fields
     get slotsAlterable(): string[] { return Object.assign([], this._slotsAlterable); }
 
-    private _slotsSupported: string[]; // 可修改sensor的fields所支持的sensor
-    get slotsSupported(): string[] { return Object.assign([], this._slotsSupported); }
-
     private _features: EnumProductProfileFeature[]; // 特性，影响可设置项
     get features(): EnumProductProfileFeature[] { return Object.assign([], this._features); }
-
-    private _sensorsMapping: UbiSensorsMapping; // 默认sensors与field对应关系
-    get sensorsMapping(): UbiSensorsMapping { return this._sensorsMapping; }
 
     private _powerConstants: UbiProductPowerConstant; // 耗电量常数
     get powerConstants(): UbiProductPowerConstant { return this._powerConstants; }
@@ -57,8 +60,6 @@ export class UbiProductProfile {
      * {
       "slots-available": ["field1", "field2", "field3", "field4", "field5"],
       "slots-alterable": ["field5"],
-      "slots-supported": ["sw_s", "sw_v"],
-      "sensors-mapping": {"sw_s": 1, "sw_v": 2}
       "features": ["noNetFn", "fnBattery"],
       "power-constants": {
         "c1": 1,
@@ -75,19 +76,55 @@ export class UbiProductProfile {
 
         this._slotsAvailable = Object.assign([], raw["slots-available"]);
         this._slotsAlterable = Object.assign([], raw["slots-alterable"]);
-        this._slotsSupported = Object.assign([], raw["slots-supported"]);
 
         this._features = Object.assign([], raw.features);
 
-        this._sensorsMapping = new UbiSensorsMapping(raw["sensors-mapping"]);
-
-        let powerConstantsRaw = raw["power-constants"];
+        let powerConstantsRaw = raw["power-constants"] || {};
         this._powerConstants = new UbiProductPowerConstant(
             powerConstantsRaw.c1,
             powerConstantsRaw.c2,
             powerConstantsRaw.c3,
             powerConstantsRaw.c4,
         );
+    }
+
+    /**
+     * whether this slot alterable (listed in slots-alterable)
+     *
+     * @param {string} slotKey eg. field1, ...
+     * @returns {boolean}
+     * @memberof UbiProductProfile
+     */
+    isSlotAlterable(slotKey: string): boolean {
+        if (this.slotsAvailable) {
+            return !!this.slotsAlterable.filter(x => x == slotKey).length;
+        }
+        return false;
+    }
+
+    /**
+     * wheter this slot available (listed in slots-available)
+     *
+     * @param {string} slotKey eg. field1, ...
+     * @returns {boolean}
+     * @memberof UbiProductProfile
+     */
+    isSlotAvailable(slotKey: string): boolean {
+        if (this.slotsAvailable) {
+            return !!this.slotsAvailable.filter(x => x == slotKey).length;
+        }
+        return false;
+    }
+
+    /**
+     * 返回不能更改的slots
+     *
+     * @returns {string[]}
+     * @memberof UbiProductProfile
+     */
+    getFixedSlots(): string[] {
+        let ret = _.difference(this.slotsAvailable, this.slotsAlterable);
+        return ret;
     }
 
 }
