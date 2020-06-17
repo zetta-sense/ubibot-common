@@ -18,16 +18,23 @@ export class UbiObjectFilterPipe implements PipeTransform {
 
         const regexp: string = _.escapeRegExp(`${pattern}`);
         // const tester: RegExp = new RegExp(`^${regexp}`, 'i'); // ignore case, starts with pattern, but end with any
-        const tester: RegExp = new RegExp(`${regexp}`, 'ig'); // ignore case, global
 
         const ret = items.filter((item) => {
-            if (property) {
-                return tester.test(item[property]);
-            } else if (typeof item === 'string') {
-                return tester.test(item);
-            } else {
-                const str = JSON.stringify(item);
-                return tester.test(str);
+            // RegExp是stateful的，因此必须每次loop新建
+            const tester: RegExp = new RegExp(regexp, 'ig'); // ignore case, global
+            try {
+                if (property) {
+                    // console.log(`testing ${item[property]}, result=${tester.test(item[property])}`)
+                    return tester.test(item[property]);
+                } else if (typeof item === 'string') {
+                    return tester.test(item);
+                } else {
+                    const str = JSON.stringify(item);
+                    return tester.test(str);
+                }
+            } catch (e) {
+                console.error(e);
+                return false;
             }
         });
 
