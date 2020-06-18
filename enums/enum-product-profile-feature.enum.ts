@@ -13,6 +13,23 @@
 // limitations under the License.
 
 export enum EnumProductProfileFeature {
-    noNetFn = 'noNetFn',
-    fnBattery = 'fnBattery',
+    ExMqtt = 'ex:mqtt',
+
+    SyncTH = 'sync:th',
+    SyncLight = 'sync:light',
+    SyncAcc = 'sync:acc',
+    SyncExt_T = 'sync:ext_t',
+    SyncRS485_TH = 'sync:rs485_th',
+    SyncRS485_STH = 'sync:rs485_sth',
+    SyncBattery = 'sync:battery',
+    SyncRS485_T = 'sync:rs485_t',
+    SyncRS485_LT = 'sync:rs485_lt',
+    SyncRS485_WS = 'sync:rs485_ws',
+    SyncRS485_CO2 = 'sync:rs485_co2',
+
+
+    ModNoNet = 'mod:no_net',
+    ModWifiMode = 'mod:wifi_mode',
+    ModDataLed = 'mod:data_led',
+    ModNetMode = 'mod:net_mode',
 }

@@ -591,15 +591,16 @@ export abstract class UbiChannel {
     /**
      * 是否显示高级设置，目前应该就sp1不显示
      *
+     * @deprecated
      * @returns
      * @memberof UbiChannel
      */
-    isAdvSettingSupported() {
-        if (this.product_id === EnumBasicProductId.SP1) {
-            return false;
-        }
-        return true;
-    }
+    // isAdvSettingSupported() {
+    //     if (this.product_id === EnumBasicProductId.SP1) {
+    //         return false;
+    //     }
+    //     return true;
+    // }
 
     hasSSID(): boolean {
         return this.getStaus().ssid !== undefined;

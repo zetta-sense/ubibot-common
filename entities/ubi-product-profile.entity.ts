@@ -117,6 +117,29 @@ export class UbiProductProfile {
     }
 
     /**
+     * whether this product contains specified feature
+     *
+     * @param {EnumProductProfileFeature} featureKey
+     * @returns {boolean}
+     * @memberof UbiProductProfile
+     */
+    hasFeature(featureKey: EnumProductProfileFeature): boolean {
+        return this.features.indexOf(featureKey) >= 0;
+    }
+
+    /**
+     * 是否存在 mod: 开头的feature
+     *
+     * @returns {boolean}
+     * @memberof UbiProductProfile
+     */
+    existsAdvanceFeature(): boolean {
+        return this.features.filter(featureKey => {
+            return /^mod:.+/.test(featureKey);
+        }).length > 0;
+    }
+
+    /**
      * 返回不能更改的slots
      *
      * @returns {string[]}

@@ -63,7 +63,7 @@ export class RemoteMiscInfoService {
                 resp['product-profiles']['ubibot-gs1-a'] = {
                     "slots-available": ["field1", "field2", "field3", "field4"],
                     "slots-alterable": ["field3", "field4"],
-                    "features": ["fnTH", "fnLight"],
+                    "features": ["sync:th", "sync:th", "sync:battery", "mod:no_net", "mod:wifi_mode", "mod:data_led", "mod:net_mode"],
                     "power-constants": { "c1": 1, "c2": 2, "c3": 3, "c4": 4 }
                 };
 
