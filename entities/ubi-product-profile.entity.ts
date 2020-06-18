@@ -140,6 +140,18 @@ export class UbiProductProfile {
     }
 
     /**
+     * 是否存在 sync: 开头的feature
+     *
+     * @returns {boolean}
+     * @memberof UbiProductProfile
+     */
+    existsSyncRateFeature(): boolean {
+        return this.features.filter(featureKey => {
+            return /^sync:.+/.test(featureKey);
+        }).length > 0;
+    }
+
+    /**
      * 返回不能更改的slots
      *
      * @returns {string[]}

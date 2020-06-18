@@ -12,15 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { UbiSensorCategory } from "../enums/enum-sensor-category.enum";
+
 interface UbiSensorProfileRaw {
     u: number;
     name: string;
+    category: string;
 }
 
 export class UbiSensorProfile {
 
     private _sensorKey: string;
-    get sensorKey(): string { return this._sensorKey }
+    get sensorKey(): string { return this._sensorKey; }
 
     /**
      * 对应的vconfig的u值
@@ -30,7 +33,7 @@ export class UbiSensorProfile {
      * @memberof UbiSensorProfile
      */
     private _u: number;
-    get u(): number { return this._u }
+    get u(): number { return this._u; }
 
 
     /**
@@ -41,12 +44,16 @@ export class UbiSensorProfile {
      * @memberof UbiSensorProfile
      */
     private _name: string;
-    get name(): string { return this._name }
+    get name(): string { return this._name; }
+
+    private _category: UbiSensorCategory;
+    get category(): UbiSensorCategory { return this._category; }
 
     constructor(sensorKey: string, raw: UbiSensorProfileRaw) {
         this._sensorKey = sensorKey;
 
         this._u = raw.u;
         this._name = raw.name;
+        this._category = raw.category as UbiSensorCategory;
     }
 }
