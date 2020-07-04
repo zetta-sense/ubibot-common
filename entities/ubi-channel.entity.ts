@@ -265,7 +265,8 @@ export abstract class UbiChannel {
     }
 
     static IsEthSupported(productId: string): boolean {
-        if (productId === EnumBasicProductId.GS1_AETH1RS) {
+        if (productId === EnumBasicProductId.GS1_AETH1RS
+            || productId === EnumBasicProductId.MS1) {
             return true;
         }
         return false;
