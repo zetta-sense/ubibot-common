@@ -216,12 +216,14 @@ export class UbiFeedsConverterEngine {
                             y: point.y,
                         };
                         dataConverted.push(pointXRange);
-                        lastPointXRange = pointXRange;
 
                         // 最后一点的y延续到当前突变点
                         if (lastPointXRange) {
                             lastPointXRange.x2 = point.x;
                         }
+
+                        // 必须在更新lastPointXRange之后
+                        lastPointXRange = pointXRange;
                     }
 
                     // tag: debug, 后null值测试 -->

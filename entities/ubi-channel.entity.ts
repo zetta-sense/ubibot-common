@@ -266,7 +266,8 @@ export abstract class UbiChannel {
 
     static IsEthSupported(productId: string): boolean {
         if (productId === EnumBasicProductId.GS1_AETH1RS
-            || productId === EnumBasicProductId.MS1) {
+            || productId === EnumBasicProductId.MS1
+            || productId === EnumBasicProductId.MS1P) {
             return true;
         }
         return false;
@@ -274,17 +275,6 @@ export abstract class UbiChannel {
 
     isEthSupported() {
         return UbiChannel.IsEthSupported(this.product_id);
-    }
-
-    static IsBleRequired(productId: string): boolean {
-        if (productId === EnumBasicProductId.SP1) {
-            return true;
-        }
-        return false;
-    }
-
-    isBleRequired() {
-        return UbiChannel.IsBleRequired(this.product_id);
     }
 
     /**
@@ -438,7 +428,7 @@ export abstract class UbiChannel {
     }
 
     /**
-     * ubibot人感
+     * ubibot人感ms1
      *
      * @static
      * @param {string} productId
@@ -454,6 +444,25 @@ export abstract class UbiChannel {
 
     isFamilyMS1(): boolean {
         return UbiChannel.IsFamilyMS1(this.product_id);
+    }
+
+    /**
+     * ubibot人感ms1p
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsFamilyMS1P(productId: string): boolean {
+        if (productId === EnumBasicProductId.MS1P) {
+            return true;
+        }
+        return false;
+    }
+
+    isFamilyMS1P(): boolean {
+        return UbiChannel.IsFamilyMS1P(this.product_id);
     }
 
     /**

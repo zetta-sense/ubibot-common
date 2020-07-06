@@ -533,6 +533,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                             data: [],
                         };
 
+                        // 数据分段
                         for (let i = 0; i < newDataPoints.length; i++) {
                             const segment: UbiDataChartPointForXRange = newDataPoints[i];
                             const yValue = segment.y;
