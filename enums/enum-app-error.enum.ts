@@ -48,6 +48,7 @@ export enum EnumAppError {
     INVALID_PHONE_FORMAT = '1423', // 电话格式错误，目前由页面直接处理错误信息，不交由parseError处理
     INVALID_SERIAL_FORMAT = '1424',
     REQUIRE_BIND_EMAIL = '1425',
+    INVALID_BETWEEN_DATE = '1426', // 通常是begin/end之间 end > begin时
 
     SERVER_ACCESS_TIMEOUT = '1480',
     SERVER_DATA_SYNC_ERROR = '1481',
