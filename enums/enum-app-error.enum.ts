@@ -49,6 +49,8 @@ export enum EnumAppError {
     INVALID_SERIAL_FORMAT = '1424',
     REQUIRE_BIND_EMAIL = '1425',
     INVALID_BETWEEN_DATE = '1426', // 通常是begin/end之间 end > begin时
+    EXCEED_MAX_RECURSIVE_COUNT = '1427', // 一般用于recursive observable load data时，如连续读取feeds，每次根据之前的end作为下次的begin
+    INVALID_EMPTY_DATA = '1428', // 通用空数据错误
 
     SERVER_ACCESS_TIMEOUT = '1480',
     SERVER_DATA_SYNC_ERROR = '1481',
