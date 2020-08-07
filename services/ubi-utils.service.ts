@@ -20,6 +20,7 @@ import { UbiEventService } from './ubi-event.service';
 import { UbiLanguageDef, UbibotSupportedLanguagesService } from '../providers/ubibot-supported-languages.service';
 import { UbiStorageService } from './ubi-storage.service';
 import { UbiFeedsConverterEngine, UbiFeedPack } from './base/ubi-feeds-converter.engine';
+import { DecimalPlaceType } from '../entities/ubi-channel-field-view-option.entity';
 
 export const UBIBOT_UTILS_DIALOG_AGENT = new InjectionToken<UbibotUtilsDialogAgent>('UBIBOT_UTILS_DIALOG_AGENT');
 
@@ -657,9 +658,9 @@ export let _EAN_ = function strEmptyAsNull<T>(input: T): T {
 // ref: https://stackoverflow.com/questions/12227594/which-is-better-numberx-or-parsefloatx/13676265#13676265
 export let _NF_ = function fixNumber(input: number, decimalPlace: number): string {
     try {
-        if (decimalPlace === -1) {
+        if (decimalPlace == DecimalPlaceType.ALL) {
             return `${input}`;
-        } else if (decimalPlace === -2) {
+        } else if (decimalPlace == DecimalPlaceType.DEFAULT) {
             return `${Number(input.toFixed(2))}`;
         }
         return input.toFixed(decimalPlace);

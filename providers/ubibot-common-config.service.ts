@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
+import { DecimalPlaceType } from '../entities/ubi-channel-field-view-option.entity';
 
 @Injectable()
 export class UbibotCommonConfigService {
@@ -28,7 +29,7 @@ export class UbibotCommonConfigService {
 
     public DefaultDateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
     public DefaultTempScale = 'celsius';
-    public DefaultDecimalPlace = -2;
+    public DefaultDecimalPlace = DecimalPlaceType.DEFAULT as number;
 
     public DefaultLocationFormat = '1.4-4'; // ref: https://angular.io/api/common/DecimalPipe
 

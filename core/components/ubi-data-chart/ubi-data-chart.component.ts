@@ -14,7 +14,7 @@ import { take, delay } from 'rxjs/operators';
 import { UbiFeedType } from 'src/modules/ubibot-common/remote/remote-channel.service';
 import { UbiFeedsChartType } from '../../../services/base/ubi-feeds-converter.engine';
 import { UbiExtraPreferenceSensorsSettings } from '../../../entities/ubi-extra-preference.entity';
-import { UbiChannelFieldViewOption } from '../../../entities/ubi-channel-field-view-option.entity';
+import { UbiChannelFieldViewOption, DecimalPlaceType } from '../../../entities/ubi-channel-field-view-option.entity';
 
 // ref: https://github.com/highcharts/highcharts-angular#theme
 NoDataToDisplay(Highcharts);
@@ -631,7 +631,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     private determineDecimalPlace(): number {
         // console.log(this.viewOption);
-        if (this.viewOption == null || this.viewOption.decimal == null) return -2; // defualt auto
+        if (this.viewOption == null || this.viewOption.decimal == null) return DecimalPlaceType.DEFAULT; // defualt auto
         // console.log('deterimine=', this.viewOption.decimal);
         return this.viewOption.decimal
     }
