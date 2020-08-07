@@ -3,7 +3,14 @@ export enum DecimalPlaceType {
     ALL = -1,
 }
 
-export class UbiChannelFieldViewOption {
+export interface UbiChannelFieldViewOptionInterface {
+    decimal: number;
+
+    yAxisMax: number;
+    yAxisMin: number;
+}
+
+export class UbiChannelFieldViewOption implements UbiChannelFieldViewOptionInterface {
     decimal: number;
 
     yAxisMax: number;
