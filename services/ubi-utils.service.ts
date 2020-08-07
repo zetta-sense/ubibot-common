@@ -432,8 +432,6 @@ export class UbiUtilsService {
      * @param data
      */
     sha256(data): string {
-        // const uint8array = new TextEncoder().encode(data);
-        // var string = new TextDecoder().decode(uint8array);
         let ret = SHA2_256(data);
         return ret;
     }
