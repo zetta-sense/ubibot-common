@@ -19,16 +19,39 @@ Object.keys(ESC_POS).forEach((k) => {
     }
 });
 
+export interface UbiPrintFeedsDef {
+
+    /**
+     * field alias
+     *
+     * @type {string}
+     * @memberof UbiPrintFeedsDef
+     */
+    header: string;
+
+    /**
+     * 例如crated at
+     *
+     * @type {string}
+     * @memberof UbiPrintFeedsDef
+     */
+    fieldKey: string;
+}
+
 export class UbiPrinterEncoder {
 
+    private title: string;
+    private feedsDef: UbiPrintFeedsDef[];
     private feeds: UbiFeedsItem[];
 
     constructor() {
         // console.log(ESC_POS);
     }
 
-    initWithFeeds(feeds: UbiFeedsItem[]): void {
+    init(title: string, feedsDef: UbiPrintFeedsDef[], feeds: UbiFeedsItem[]): void {
+        this.title = title;
         this.feeds = feeds;
+        this.feedsDef = feedsDef;
     }
 
     text(): string {
@@ -55,6 +78,21 @@ export class UbiPrinterEncoder {
         return ret.join('');
     }
 
+    private appendAsTimeData(): string {
+        let ret = '';
+        // todo: 单列
+
+        const columnWidth = Math.floor(32 / 2);
+
+        return ret;
+    }
+
+    private appendAsTimeDataData(): string {
+        let ret = '';
+        // todo: 双列
+        return ret;
+    }
+
     encode(text: string, charset: string = 'utf-8'): Uint8Array {
         console.log(`UbiPrinterEncoder encoding with ${charset}...`);
 
@@ -64,5 +102,10 @@ export class UbiPrinterEncoder {
         return ret;
     }
 
+    enodeDebugText(text: string, charset = 'gb18030'): Uint8Array {
+        const charsetEncoder = new TextEncoder(charset, { NONSTANDARD_allowLegacyEncoding: true });
+        const ret = charsetEncoder.encode(text);
+        return ret;
+    }
 
 }
