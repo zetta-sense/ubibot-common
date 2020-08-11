@@ -1,7 +1,7 @@
 import { UbiFeedsItem } from "../../remote/remote-channel.service";
 import { TextEncoder, TextDecoder } from 'text-encoding';
 
-const PAGE_WIDTH: number = 50; // 80mm打印机能容纳的ascii字符数
+const PAGE_WIDTH: number = 48; // 80mm打印机能容纳的ascii字符数
 
 const ESC_POS = {
     ESC_INIT: `@`,
