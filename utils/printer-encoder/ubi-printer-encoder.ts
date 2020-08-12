@@ -1,6 +1,7 @@
 import { UbiFeedsItem } from "../../remote/remote-channel.service";
 import { TextEncoder, TextDecoder } from 'text-encoding';
 import * as moment from "moment-timezone";
+import { UbiChannelFieldDef } from "../../entities/ubi-channel-field-def.entity";
 
 const PAGE_WIDTH: number = 48; // 80mm打印机能容纳的ascii字符数
 
@@ -42,7 +43,7 @@ class StringBuffer {
     }
 }
 
-export interface UbiPrintColumnDef {
+export interface UbiPrintEncoderColumnDef {
 
     /**
      * field alias
@@ -55,6 +56,8 @@ export interface UbiPrintColumnDef {
     scaleType: string;
 
     fieldKey: string;
+
+    fieldDef: UbiChannelFieldDef;
 }
 
 interface LineStyleInterface { }
@@ -76,14 +79,14 @@ export class UbiPrinterEncoder {
     private subtitles: string[];
     private footers: string[];
 
-    private feedsDef: UbiPrintColumnDef[];
+    private feedsDef: UbiPrintEncoderColumnDef[];
     private feeds: string[][]; // 每个元素应为每一行的数据
 
     constructor() {
         // console.log(ESC_POS);
     }
 
-    init(title: string, feedsDef: UbiPrintColumnDef[], feeds: string[][]): void {
+    init(title: string, feedsDef: UbiPrintEncoderColumnDef[], feeds: string[][]): void {
         this.title = title;
         this.feeds = feeds;
         this.feedsDef = feedsDef;
@@ -141,6 +144,10 @@ export class UbiPrinterEncoder {
         }
 
         // subtitles 如数据日期，时区
+        if (this.subtitles.length > 0) {
+            this.appendLineSplitter(buffer, '=');
+        }
+
         this.subtitles.forEach((subtitle) => {
             this.appendLineCenter(buffer, subtitle);
         });
