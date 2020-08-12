@@ -1,5 +1,6 @@
 import { UbiFeedsItem } from "../../remote/remote-channel.service";
 import { TextEncoder, TextDecoder } from 'text-encoding';
+import * as moment from "moment-timezone";
 
 const PAGE_WIDTH: number = 48; // 80mm打印机能容纳的ascii字符数
 
@@ -51,12 +52,30 @@ export interface UbiPrintColumnDef {
      */
     header: string;
 
-    nickname: string;
+    scaleType: string;
+
+    fieldKey: string;
+}
+
+interface LineStyleInterface { }
+
+export class LineStylePair implements LineStyleInterface {
+    label: string;
+    value: string;
+
+    constructor(label: string, value: string) {
+        this.label = label;
+        this.value = value;
+    }
 }
 
 export class UbiPrinterEncoder {
 
     private title: string;
+
+    private subtitles: string[];
+    private footers: string[];
+
     private feedsDef: UbiPrintColumnDef[];
     private feeds: string[][]; // 每个元素应为每一行的数据
 
@@ -68,6 +87,46 @@ export class UbiPrinterEncoder {
         this.title = title;
         this.feeds = feeds;
         this.feedsDef = feedsDef;
+
+        this.resetSubtitles();
+        this.resetFooters();
+    }
+
+    appendSubtitle(line: string): void {
+        if (line != null) {
+            this.subtitles.push(line);
+        }
+    }
+
+    appendFooter(line: LineStyleInterface): void {
+        if (line != null) {
+            if (line instanceof LineStylePair) {
+                const pair = line as LineStylePair;
+
+                const labelMaxWidth = 16;
+                let label = this.nomalize(pair.label);
+                label = this.truncate(label, labelMaxWidth);
+
+                const labelAsciiLen = this.calAsciiLength(label);
+                label = `${label}${this.brewSpaces(labelMaxWidth - labelAsciiLen)}`;
+
+                const valueMaxwidth = PAGE_WIDTH - labelMaxWidth;
+                let value = this.nomalize(pair.value);
+                value = this.truncate(value, valueMaxwidth);
+
+                this.footers.push(`${label}${value}`);
+            } else {
+                this.footers.push('Unknown line style');
+            }
+        }
+    }
+
+    resetSubtitles(): void {
+        this.subtitles = [];
+    }
+
+    resetFooters(): void {
+        this.footers = [];
     }
 
     text(): string {
@@ -75,10 +134,18 @@ export class UbiPrinterEncoder {
         ret.push(ESC_POS.ESC_INIT);
 
         const buffer = new StringBuffer();
+
+        // channel alias
         if (this.title != null) {
             this.appendLineCenter(buffer, this.title);
-            this.appendLineSplitter(buffer);
         }
+
+        // subtitles 如数据日期，时区
+        this.subtitles.forEach((subtitle) => {
+            this.appendLineCenter(buffer, subtitle);
+        });
+
+        this.appendLineSplitter(buffer, '=');
 
         // 打印colums header
         const headers = this.feedsDef.map((fd) => fd.header);
@@ -97,12 +164,14 @@ export class UbiPrinterEncoder {
 
         this.appendLineSplitter(buffer);
 
-        // todo: 打印最大/最小/平均值
-        // ...
+        // footers 如最大/最小/平均值
+        this.footers.forEach((footer) => {
+            this.appendLineLeft(buffer, footer);
+        });
 
         this.appendLineSplitter(buffer);
 
-        this.appendLineLeft(buffer, 'Signature'); // 签名行
+        this.appendLineLeft(buffer, 'Signature:'); // 签名行
         this.appendEmptyLine(buffer, 5);
 
         return buffer.toString();
