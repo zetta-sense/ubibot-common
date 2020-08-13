@@ -22,6 +22,11 @@ Object.keys(ESC_POS).forEach((k) => {
     }
 });
 
+export enum UbiPrinterCharset {
+    UTF8 = 'UTF-8',
+    GB18030 = 'GB18030',
+}
+
 class StringBuffer {
     private buffer: string[];
     constructor() {
@@ -62,6 +67,14 @@ export interface UbiPrintEncoderColumnDef {
 
 interface LineStyleInterface { }
 
+export class LineStyleAlignLeft implements LineStyleInterface {
+    text;
+
+    constructor(text: string) {
+        this.text = text;
+    }
+}
+
 export class LineStylePair implements LineStyleInterface {
     label: string;
     value: string;
@@ -72,12 +85,28 @@ export class LineStylePair implements LineStyleInterface {
     }
 }
 
+export class LineStyleAlignColumns implements LineStyleInterface {
+    values: string[];
+
+    constructor(values: string[]) {
+        this.values = values;
+    }
+}
+
+export class LineStyleSplitter implements LineStyleInterface {
+    splitter: string;
+
+    constructor(splitter: string = '-') {
+        this.splitter = splitter;
+    }
+}
+
 export class UbiPrinterEncoder {
 
     private title: string;
 
     private subtitles: string[];
-    private footers: string[];
+    private footers: LineStyleInterface[];
 
     private feedsDef: UbiPrintEncoderColumnDef[];
     private feeds: string[][]; // 每个元素应为每一行的数据
@@ -102,26 +131,7 @@ export class UbiPrinterEncoder {
     }
 
     appendFooter(line: LineStyleInterface): void {
-        if (line != null) {
-            if (line instanceof LineStylePair) {
-                const pair = line as LineStylePair;
-
-                const labelMaxWidth = 16;
-                let label = this.nomalize(pair.label);
-                label = this.truncate(label, labelMaxWidth);
-
-                const labelAsciiLen = this.calAsciiLength(label);
-                label = `${label}${this.brewSpaces(labelMaxWidth - labelAsciiLen)}`;
-
-                const valueMaxwidth = PAGE_WIDTH - labelMaxWidth;
-                let value = this.nomalize(pair.value);
-                value = this.truncate(value, valueMaxwidth);
-
-                this.footers.push(`${label}${value}`);
-            } else {
-                this.footers.push('Unknown line style');
-            }
-        }
+        this.footers.push(line);
     }
 
     resetSubtitles(): void {
@@ -172,13 +182,26 @@ export class UbiPrinterEncoder {
         this.appendLineSplitter(buffer);
 
         // footers 如最大/最小/平均值
-        this.footers.forEach((footer) => {
-            this.appendLineLeft(buffer, footer);
+        this.footers.forEach((footerLine) => {
+            if (footerLine != null) {
+                if (footerLine instanceof LineStylePair) {
+                    const pair = footerLine as LineStylePair;
+                    this.appendLineLabelValue(buffer, pair.label, pair.value);
+                } else if (footerLine instanceof LineStyleAlignColumns) {
+                    const cols = (footerLine as LineStyleAlignColumns).values;
+                    this.appendColumnsData(buffer, cols);
+                } else if (footerLine instanceof LineStyleSplitter) {
+                    const splitter = (footerLine as LineStyleSplitter).splitter;
+                    this.appendLineSplitter(buffer, splitter);
+                } else if (footerLine instanceof LineStyleAlignLeft) {
+                    const text = (footerLine as LineStyleAlignLeft).text;
+                    this.appendLineLeft(buffer, text);
+                } else {
+                    this.appendLineCenter(buffer, '----Unknown line style----');
+                }
+            }
         });
 
-        this.appendLineSplitter(buffer);
-
-        this.appendLineLeft(buffer, 'Signature:'); // 签名行
         this.appendEmptyLine(buffer, 5);
 
         return buffer.toString();
@@ -217,6 +240,25 @@ export class UbiPrinterEncoder {
      */
     private nomalize(text: string): string {
         return text == null ? '' : text.replace(/\n/ig, '');
+    }
+
+    private appendLineLabelValue(buffer: StringBuffer, label: string, value: string): StringBuffer {
+        const labelMaxWidth = 16;
+        label = this.nomalize(label);
+        label = this.truncate(label, labelMaxWidth);
+
+        const labelAsciiLen = this.calAsciiLength(label);
+        label = `${label}`;
+
+        const spaces = this.brewSpaces(labelMaxWidth - labelAsciiLen);
+
+        const valueMaxwidth = PAGE_WIDTH - labelMaxWidth;
+        value = this.nomalize(value);
+        value = this.truncate(value, valueMaxwidth);
+
+        const text = `${label}${spaces}${value}`;
+
+        return buffer.append(text).append(ESC_POS.LF);
     }
 
     /**
@@ -347,16 +389,22 @@ export class UbiPrinterEncoder {
         return buffer.append(ESC_POS.LF);
     }
 
-    encode(text: string, charset: string = 'utf-8'): Uint8Array {
+    encode(charset: UbiPrinterCharset = UbiPrinterCharset.UTF8): Uint8Array {
         console.log(`UbiPrinterEncoder encoding with ${charset}...`);
 
+        const text = this.text();
         const charsetEncoder = new TextEncoder(charset, { NONSTANDARD_allowLegacyEncoding: true });
         const ret = charsetEncoder.encode(text);
 
         return ret;
+
+        // const charsetEncoder = new TextEncoder(charset, { NONSTANDARD_allowLegacyEncoding: true });
+        // const ret = charsetEncoder.encode(text);
+
+        // return ret;
     }
 
-    enodeDebugText(text: string, charset = 'gb18030'): Uint8Array {
+    enodeDebugText(text: string, charset: UbiPrinterCharset = UbiPrinterCharset.GB18030): Uint8Array {
         const charsetEncoder = new TextEncoder(charset, { NONSTANDARD_allowLegacyEncoding: true });
         const ret = charsetEncoder.encode(text);
         return ret;
