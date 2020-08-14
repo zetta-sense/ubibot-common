@@ -448,7 +448,7 @@ export class UbiUtilsService {
         return `${level}: ${errInfo}`;
     }
 
-    error(err, ...argsObj): void {
+    error(err, argsObj?): void {
         let errMsg = '';
         let errInfo = '';
 
