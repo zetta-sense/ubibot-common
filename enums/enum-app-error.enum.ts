@@ -93,6 +93,7 @@ export enum EnumAppError {
     BLE_COMMAND_BAD_PARAMETERS = '8928', // ble_command 参数不足
     BLE_MTU_FAILED = '8929', // request MTU failed
     BLE_EMPTY_RESPONSE = '8930', // empty response
+    BLE_DEVICE_EXPECTED_SERVICE_NOT_FOUND = '8931', // 该蓝牙设备未发现期望的可用服务，例如蓝牙打印机没有暴露预定的服务uuid
 
     PARAMETER_SCHEDULER_S_REPEAT_EMPTY = '12001',
 
