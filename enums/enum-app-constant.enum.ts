@@ -19,6 +19,8 @@ export enum EnumAppConstant {
     DIALOG_CUSTOM_LIST_VIEW_SINGLETON_ID = 'ubi_dialog_custom_list_view_singleton',
 
     STORAGE_APP_EXECUTED = 'ubi_app_executed',
+
+    STORAGE_BLE_PRINTER_LAST_CHARSET = 'ubi_ble_printer_last_charset',
 }
 
 

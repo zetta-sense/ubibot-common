@@ -192,10 +192,24 @@ export class UbiUtilsService {
         }
     }
 
+    /**
+     * 用于保存一些用户操作等，例如 记住xx
+     *
+     * @param {string} key
+     * @param {string} value
+     * @memberof UbiUtilsService
+     */
     setKeyValue(key: string, value: string) {
         this.ubiStorage.save(key, value);
     }
 
+    /**
+     * 用于获取已保存的一些用户操作，例如 记住xx
+     *
+     * @param {string} key
+     * @returns {string}
+     * @memberof UbiUtilsService
+     */
     getKeyValue(key: string): string {
         return this.ubiStorage.get(key);
     }

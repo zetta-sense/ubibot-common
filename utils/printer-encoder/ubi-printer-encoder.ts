@@ -3,6 +3,8 @@ import { TextEncoder, TextDecoder } from 'text-encoding';
 import * as moment from "moment-timezone";
 import { UbiChannelFieldDef } from "../../entities/ubi-channel-field-def.entity";
 
+window.TextEncoder = TextEncoder;
+
 const PAGE_WIDTH: number = 48; // 80mm打印机能容纳的ascii字符数
 
 const ESC_POS = {
@@ -22,9 +24,25 @@ Object.keys(ESC_POS).forEach((k) => {
     }
 });
 
+
+/**
+ * 这里是且仅是lib的一个子集
+ *
+ * ref: https://github.com/inexorabletash/text-encoding
+ *
+ * ref: https://encoding.spec.whatwg.org/
+ *
+ * @export
+ * @enum {number}
+ */
 export enum UbiPrinterCharset {
     UTF8 = 'UTF-8',
     GB18030 = 'GB18030',
+    BIG5 = 'BIG5',
+    EUC_JP = 'EUC-JP',
+    ISO_2022_JP = 'ISO-2022-JP',
+    EUC_KR = 'EUC-KR',
+    ISO_8859_1 = 'ISO-8859-1', // 即windows-1252, ascii
 }
 
 class StringBuffer {
@@ -389,6 +407,17 @@ export class UbiPrinterEncoder {
         return buffer.append(ESC_POS.LF);
     }
 
+    /**
+     * 进行pos/esc 以及 字符编码输出，注意编码后含pos/esc的一整段字节数据
+     *
+     * 具体数据大小基本可以近似估算，例如当前80mm一行48个字符，计算控制字符在内，则一行的数据大小约50 bytes，可推导如20行数据约等于1kb
+     *
+     * text-encoding库参考: https://github.com/inexorabletash/text-encoding
+     *
+     * @param {UbiPrinterCharset} [charset=UbiPrinterCharset.UTF8]
+     * @returns {Uint8Array}
+     * @memberof UbiPrinterEncoder
+     */
     encode(charset: UbiPrinterCharset = UbiPrinterCharset.UTF8): Uint8Array {
         console.log(`UbiPrinterEncoder encoding with ${charset}...`);
 
