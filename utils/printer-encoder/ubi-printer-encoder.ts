@@ -5,7 +5,7 @@ import { UbiChannelFieldDef } from "../../entities/ubi-channel-field-def.entity"
 
 // window.TextEncoder = TextEncoder;
 
-const PAGE_WIDTH: number = 48; // 80mm打印机能容纳的ascii字符数
+const PAGE_WIDTH: number = 48; // 58mm打印机能容纳的ascii字符数，即有效宽度48mm
 
 const ESC_POS = {
     ESC_INIT: `@`,
