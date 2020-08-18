@@ -3,7 +3,7 @@ import { TextEncoder, TextDecoder } from 'text-encoding';
 import * as moment from "moment-timezone";
 import { UbiChannelFieldDef } from "../../entities/ubi-channel-field-def.entity";
 
-window.TextEncoder = TextEncoder;
+// window.TextEncoder = TextEncoder;
 
 const PAGE_WIDTH: number = 48; // 80mm打印机能容纳的ascii字符数
 

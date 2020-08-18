@@ -95,6 +95,7 @@ export enum EnumAppError {
     BLE_EMPTY_RESPONSE = '8930', // empty response
     BLE_DEVICE_EXPECTED_SERVICE_NOT_FOUND = '8931', // 该蓝牙设备未发现期望的可用服务，例如蓝牙打印机没有暴露预定的服务uuid
     BLE_DEVICE_UNKNOWN_ERROR = '8932', // ble返回未知的错误
+    BLE_PRINTER_RESPONSE_TIMEOUT = '8933', // ble printer响应超时
 
     PARAMETER_SCHEDULER_S_REPEAT_EMPTY = '12001',
 
