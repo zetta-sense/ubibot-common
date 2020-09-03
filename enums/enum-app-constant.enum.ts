@@ -20,7 +20,15 @@ export enum EnumAppConstant {
 
     STORAGE_APP_EXECUTED = 'ubi_app_executed',
 
+    /**
+     * 上次打印使用的字符集
+     */
     STORAGE_BLE_PRINTER_LAST_CHARSET = 'ubi_ble_printer_last_charset',
+
+    /**
+     * 上次使用的打印机id
+     */
+    STORAGE_BLE_LAST_PRINTER = 'ubi_ble_last_printer',
 }
 
 
