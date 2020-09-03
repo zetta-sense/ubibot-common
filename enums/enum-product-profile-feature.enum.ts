@@ -27,6 +27,10 @@ export enum EnumProductProfileFeature {
     SyncRS485_WS = 'sync:rs485_ws',
     SyncRS485_CO2 = 'sync:rs485_co2',
 
+    SyncPH = 'sync:ph',
+    SyncEC = 'sync:ec',
+    SyncGPS = 'sync:gps',
+
 
     ModNoNet = 'mod:no_net',
     ModWifiMode = 'mod:wifi_mode',

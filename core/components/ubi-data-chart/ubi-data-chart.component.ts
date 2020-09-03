@@ -79,6 +79,8 @@ type UbiHighchartsPoint = any[2];
 })
 export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
 
+    EnumSerieColors = ['#e00', '#0e0', '#00e', '#ee0', '#e0e', '#0ee', '#7e0', '#70e', '#07e', '#0e7', '#e07', '#e70'];
+
     highcharts: typeof Highcharts = Highcharts; // required
     highchartsDateTimeLabelFormats: {} = {
         millisecond: '%H:%M:%S',//'%H:%M:%S.%L',
@@ -496,137 +498,370 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 // delay(5000),
             ).subscribe(() => {
                 // console.log('data=', this.data);
-                const _self = this;
 
                 if (this.chartType === UbiFeedsChartType.XRange || this.chartType === UbiFeedsChartType.XRangeReversedColor) { // tag: XRange chart
-                    this.chart.series.forEach((s) => s.remove());
-
-                    this.data.forEach((serie: UbiDataChartSerie) => {
-                        const newDataPoints: UbiDataChartPointForXRange[] = serie.data as UbiDataChartPointForXRange[];
-
-                        let segmentData: any = {
-                            name: this.translate.instant('APP.COMMON.STATE'),
-                            borderColor: '#aaa',
-                            borderWidth: 1,
-                            borderRadius: 3,
-                            tooltip: {
-                                // ref: https://api.highcharts.com/highcharts/series.xrange.tooltip.pointFormatter
-                                // ref: https://api.highcharts.com/class-reference/Highcharts
-                                pointFormatter: function () {
-                                    try {
-                                        // console.log(this);
-                                        const stateLabel = this.series.name;
-                                        const yValue = this.custom.y;
-                                        const color = this.color;
-
-                                        let convertedValue: any = yValue;
-                                        if (_self.valueFormatter && typeof _self.valueFormatter === 'function') {
-                                            // console.log(yValue, _self.valueFormatter);
-                                            convertedValue = _self.valueFormatter(yValue);
-                                        }
-
-                                        return `<span style="color:${color}">●</span> ${stateLabel}: <b>${convertedValue}</b><br/>`;
-                                    } catch (e) { }
-                                    return null;
-                                },
-                            },
-                            data: [],
-                        };
-
-                        // 数据分段
-                        for (let i = 0; i < newDataPoints.length; i++) {
-                            const segment: UbiDataChartPointForXRange = newDataPoints[i];
-                            const yValue = segment.y;
-
-                            // (this.highchartsOptions.yAxis as any).max = this.maxPoint.y + Math.abs((diff * upperLowerBoundScale || 1));
-
-                            const greenStateValue = this.chartType == UbiFeedsChartType.XRange ? 1 : 0;
-
-                            if (yValue != null) {
-                                const segmentForHighchart = {
-                                    x: segment.x,
-                                    x2: segment.x2,
-                                    y: 0,
-                                    custom: segment, // 用custom保留segment数据供formatter使用
-                                    color: yValue == greenStateValue ? 'rgba(170, 253, 179, 0.6)' : 'rgba(253, 192, 194, 0.6)', // 开/关, #ddfddb
-                                };
-
-                                segmentData.data.push(segmentForHighchart);
-                            }
-
-                            if (i == 0) {
-                                (this.highchartsOptions.xAxis as any).min = segment.x;
-                            } else if (i == newDataPoints.length - 1) {
-                                (this.highchartsOptions.xAxis as any).max = segment.x2;
-                            }
-                        }
-                        this.chart.addSeries(segmentData);
-                    });
+                    this.updateDataForXRangeLike(this.chartType === UbiFeedsChartType.XRangeReversedColor);
+                } else if (this.chartType === UbiFeedsChartType.Fusion) {
+                    this.updateDataForFusionLike();
                 } else { // tag: Line chart
-                    this.data.forEach((serie: UbiDataChartSerie) => {
-                        let existedSerie: any = _.find(this.highchartsOptions.series, { name: serie.name });
-
-                        if (!serie.data) {
-                            console.warn('Serie.data should not be null.');
-                        }
-
-                        let newDataPoints: UbiHighchartsPoint[] = this.convertUbiDataToHighchartsData(_.concat([], serie.data));
-
-                        if (existedSerie) {
-                            existedSerie.data = newDataPoints;
-                        } else {
-                            // console.log(newDataPoints.length);
-                            // @ts-ignore
-                            this.chart.addSeries({
-                                // type: 'line', // line, area
-                                // fillColor: 'rgba(127,127,127,0.1)',  // When you set an explicit fillColor, the fillOpacity is not applied.
-                                id: serie.label,
-                                name: serie.label,
-                                // turboThreshold: 20,
-                                // softThreshold: true,
-                                data: newDataPoints,
-                                color: serie.color || '#a1c2fc', // 连线
-                                // Instead, you should define the opacity in the fillColor with an rgba color definition.
-                                lineWidth: 1,// tag: 如果只显示点,则设为0
-                                // connectNulls: true,
-                                // marker: { // 有值的点
-                                //     fillColor: '#3880ff',
-                                //     enabled: true,
-                                //     radius: 1, // 点大小
-                                // },
-                                states: {
-                                    hover: {
-                                        lineWidthPlus: 0
-                                    }
-                                },
-                                tooltip: {
-                                    // ref: https://api.highcharts.com/highcharts/series.line.tooltip.pointFormat
-                                    pointFormatter: function () {
-                                        try {
-                                            // console.log(this);
-                                            const stateLabel = this.series.name;
-                                            const yValue = this.y;
-                                            const color = this.color;
-
-                                            let convertedValue: any = yValue;
-                                            if (_self.valueFormatter && typeof _self.valueFormatter === 'function') {
-                                                convertedValue = _self.valueFormatter(yValue);
-                                            }
-
-                                            return `<span style="color:${color}">●</span> ${stateLabel}: <b>${convertedValue}</b><br/>`;
-                                        } catch (e) { }
-                                        return null;
-                                    },
-                                },
-                            }, false);
-
-                        }
-                    });
+                    this.updateDataForLineLike();
                 }
 
                 this.highchartsUpdateFlag = true;
             })
         }
+    }
+
+    private updateDataForFusionLike(): void {
+        const _self = this;
+
+        const yAxisDef: Highcharts.YAxisOptions = {
+            crosshair: false,
+            gridLineWidth: 1,
+            title: {
+                text: null,// remove side label - Values
+            },
+            labels: {},
+        };
+        this.highchartsOptions.yAxis = [];
+
+        let tmp = [];
+
+        this.data.forEach((serie: UbiDataChartSerie, si) => {
+            let existedSerie: any = _.find(this.highchartsOptions.series, { name: serie.name });
+            let color = this.EnumSerieColors[si % this.EnumSerieColors.length];
+
+            if (!serie.data) {
+                console.warn('Serie.data should not be null.');
+            }
+
+            let newDataPoints: UbiHighchartsPoint[] = this.convertUbiDataToHighchartsData(_.concat([], serie.data));
+
+            if (existedSerie) {
+                existedSerie.data = newDataPoints;
+            } else {
+                const maxPoint = _.maxBy(serie.data, (o: UbiDataChartPoint) => o.y);
+                const minPoint = _.minBy(serie.data, (o: UbiDataChartPoint) => o.y);
+
+                let yAxisOpt = Object.assign({}, yAxisDef);
+                yAxisOpt = {
+                    // labels: {
+                    //     format: `{value} ${serie.label}`,
+                    //     style: {
+                    //         color: color,
+                    //     }
+                    // },
+                    title: {
+                        text: serie.label,
+                        style: {
+                            color: color,
+                        }
+                    },
+                    max: maxPoint ? maxPoint.y : undefined,
+                    min: minPoint ? minPoint.y : undefined,
+                    visible: false,
+                    // opposite: si != 0,
+                };
+                // yAxisOpt.title = {
+                //     text: serie.label,
+                //     style: {
+                //         color: color,
+                //     }
+                // };
+                // yAxisOpt.opposite = si != 0;
+                (this.highchartsOptions.yAxis as Highcharts.YAxisOptions[]).push(yAxisOpt);
+                // this.chart.update(Object.assign({}, this.highchartsOptions));
+                console.log('adding serie:', serie);
+
+                this.highchartsOptions.tooltip.shared = true;
+                this.highchartsOptions.tooltip.borderColor = '#777';
+
+                this.highchartsOptions.tooltip.formatter = function () {
+                    // The first returned item is the header, subsequent items are the
+                    // points
+                    // return ['<b>' + this.x + '</b>'].concat(
+                    //     this.points ?
+                    //         this.points.map(function (point) {
+                    //             return '<br>' + point.series.name + ': ' + point.y + 'm';
+                    //         }) : []
+                    // );
+
+                    var s = '<b>' + Highcharts.dateFormat('%A, %b %e, %Y', this.x) + '</b>',
+                        actTime = this.x;
+
+                    // console.log(actTime);
+
+                    this.points[0].series.chart.series.forEach((series, i) => {
+                        // console.log(series);
+
+                        var diff = 100 * 60 * 1000;//series.closestPointRange;
+                        // var diff = (series as any).closestPointRange;
+                        var delta = NaN;
+                        var actPoint = null;
+
+                        // console.log(series);
+                        series.points.forEach((point, i) => {
+                            // console.log(actTime - point.x);
+                            let d = Math.abs(actTime - point.x);
+                            if (d < diff && (isNaN(delta) || d < delta)) {
+                                // console.log('found new: ', point);
+                                actPoint = point;
+                                delta = d;
+                            }
+                        });
+
+                        if (actPoint != null) {
+                            // s += `<br/>${series.name}: ` + actPoint.plotY + ' ';
+                            s += `<br/>${series.name}: ` + (series as any).processedYData[actPoint.i] + ' ';
+                        }
+                    });
+
+                    return s;
+                };
+
+                // console.log(newDataPoints.length);
+                // @ts-ignore
+                // this.chart.addSeries({
+                //     // type: 'line', // line, area
+                //     // fillColor: 'rgba(127,127,127,0.1)',  // When you set an explicit fillColor, the fillOpacity is not applied.
+                //     id: serie.label,
+                //     name: serie.label,
+                //     // turboThreshold: 20,
+                //     // softThreshold: true,
+                //     data: newDataPoints,
+                //     color: color, //serie.color || '#a1c2fc', // 连线
+                //     // Instead, you should define the opacity in the fillColor with an rgba color definition.
+                //     lineWidth: 1,// tag: 如果只显示点,则设为0
+                //     // connectNulls: true,
+                //     // marker: { // 有值的点
+                //     //     fillColor: '#3880ff',
+                //     //     enabled: true,
+                //     //     radius: 1, // 点大小
+                //     // },
+                //     states: {
+                //         hover: {
+                //             lineWidthPlus: 0
+                //         }
+                //     },
+                //     yAxis: 0,
+                //     // yAxis: (this.highchartsOptions.yAxis as []).length - 1,
+                //     tooltip: {
+                //         // ref: https://api.highcharts.com/highcharts/series.line.tooltip.pointFormat
+                //         pointFormatter: function () {
+                //             try {
+                //                 // console.log(this);
+                //                 const stateLabel = this.series.name;
+                //                 const yValue = this.y;
+                //                 const color = this.color;
+
+                //                 let convertedValue: any = yValue;
+                //                 if (_self.valueFormatter && typeof _self.valueFormatter === 'function') {
+                //                     convertedValue = _self.valueFormatter(yValue);
+                //                 }
+
+                //                 return `<span style="color:${color}">●</span> ${stateLabel}: <b>${convertedValue}</b><br/>`;
+                //             } catch (e) { }
+                //             return null;
+                //         },
+                //     },
+                // }, false);
+
+                tmp.push({
+                    type: 'line', // line, area
+                    // fillColor: 'rgba(127,127,127,0.1)',  // When you set an explicit fillColor, the fillOpacity is not applied.
+                    id: serie.name,
+                    name: serie.label,
+                    // turboThreshold: 20,
+                    // softThreshold: true,
+                    data: newDataPoints,
+                    color: color, //serie.color || '#a1c2fc', // 连线
+                    // Instead, you should define the opacity in the fillColor with an rgba color definition.
+                    lineWidth: 1,// tag: 如果只显示点,则设为0
+                    // connectNulls: true,
+                    // marker: { // 有值的点
+                    //     fillColor: '#3880ff',
+                    //     enabled: true,
+                    //     radius: 1, // 点大小
+                    // },
+                    states: {
+                        hover: {
+                            lineWidthPlus: 0
+                        }
+                    },
+                    yAxis: si,
+                    // yAxis: (this.highchartsOptions.yAxis as []).length - 1,
+                    tooltip: {
+                        // // ref: https://api.highcharts.com/highcharts/series.line.tooltip.pointFormat
+                        pointFormatter: function () {
+                            try {
+                                // console.log(this);
+                                const stateLabel = this.series.name;
+                                const yValue = this.y;
+                                const color = this.color;
+
+                                let convertedValue: any = yValue;
+                                if (_self.valueFormatter && typeof _self.valueFormatter === 'function') {
+                                    convertedValue = _self.valueFormatter(yValue);
+                                }
+
+                                return `<span style="color:${color}">●</span> ${stateLabel}: <b>${convertedValue}</b><br/>`;
+                            } catch (e) { }
+                            return null;
+                        },
+                    },
+                });
+            }
+        });
+
+        let newOpts = Object.assign({}, this.highchartsOptions);
+        newOpts.series = tmp;
+        console.log(newOpts);
+        this.chart.update(newOpts, false, true);
+    }
+
+    /**
+     * 用于开关/人感状态的画图xrange/xrange2
+     *
+     * @private
+     * @param {boolean} [reverseColor=false]
+     * @memberof UbiDataChartComponent
+     */
+    private updateDataForXRangeLike(reverseColor: boolean = false): void {
+        const _self = this;
+        this.chart.series.forEach((s) => s.remove());
+
+        this.data.forEach((serie: UbiDataChartSerie) => {
+            const newDataPoints: UbiDataChartPointForXRange[] = serie.data as UbiDataChartPointForXRange[];
+
+            let segmentData: any = {
+                name: this.translate.instant('APP.COMMON.STATE'),
+                borderColor: '#aaa',
+                borderWidth: 1,
+                borderRadius: 3,
+                tooltip: {
+                    // ref: https://api.highcharts.com/highcharts/series.xrange.tooltip.pointFormatter
+                    // ref: https://api.highcharts.com/class-reference/Highcharts
+                    pointFormatter: function () {
+                        try {
+                            // console.log(this);
+                            const stateLabel = this.series.name;
+                            const yValue = this.custom.y;
+                            const color = this.color;
+
+                            let convertedValue: any = yValue;
+                            if (_self.valueFormatter && typeof _self.valueFormatter === 'function') {
+                                // console.log(yValue, _self.valueFormatter);
+                                convertedValue = _self.valueFormatter(yValue);
+                            }
+
+                            return `<span style="color:${color}">●</span> ${stateLabel}: <b>${convertedValue}</b><br/>`;
+                        } catch (e) { }
+                        return null;
+                    },
+                },
+                data: [],
+            };
+
+            // 数据分段
+            for (let i = 0; i < newDataPoints.length; i++) {
+                const segment: UbiDataChartPointForXRange = newDataPoints[i];
+                const yValue = segment.y;
+
+                // (this.highchartsOptions.yAxis as any).max = this.maxPoint.y + Math.abs((diff * upperLowerBoundScale || 1));
+
+                const VALUE_FOR_GREEN = reverseColor ? 0 : 1;
+
+                if (yValue != null) {
+                    const segmentForHighchart = {
+                        x: segment.x,
+                        x2: segment.x2,
+                        y: 0,
+                        custom: segment, // 用custom保留segment数据供formatter使用
+                        color: yValue == VALUE_FOR_GREEN ? 'rgba(170, 253, 179, 0.6)' : 'rgba(253, 192, 194, 0.6)', // 开/关, #ddfddb
+                    };
+
+                    segmentData.data.push(segmentForHighchart);
+                }
+
+                if (i == 0) {
+                    (this.highchartsOptions.xAxis as any).min = segment.x;
+                } else if (i == newDataPoints.length - 1) {
+                    (this.highchartsOptions.xAxis as any).max = segment.x2;
+                }
+            }
+            this.chart.addSeries(segmentData);
+        });
+    }
+
+
+    /**
+     * 用于一般线段型单数据画图（温度等）
+     *
+     * @private
+     * @memberof UbiDataChartComponent
+     */
+    private updateDataForLineLike(): void {
+        const _self = this;
+
+        this.data.forEach((serie: UbiDataChartSerie) => {
+            let existedSerie: any = _.find(this.highchartsOptions.series, { name: serie.name });
+
+            if (!serie.data) {
+                console.warn('Serie.data should not be null.');
+            }
+
+            let newDataPoints: UbiHighchartsPoint[] = this.convertUbiDataToHighchartsData(_.concat([], serie.data));
+
+            if (existedSerie) {
+                existedSerie.data = newDataPoints;
+            } else {
+                // console.log(newDataPoints.length);
+                // @ts-ignore
+                this.chart.addSeries({
+                    // type: 'line', // line, area
+                    // fillColor: 'rgba(127,127,127,0.1)',  // When you set an explicit fillColor, the fillOpacity is not applied.
+                    id: serie.label,
+                    name: serie.label,
+                    // turboThreshold: 20,
+                    // softThreshold: true,
+                    data: newDataPoints,
+                    color: serie.color || '#a1c2fc', // 连线
+                    // Instead, you should define the opacity in the fillColor with an rgba color definition.
+                    lineWidth: 1,// tag: 如果只显示点,则设为0
+                    // connectNulls: true,
+                    // marker: { // 有值的点
+                    //     fillColor: '#3880ff',
+                    //     enabled: true,
+                    //     radius: 1, // 点大小
+                    // },
+                    states: {
+                        hover: {
+                            lineWidthPlus: 0
+                        }
+                    },
+                    tooltip: {
+                        // ref: https://api.highcharts.com/highcharts/series.line.tooltip.pointFormat
+                        pointFormatter: function () {
+                            try {
+                                // console.log(this);
+                                const stateLabel = this.series.name;
+                                const yValue = this.y;
+                                const color = this.color;
+
+                                let convertedValue: any = yValue;
+                                if (_self.valueFormatter && typeof _self.valueFormatter === 'function') {
+                                    convertedValue = _self.valueFormatter(yValue);
+                                }
+
+                                return `<span style="color:${color}">●</span> ${stateLabel}: <b>${convertedValue}</b><br/>`;
+                            } catch (e) { }
+                            return null;
+                        },
+                    },
+                }, false);
+
+            }
+        });
     }
 
     private determineDecimalPlace(): number {

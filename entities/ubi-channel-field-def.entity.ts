@@ -145,6 +145,11 @@ export enum UbiChannelFieldDefScaleType {
      */
     HUMAN_DETECTION = '30',
 
+    /**
+     * 人感噪音分贝
+     */
+    HUMAN_DETECTION_NOISE = '31',
+
 
     /**
      * 外接RS485温度探头

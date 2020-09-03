@@ -33,6 +33,7 @@ export enum UbiFeedsChartType {
     Line = 'line',
     XRange = 'xrange',
     XRangeReversedColor = 'xrange2',
+    Fusion = 'fusion',
 }
 
 export class UbiFeedsConverterEngine {
@@ -51,7 +52,7 @@ export class UbiFeedsConverterEngine {
      */
     extractFeeds(resp: UbiFeedsResponse, opts?: UbiValueOptions, type?: UbiFeedType): UbiFeedPack[] {
         const channel: UbiChannelDAO = new UbiChannelDAO(resp.channel);
-        const fields: UbiChannelFieldDef[] = channel.getFields().getEnabledFieldDefs()
+        const fields: UbiChannelFieldDef[] = channel.getFields().getEnabledFieldDefs();
 
         // 追加头尾两端的端点
         // tag: 必须要转换为number, 如果是string, 可能由于带有zone time的关系导致比较错误

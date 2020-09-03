@@ -612,6 +612,11 @@ export class UbiUtilsService {
                 part1 = part1.charAt(0).toUpperCase() + part1.slice(1);
                 part2 = part2;
 
+                // tag: 调试用设备，旧的蓝牙id没更新
+                if (serial == 'A0003HUM1' || serial == 'A0004HUM1' || serial == '6VDB2C6CSP1' || serial == 'Q310YH78SP1') {
+                    part2 = part2.toUpperCase();
+                }
+
                 let part3 = serial.substring(0, 5);
                 ret = `${part1}-${part2}-${part3}`;
             } catch (e) {

@@ -217,6 +217,7 @@ export abstract class UbiChannel {
             // 不含gs1 wifi/eth版
             || productId === EnumBasicProductId.GS1_AL2G1RS
             || productId === EnumBasicProductId.GS1_AL4G1RS
+            || productId === EnumBasicProductId.GS1_PL4G1RS
             // sp1
             || productId === EnumBasicProductId.SP1) {
             return true;
@@ -397,7 +398,8 @@ export abstract class UbiChannel {
         if (productId === EnumBasicProductId.GS1_A ||
             productId === EnumBasicProductId.GS1_AETH1RS ||
             productId === EnumBasicProductId.GS1_AL2G1RS ||
-            productId === EnumBasicProductId.GS1_AL4G1RS) {
+            productId === EnumBasicProductId.GS1_AL4G1RS ||
+            productId === EnumBasicProductId.GS1_PL4G1RS) {
             return true;
         }
         return false;
