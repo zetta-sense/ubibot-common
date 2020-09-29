@@ -14,6 +14,7 @@ export enum EnumBasicProductId {
     GS1_PL4G1RS = 'ubibot-gs1-pl4g1rs',
 
     SP1 = 'ubibot-sp1',
+    SP1_4G = 'ubibot-sp1-4g',
 
     MS1 = 'ubibot-ms1',
     MS1P = 'ubibot-ms1p',

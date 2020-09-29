@@ -219,7 +219,7 @@ export abstract class UbiChannel {
             || productId === EnumBasicProductId.GS1_AL4G1RS
             || productId === EnumBasicProductId.GS1_PL4G1RS
             // sp1
-            || productId === EnumBasicProductId.SP1) {
+            || productId === EnumBasicProductId.SP1_4G) {
             return true;
         }
         return false;
@@ -239,10 +239,11 @@ export abstract class UbiChannel {
      */
     static IsSimAutoSupported(productId: string): boolean {
         const simSupported = UbiChannel.IsSimSupported(productId);
-        if (productId === EnumBasicProductId.SP1) { // exclude sp1
-            return false;
-        };
-        return simSupported;
+        // if (productId === EnumBasicProductId.SP1_4G) { // exclude sp1
+        //     return false;
+        // };
+        // return simSupported;
+        return false;
     }
 
     /**
@@ -419,7 +420,8 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     static IsFamilySP1(productId: string): boolean {
-        if (productId === EnumBasicProductId.SP1) {
+        if (productId === EnumBasicProductId.SP1
+            || productId === EnumBasicProductId.SP1_4G) {
             return true;
         }
         return false;
@@ -468,23 +470,6 @@ export abstract class UbiChannel {
     }
 
     /**
-     * 是否支持rs485 (ws1, gs1_a不支持)
-     *
-     * Updated for  http://jira.cloudforce.cn:9000/browse/UBCONSOLE-73
-     *
-     * @returns
-     * @memberof UbiChannel
-     */
-    isRS485Supported() {
-        if ((this.isFamilyWS1P() || this.isFamilyGS1()) &&
-            // 除gs1a
-            this.product_id !== EnumBasicProductId.GS1_A) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * 目前除ws1p外的能支持rs的型号都应该能自动检测
      *
      * 2019-11-05 取消gs1系列的auto
@@ -496,123 +481,6 @@ export abstract class UbiChannel {
     isRS485AutoDetectSupported() {
         return false;
     }
-
-    /**
-     * 是否支持LED灯
-     *
-     * ws1p有
-     *
-     * ws1, gs1没有
-     *
-     * @returns
-     * @memberof UbiChannel
-     */
-    isLEDSupported() {
-        return this.isFamilyWS1P();
-    }
-
-    // 根据 http://jira.cloudforce.cn:9000/browse/UBCONSOLE-73
-    isFnLightSupported() {
-        if (this.product_id === EnumBasicProductId.GS1_A
-            || this.product_id === EnumBasicProductId.GS1_AETH1RS
-            || this.product_id === EnumBasicProductId.SP1
-            || this.product_id === EnumBasicProductId.MS1) {
-            return false;
-        }
-        return true;
-    }
-
-    isFnThSupported() {
-        if (this.product_id === EnumBasicProductId.SP1
-            || this.product_id === EnumBasicProductId.MS1) {
-            return false;
-        }
-        return true;
-    }
-
-    // 根据 http://jira.cloudforce.cn:9000/browse/UBCONSOLE-73
-    isFnExtTSupported() {
-        if (this.isFamilyGS1()
-            || this.product_id === EnumBasicProductId.SP1
-            || this.product_id === EnumBasicProductId.MS1) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 是否支持多种网络模式
-     *
-     * @returns
-     * @memberof UbiChannel
-     */
-    isMultiNetworkSupported() {
-        if ((this.isFamilyWS1P()
-            || this.isFamilyGS1()
-            || this.product_id === EnumBasicProductId.SP1
-            || this.product_id === EnumBasicProductId.MS1) &&
-            // 不含ws1p wifi版
-            this.product_id !== EnumBasicProductId.WS1PA &&
-            // 不含gs1 wifi/eth
-            this.product_id !== EnumBasicProductId.GS1_A &&
-            this.product_id !== EnumBasicProductId.GS1_AETH1RS) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 电池电压
-     *
-     * @returns
-     * @memberof UbiChannel
-     */
-    isFnBatterySupported() {
-        if (this.product_id === EnumBasicProductId.SP1) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 断网节电
-     *
-     * @returns
-     * @memberof UbiChannel
-     */
-    isNoNetFnSupported() {
-        if (this.product_id === EnumBasicProductId.SP1) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * WiFi直连模式
-     *
-     * @returns
-     * @memberof UbiChannel
-     */
-    isWifiModeSupported() {
-        if (this.product_id === EnumBasicProductId.SP1) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 是否显示高级设置，目前应该就sp1不显示
-     *
-     * @deprecated
-     * @returns
-     * @memberof UbiChannel
-     */
-    // isAdvSettingSupported() {
-    //     if (this.product_id === EnumBasicProductId.SP1) {
-    //         return false;
-    //     }
-    //     return true;
-    // }
 
     hasSSID(): boolean {
         return this.getStaus().ssid !== undefined;
