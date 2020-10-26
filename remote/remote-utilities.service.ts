@@ -34,7 +34,7 @@ export class RemoteUtilitiesService {
      * @memberof RemoteUtilitiesService
      */
     getIPCountryIO(): Observable<string> {
-        const url = `https://api.ubibot.io/utilities/ip-info`; // 固定使用io
+        const url = `https://api.ubibot.com/utilities/ip-info`; // 固定使用io
         return this.http.get(url).pipe(
             map((resp: any) => resp.country)
         );

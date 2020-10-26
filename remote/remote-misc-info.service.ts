@@ -56,7 +56,7 @@ export class RemoteMiscInfoService {
      */
     getUbibotProfiles(): Observable<UbiProfileTable> {
         let url = `${this.ubibotCommonConfig.EndPoint}/configs/product-profiles/all`;
-        // let url = `https:/api.ubibot.io/configs/product-profiles/all`; // fixme: 暂时用io的作为debug
+        // let url = `https:/api.ubibot.com/configs/product-profiles/all`; // fixme: 暂时用io的作为debug
         return this.http.get(url).pipe(
             map((resp: any) => {
                 // resp['product-profiles']['ubibot-gs1-a'] = {

@@ -19,7 +19,7 @@ export class UbibotCommonConfigService {
     public _EndPoint = 'https://api-cdn.ubibot.cn'; // raw to copy and convert domain
     public WebLinkAboutUs = '';
     public _WebLinkAboutUs = 'https://www.ubibot.cn/aboutus/'; // raw to copy and convert domain
-    // public readonly DownloadDriverCH341SER = 'https://www.ubibot.io/setup/';
+    // public readonly DownloadDriverCH341SER = 'https://www.ubibot.com/setup/';
     public DownloadDriverCH341SER = 'http://www.wch.cn/downloads/file/65.html';
     public TermsLink = '';
     public _TermsLink = 'https://www.ubibot.cn/service/'; // raw to copy and convert domain
@@ -146,9 +146,9 @@ export class UbibotCommonConfigService {
 
         // tag: 判断使用哪个server
         if (ioAgentList.indexOf(this.DeployAgent) !== -1) {
-            this.EndPoint = this._EndPoint.replace(/\.cn/, '.io');
-            this.WebLinkAboutUs = this._WebLinkAboutUs.replace(/\.cn/, '.io');
-            this.TermsLink = this._TermsLink.replace(/\.cn/, '.io');
+            this.EndPoint = this._EndPoint.replace(/\.cn/, '.com');
+            this.WebLinkAboutUs = this._WebLinkAboutUs.replace(/\.cn/, '.com');
+            this.TermsLink = this._TermsLink.replace(/\.cn/, '.com');
         } else {
             this.EndPoint = this._EndPoint;
             this.WebLinkAboutUs = this._WebLinkAboutUs;

@@ -205,7 +205,7 @@ export class RemoteChannelService {
      * Valid request parameters:
      *
      * account_key or token_id (string) - account_key  is User's account key; token_id  is obtained through login API (required).
-     * email_code: 调用账户操作验证码索取(邮件形式)  (http://api.ubibot.io/identify/action/email)
+     * email_code: 调用账户操作验证码索取(邮件形式)  (http://api.ubibot.com/identify/action/email)
      *
      * @param {string} channelId
      * @param {string} code
