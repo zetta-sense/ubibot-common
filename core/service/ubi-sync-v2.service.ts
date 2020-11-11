@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { RemoteChannelService } from '../../remote/remote-channel.service';
 import { UbiChannel, UbiChannelDAO } from '../../entities/ubi-channel.entity';
 import { interval, Observable, EMPTY, timer, from, of, Subscription, OperatorFunction, Subject, BehaviorSubject, race, merge, empty, throwError } from 'rxjs';
-import { flatMap, catchError, timeout, delay, mergeMap, tap, finalize, map, switchMap, take } from 'rxjs/operators';
+import { flatMap, catchError, timeout, delay, mergeMap, tap, finalize, map, switchMap, take, auditTime } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { UbiError } from '../../errors/UbiError';
 import { EnumAppError } from '../../enums/enum-app-error.enum';
@@ -78,6 +78,7 @@ export class UbiSyncV2Service implements OnDestroy {
             ),
             // 强制refresh的信号
             this.refresh$.pipe(
+                auditTime(500),
                 tap(() => console.log('Forced a sync.')),
             ),
         ).pipe(
