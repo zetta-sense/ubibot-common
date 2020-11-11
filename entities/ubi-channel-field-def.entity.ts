@@ -121,6 +121,11 @@ export enum UbiChannelFieldDefScaleType {
     SWITCH_ACCUMULATED_CONSUMPTION = '64',
 
     /**
+     * 累计开启时长
+     */
+    SWITCH_ACCUMULATED_POWERON_ELAPSED = '65',
+
+    /**
      * RS485 CO2外接
      */
     RS485_CO2_PROBE = '20',
