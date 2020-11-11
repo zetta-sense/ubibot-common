@@ -312,6 +312,20 @@ export class UbiChannelFieldDef {
 
     }
 
+    isSwitchStateLike(): boolean {
+        if (this.scaleType == UbiChannelFieldDefScaleType.SWITCH_STATE) {
+            return true;
+        }
+        return false;
+    }
+
+    isHumanDetectionLike() {
+        if (this.scaleType == UbiChannelFieldDefScaleType.HUMAN_DETECTION) {
+            return true;
+        }
+        return false;
+    }
+
     static IsFieldPrefix(fieldKey: string) {
         return /^field\d+$/i.test(fieldKey);
     }
