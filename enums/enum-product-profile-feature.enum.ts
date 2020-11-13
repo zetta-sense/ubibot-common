@@ -36,4 +36,16 @@ export enum EnumProductProfileFeature {
     ModWifiMode = 'mod:wifi_mode',
     ModDataLed = 'mod:data_led',
     ModNetMode = 'mod:net_mode',
+
+    // patch 2020-11-13
+    SyncSW_E = 'sync:sw_e',
+    SyncSW_PC = 'sync:sw_pc',
+    SyncSW_ON = 'sync:sw_on',
+    SyncSenCycle = 'sync:sen_cycle',
+    SyncSenRes = 'sync:sen_res',
+    SyncSenSta = 'sync:sen_sta',
+
+    ModSen = 'mod:sen',
+    ModDE_SW_S = 'mod:de_sw_s',
+
 }
