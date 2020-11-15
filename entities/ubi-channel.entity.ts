@@ -947,11 +947,15 @@ export function UseCelsius(tempScale: UbiExtraPreferenceTempScale): boolean {
  *
  * @export
  * @param {number} value
- * @param {UbiChannelFieldDef} fieldDef
+ * @param {UbiChannelFieldDef} fieldDef 若null则返回原值
  * @param {UbiValueOptions} [opts] 用户偏好的选项，一般从UbiUserPrefference获得
- * @returns
+ * @returns {number}
  */
-export function ConvertValue(value: number, fieldDef: UbiChannelFieldDef, opts: UbiValueOptions = {}) {
+export function ConvertValue(value: number, fieldDef: UbiChannelFieldDef, opts: UbiValueOptions = {}): number {
+    if (fieldDef == null) {
+        return value;
+    }
+
     // 仅当为温度时，且偏好非celsius则转换值
     if (!UseCelsius(opts.tempScale) && value != null && (
         fieldDef.scaleType === UbiChannelFieldDefScaleType.TEMPERATURE ||
@@ -973,11 +977,15 @@ export function ConvertValue(value: number, fieldDef: UbiChannelFieldDef, opts: 
  *
  * @export
  * @param {number} value
- * @param {UbiChannelFieldDef} fieldDef
+ * @param {UbiChannelFieldDef} fieldDef 若null则返回原值
  * @param {UbiValueOptions} [opts={}]
- * @returns
+ * @returns {number}
  */
-export function ConvertValueReverse(value: number, fieldDef: UbiChannelFieldDef, opts: UbiValueOptions = {}) {
+export function ConvertValueReverse(value: number, fieldDef: UbiChannelFieldDef, opts: UbiValueOptions = {}): number {
+    if (fieldDef == null) {
+        return value;
+    }
+
     // 仅当为温度时，且偏好非celsius则转换值
     if (!UseCelsius(opts.tempScale) && value != null && (
         fieldDef.scaleType === UbiChannelFieldDefScaleType.TEMPERATURE ||

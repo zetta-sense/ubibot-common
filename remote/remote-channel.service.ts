@@ -159,22 +159,28 @@ export class RemoteChannelService {
     }
 
     private extractChannels(resp: any): UbiChannel[] {
-        const channels: UbiChannel[] = (resp.channels || []).map(x => new UbiChannelDAO(x));
         const virtualFields: UbiChannelVirtualFieldLike[] = resp.virtual_fields;
+
+        let ret: UbiChannel[] = [];
+        (resp.channels || []).forEach((channelData) => {
+            ret.push(this.extractChannel(channelData, virtualFields));
+        });
+
+        return ret;
+    }
+
+    private extractChannel(channelData: any, virtualFields: UbiChannelVirtualFieldLike[]): UbiChannel {
+        const channel = new UbiChannelDAO(channelData);
 
         if (virtualFields != null) {
             virtualFields.forEach((channelVirtualField: UbiChannelVirtualFieldLike) => {
-                const foundChannel = channels.find((channel) => {
-                    return channel.channel_id == channelVirtualField.channel_id;
-                });
-
-                if (foundChannel) {
-                    foundChannel.mergeVirtualFieldsData(channelVirtualField);
+                if (channel.channel_id == channelVirtualField.channel_id) {
+                    channel.mergeVirtualFieldsData(channelVirtualField);
                 }
             });
         }
 
-        return channels;
+        return channel;
     }
 
     /**
@@ -189,9 +195,13 @@ export class RemoteChannelService {
 
         const url = `${this.ubibotCommonConfig.EndPoint}/channels/${channelId}`;
         return this.http.get(url).pipe(
-            map((resp: any) => {
-                return new UbiChannelDAO(resp.channel);
+            concatMap((resp: any) => {
+                let channel = this.extractChannel(resp.channel, resp.virtual_fields);
+                return of(channel);
             }),
+            // map((resp: any) => {
+            //     return new UbiChannelDAO(resp.channel);
+            // }),
         );
     }
 
