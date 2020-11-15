@@ -239,11 +239,11 @@ export abstract class UbiChannel {
      */
     static IsSimAutoSupported(productId: string): boolean {
         const simSupported = UbiChannel.IsSimSupported(productId);
-        // if (productId === EnumBasicProductId.SP1_4G) { // exclude sp1
-        //     return false;
-        // };
-        // return simSupported;
-        return false;
+        if (this.IsFamilySP1(productId) || this.IsFamilyMS1(productId)) {
+            return false;
+        };
+        return simSupported;
+        // return false;
     }
 
     /**
