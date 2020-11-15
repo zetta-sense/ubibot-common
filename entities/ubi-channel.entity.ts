@@ -81,6 +81,18 @@ export interface UbiChannelTriggeringRule {
     rule_name: string,
 }
 
+export interface UbiChannelVirtualFieldLike {
+    channel_id: string,
+    created_at: string,
+    field_label: string,
+    field_name: string,
+    field_status: string,
+    field_unit: string,
+    source_function: string,
+    updated_at: string,
+    user_id: string,
+    virtual_id: string,
+}
 
 
 /**
@@ -166,6 +178,8 @@ export abstract class UbiChannel {
 
     [key: string]: any;
 
+    virtualFields: UbiChannelVirtualFieldLike[] = [];
+
     private getStaus(): any {
         let ret = {};
         try {
@@ -179,6 +193,21 @@ export abstract class UbiChannel {
 
     // tag: 不需要复杂parse的getter直接放entity里
 
+
+    public mergeVirtualFieldsData(channelVirtualField: UbiChannelVirtualFieldLike): void {
+        const virtualFieldCopy = Object.assign({}, channelVirtualField);
+        const existed = this.virtualFields.find((vf) => {
+            return vf.virtual_id == virtualFieldCopy.virtual_id;
+        });
+
+
+        if (existed) {
+            // merge if existed
+            Object.assign(existed, virtualFieldCopy);
+        } else {
+            this.virtualFields.push(virtualFieldCopy);
+        }
+    }
 
     /**
      * 是否有USB供电功能
@@ -862,6 +891,10 @@ export class UbiChannelFieldValueDAO {
         return ret;
     }
 
+    getValueItem(): UbiChannelLastValuesItem {
+        return Object.assign({}, this.valueItem);
+    }
+
     getChannel(): UbiChannel {
         return this.channel;
     }
@@ -872,6 +905,10 @@ export class UbiChannelFieldValueDAO {
             ret = ConvertValue(ret, this.fieldDef, opts);
         }
         return ret;
+    }
+
+    setOldValueItem(oldValueItem: UbiChannelLastValuesItem): void {
+        this.oldValueItem = Object.assign({}, oldValueItem);
     }
 
     getFieldDef(): UbiChannelFieldDef {

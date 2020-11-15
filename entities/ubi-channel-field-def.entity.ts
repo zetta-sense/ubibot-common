@@ -21,6 +21,9 @@ import { UbiChannelVConfig, VConfigItemHidden } from "./ubi-channel-vconfig.enti
 export enum UbiChannelFieldDefScaleType {
     // vconfig值, 值域一般为1, 3, 4, 5, 6, 7, 8, 9
 
+    UNKNOWN = '65535',
+    VFIELD = '65534',
+
     /**
      * 温度
      */

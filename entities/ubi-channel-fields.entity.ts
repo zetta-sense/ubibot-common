@@ -1,4 +1,4 @@
-import { UbiChannel } from "./ubi-channel.entity";
+import { UbiChannel, UbiChannelVirtualFieldLike } from "./ubi-channel.entity";
 import { UbiChannelFieldDef, UbiChannelFieldDefScaleType } from "./ubi-channel-field-def.entity";
 import { UbiChannelVConfig, VConfigItemHidden } from "./ubi-channel-vconfig.entity";
 
@@ -45,7 +45,7 @@ export class UbiChannelFields<T extends UbiChannelFieldDef> extends Array<T> {
     getField(fieldKey: string): T {
         for (let i = 0; i < this.length; i++) {
             const field = this[i];
-            if(field.key === fieldKey) {
+            if (field.key === fieldKey) {
                 return field;
             }
         }
@@ -73,6 +73,23 @@ export class UbiChannelFields<T extends UbiChannelFieldDef> extends Array<T> {
 
                 ret.push(fieldDef);
             }
+        });
+
+        channel.virtualFields.forEach((vField: UbiChannelVirtualFieldLike) => {
+            const fieldDef: UbiChannelFieldDef = new UbiChannelFieldDef();
+            const key = vField.field_name;
+            const label = vField.field_label;
+            fieldDef.key = key;
+            fieldDef.label = label;
+
+            if (!fieldDef.label) {
+                fieldDef.enabled = false;
+            }
+
+            // fieldDef.scaleType = UbiChannelFieldDefScaleType;
+            fieldDef.scaleType = UbiChannelFieldDefScaleType.VFIELD;
+
+            ret.push(fieldDef);
         });
 
         return ret;
