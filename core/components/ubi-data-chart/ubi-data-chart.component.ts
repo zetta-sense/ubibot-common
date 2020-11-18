@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, ElementRef, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import * as _ from 'lodash';
 
@@ -10,16 +10,70 @@ import HighchartsBoost from 'highcharts/modules/boost';
 import HighchartsXRange from 'highcharts/modules/xrange';
 import { TranslateService } from '@ngx-translate/core';
 import { UbiUtilsService, _NF_ } from '../../../services/ubi-utils.service';
-import { take, delay } from 'rxjs/operators';
+import { take, delay, auditTime } from 'rxjs/operators';
 import { UbiFeedType } from 'src/modules/ubibot-common/remote/remote-channel.service';
 import { UbiFeedsChartType } from '../../../services/base/ubi-feeds-converter.engine';
 import { UbiExtraPreferenceSensorsSettings } from '../../../entities/ubi-extra-preference.entity';
 import { UbiChannelFieldViewOption, DecimalPlaceType } from '../../../entities/ubi-channel-field-view-option.entity';
+import { UbiBasePair } from '../../../../../app/base/ubi-base-pair.interface';
+import { UbiClass, UbiSubscription } from '../../decorators/ubi-class.decorator';
+import { EnumAppConstant } from '../../../enums/enum-app-constant.enum';
 
 // ref: https://github.com/highcharts/highcharts-angular#theme
 NoDataToDisplay(Highcharts);
 HighchartsBoost(Highcharts);
 HighchartsXRange(Highcharts);
+
+
+/**
+ * Override the reset function, we don't need to hide the tooltips and
+ * crosshairs.
+ */
+Highcharts.Pointer.prototype.reset = function () {
+    return undefined;
+};
+
+/**
+ * Highlight a point by showing tooltip, setting hover state and draw crosshair
+ */
+(<any>Highcharts.Point.prototype).highlight = function (event) {
+
+    let chart: Highcharts.Chart = this.series.chart;
+
+    event = chart.pointer.normalize(event);
+    // this.onMouseOver(); // Show the hover marker
+    // chart.tooltip.refresh(this); // Show the tooltip
+    // chart.tooltip.update({ enabled: false });
+    chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair
+    chart.yAxis[0].drawCrosshair(event, this); // Show the crosshair
+};
+
+// 由于highcharts的mouseover不带originalEvent，所以需要override
+// ref: https://stackoverflow.com/questions/60700851/is-there-a-way-to-get-the-mouse-coordinates-with-respect-to-page-on-mouseover-of
+(function (H) {
+    H.wrap(
+        H.Pointer.prototype,
+        'getHoverData',
+        <any>function (
+            proceed,
+            existingHoverPoint,
+            existingHoverSeries,
+            series,
+            isDirectTouch,
+            shared,
+            e,
+        ) {
+
+            var result = proceed.apply(this, Array.prototype.slice.call(arguments, 1));
+
+            if (result.hoverPoint) {
+                result.hoverPoint.originalEvent = e;
+            }
+
+            return result;
+        }
+    );
+}(Highcharts));
 
 const MARKUP_FONT_SIZE = 14;
 
@@ -59,6 +113,15 @@ export type UbiDataChartValueFormatter = (value: any) => string;
 
 type UbiHighchartsPoint = any[2];
 
+class UbiDataChartInternalEvent {
+    code: EnumAppConstant;
+    param: any;
+
+    constructor(code, param) {
+        this.code = code;
+        this.param = param;
+    }
+}
 
 /**
  * All reference Highcharts official angular wrapper.
@@ -72,14 +135,20 @@ type UbiHighchartsPoint = any[2];
  * demo
  * ref: https://github.com/highcharts/highcharts-angular/blob/master/src/app/app.component.ts
  */
+@UbiClass()
 @Component({
     selector: 'ubi-data-chart',
     templateUrl: './ubi-data-chart.component.html',
     styleUrls: ['./ubi-data-chart.component.scss']
 })
-export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
+export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges, AfterContentInit {
 
     EnumSerieColors = ['#e00', '#0e0', '#00e', '#ee0', '#e0e', '#0ee', '#7e0', '#70e', '#07e', '#0e7', '#e07', '#e70'];
+
+    currentCrosshairValue: string;
+
+    @UbiSubscription()
+    touchmove$ = new Subject<Event>();
 
     highcharts: typeof Highcharts = Highcharts; // required
     highchartsDateTimeLabelFormats: {} = {
@@ -103,6 +172,21 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         chart: {
             // type: 'line', // ngOnInit根据pack的chartType初始化此项
             animation: false,
+            // events: {
+            //     load: function () {
+            //         let seriesGroup = (<any>this).seriesGroup;
+            //         if (seriesGroup != null) {
+            //             let innerRect = seriesGroup.element;
+
+            //             ['touchmove', 'touchstart'].forEach((eventtype) => {
+            //                 innerRect.addEventListener(eventtype, (e) => {
+            //                     console.log(e);
+            //                 });
+            //             });
+            //         }
+            //         // console.log((<any>this).seriesGroup); // .element
+            //     }
+            // }
         },
         plotOptions: {
             series: {
@@ -115,6 +199,54 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 //     groupAll: true,
                 //     groupPixelWidth: 10,
                 // },
+
+                point: { // tag: highcharts 动作事件
+                    events: {
+                        click: (e) => {
+                            // console.log('e:', e);
+
+                            // const target: Highcharts.Point = e.point;
+
+                            // if (target.series.type == 'xrange') {
+                            //     let customData = (<any>target).custom;
+
+                            //     console.log(target, customData);
+                            // }
+
+                            // // if (target.series.type == 'xrange') {
+                            // //     let originalEvent = e;
+
+                            // //     let selfPointEvent = target.series.chart.pointer.normalize(originalEvent);
+                            // //     let selfPoint = target.series.searchPoint(selfPointEvent, true);
+
+                            // //     // (<Highcharts.Chart>target.series.chart).tooltip.refresh(selfPoint);
+                            // //     (<Highcharts.Chart>target.series.chart).tooltip.update({
+                            // //         enabled: true,
+                            // //     });
+
+                            // //     // highcharts的charts数组在chart dispose的时候会将其置为undefined，所以需要filter
+                            // //     Highcharts.charts.filter(x => !!x).forEach((chart) => {
+                            // //         let pointEvent = chart.pointer.normalize(originalEvent);
+                            // //         let point = (<any>chart.series[0]).searchPoint(pointEvent, true);
+
+
+                            // //         if (point && chart != target.series.chart) {
+                            // //             point.highlight(pointEvent);
+
+                            // //             // hoverTimeData.data.push(point);
+                            // //         } else {
+                            // //             // console.warn('Same chart. Ignored...!!!');
+                            // //         }
+                            // //     });
+                            // // }
+                        },
+                        mouseOver: (e) => {
+                            this.touchmove$.next(e);
+                        },
+                        mouseOut: function () {
+                        }
+                    },
+                },
             },
         },
         title: {},
@@ -123,7 +255,9 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             enabled: false
         },
         xAxis: {
-            crosshair: true,
+            crosshair: {
+                color: '#f09000',
+            },
             type: 'datetime',
             gridLineWidth: 1,
             // dateTimeLabelFormats: this.highchartsDateTimeLabelFormats
@@ -133,7 +267,9 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             timezoneOffset: new Date().getTimezoneOffset(), // 先给个默认的，当timezone更新后这个offset将被覆盖
         },
         yAxis: {
-            crosshair: true,
+            crosshair: {
+                color: '#f09000',
+            },
             gridLineWidth: 1,
             title: {
                 text: null,// remove side label - Values
@@ -151,6 +287,8 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             }
         },
         tooltip: {
+            enabled: false,
+            animation: false,
             // useHTML: true,
             // xDateFormat: '%Y-%m-%d %H:%M:%S',
         },
@@ -162,6 +300,8 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     highchartsUpdateFlag = false;
     highchartsAfterInit$: Subject<Highcharts.Chart>;
 
+    @Output('onTouchmove')
+    onTouchmove = new EventEmitter<any>();
 
     /**
      * 要变更，必须传入新的ref
@@ -254,6 +394,8 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     @Input() valueFormatter: UbiDataChartValueFormatter;
 
 
+    private customEmitter = new EventEmitter<UbiDataChartInternalEvent>(true);
+
     /**
      * Optional. Default to undefined.
      *
@@ -273,6 +415,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         private ubiUtils: UbiUtilsService,
         private translate: TranslateService,
         private ngZone: NgZone,
+        private elementRef: ElementRef,
     ) {
         // tag: 只能放在这个阶段，不能在初始化后
         this.updateTheme();
@@ -284,6 +427,22 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         this.highchartsAfterInit$ = new Subject<Highcharts.Chart>();
         this.highchartsAfterInit$.subscribe((chart: Highcharts.Chart) => {
             this.chart = chart;
+
+            // tag: 为chart附加一个emitter用于其它component通过highchart触发事件
+            (<any>this.chart).customEmitter = this.customEmitter;
+            this.customEmitter.subscribe((e: UbiDataChartInternalEvent) => {
+                // console.log('recv customEmitter event:', this.containerId);
+                if (e.code == EnumAppConstant.EVENT_UBI_CHART_UPDATE_CURRENT_VALUE) {
+                    this.ngZone.run(() => {
+                        if (this.valueFormatter) {
+                            const convertedValue = this.valueFormatter(e.param);
+                            this.currentCrosshairValue = `${convertedValue} ${this.unit}`;
+                        } else {
+                            this.currentCrosshairValue = `${e.param} ${this.unit}`;
+                        }
+                    });
+                }
+            });
 
             this.updateData();
             this.updateExtra();
@@ -304,6 +463,14 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         const opts: any = this.highchartsOptions;
         const _self = this;
 
+        // tag: 尝试为highcharts extends valueFormatter，供touchmove event 使用
+        try {
+            opts.yAxis.labels.valueFormatter = _self.valueFormatter;
+        } catch (e) {
+            console.warn('Can not extends valueFormatter for Highcharts.');
+        }
+
+        // 根据不同的种类处理
         if (this.chartType == UbiFeedsChartType.XRange || this.chartType == UbiFeedsChartType.XRangeReversedColor) {
             opts.chart.type = 'xrange';
 
@@ -313,6 +480,9 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
             opts.yAxis.crosshair = false;
             opts.xAxis.crosshair = false;
+            // opts.xAxis.crosshair ={
+            //     color: '#f09000',
+            // };
 
         } else {
             opts.chart.type = 'line';
@@ -332,6 +502,102 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         // setTimeout(() => {
         //     this.chart.reflow();
         // }, 2000);
+
+        this.touchmove$.pipe(
+            auditTime(25), // 设定一个audit阀值以减少连续移动时的cpu消耗
+        ).subscribe((e) => {
+
+            // console.log('e:', e);
+
+            const target: any = e.target;
+
+            // 令 xrange 不支持 touchmove
+            if (target.series.type != 'xrange') {
+
+                let originalEvent = (<any>e.target).originalEvent;
+
+                let selfPointEvent = target.series.chart.pointer.normalize(originalEvent);
+                let selfPoint = target.series.searchPoint(selfPointEvent, true);
+
+                // (<Highcharts.Chart>target.series.chart).tooltip.refresh(selfPoint);
+                // (<Highcharts.Chart>target.series.chart).tooltip.update({
+                //     enabled: true,
+                // });
+
+                // let hoverTimeData: any = {
+                //     time: target.x,
+                //     data: [],
+                // };
+
+                // // opts.yAxis.labels.testExtend
+                // try {
+                //     const valueFormatter = (<Highcharts.Chart>target.series.chart).options.yAxis[0].labels.valueFormatter;
+
+                //     let y = target.custom ? target.custom.y : target.y; // 仅xrange有custom
+                //     const convertedValue = valueFormatter(y);
+
+                //     let tmp: UbiBasePair = {
+                //         key: `${convertedValue}`,
+                //         label: `${target.series.name}`,
+                //     };
+
+                //     hoverTimeData.data.push(tmp);
+
+                //     // console.log(valueFormatter);
+                // } catch (e) { console.error(e); }
+
+
+                // tag: highcharts的charts数组在chart dispose的时候会将其置为undefined，所以需要filter
+                // ref: https://github.com/highcharts/highcharts/blob/master/ts/Core/Pointer.ts
+                Highcharts.charts.filter(x => !!x).forEach((chart, index) => {
+
+                    if (chart.series[0].type == 'xrange') {
+                        // console.log('chart:', chart);
+                        const foundSeg = chart.series[0].points.find(p => p.x < selfPoint.x && p.x2 >= selfPoint.x);
+                        if (foundSeg) {
+                            const customData = (<any>foundSeg).custom;
+                            const stateY = customData.y;
+
+                            // fixme: 暂时不处理 xrange 型
+
+                            // console.warn('state:', stateY, foundSeg);
+                        }
+                    } else {
+                        let pointEvent = chart.pointer.normalize(originalEvent);
+                        let point = (<any>chart.series[0]).searchPoint(pointEvent, true);
+
+
+                        if (point && chart != target.series.chart) {
+                            point.highlight(pointEvent);
+
+                            let customEmitter = (<any>chart).customEmitter as EventEmitter<UbiDataChartInternalEvent>;
+                            if (customEmitter) {
+                                customEmitter.emit(new UbiDataChartInternalEvent(EnumAppConstant.EVENT_UBI_CHART_UPDATE_CURRENT_VALUE, point.y));
+                            }
+
+                            // hoverTimeData.data.push(point);
+                        } else {
+                            // console.warn('Same chart. Ignored...!!!');
+                        }
+                    }
+                });
+
+                // 通知自己更新currentCrosshair value
+                let customEmitter = (<any>target.series.chart).customEmitter as EventEmitter<UbiDataChartInternalEvent>;
+                if (customEmitter) {
+                    customEmitter.emit(new UbiDataChartInternalEvent(EnumAppConstant.EVENT_UBI_CHART_UPDATE_CURRENT_VALUE, target.y));
+                }
+
+                // let pointEvent = this.series.chart.pointer.normalize(originalEvent);
+                // let point = (<any>this.series).searchPoint(pointEvent, true);
+                // this.series.chart.tooltip.update({
+                //     enabled: true,
+                // });
+                // this.series.chart.tooltip.refresh(point);
+
+                // this.onTouchmove.emit(hoverTimeData);
+            }
+        });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -375,10 +641,12 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     private updateTooltip() {
         this.ngZone.onStable.pipe(take(1)).subscribe(() => {
-            if (this.unit) {
-                this.highchartsOptions.tooltip.valueSuffix = ` ${this.unit}`;
-            } else {
-                this.highchartsOptions.tooltip.valueSuffix = undefined;
+            if (this.highchartsOptions.tooltip) {
+                if (this.unit) {
+                    this.highchartsOptions.tooltip.valueSuffix = ` ${this.unit}`;
+                } else {
+                    this.highchartsOptions.tooltip.valueSuffix = undefined;
+                }
             }
         });
     }
@@ -468,7 +736,10 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
                 // @ts-ignore
                 this.highchartsOptions.xAxis.dateTimeLabelFormats = newFormat;
-                this.highchartsOptions.tooltip.xDateFormat = segs.join(' ');
+
+                if (this.highchartsOptions.tooltip) {
+                    this.highchartsOptions.tooltip.xDateFormat = segs.join(' ');
+                }
 
                 this.highchartsUpdateFlag = true;
             });
@@ -516,7 +787,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         const _self = this;
 
         const yAxisDef: Highcharts.YAxisOptions = {
-            crosshair: false,
+            crosshair: true,
             gridLineWidth: 1,
             title: {
                 text: null,// remove side label - Values
@@ -525,7 +796,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         };
         this.highchartsOptions.yAxis = [];
 
-        let tmp = [];
+        let tmp: Highcharts.SeriesOptionsType[] = [];
 
         this.data.forEach((serie: UbiDataChartSerie, si) => {
             let existedSerie: any = _.find(this.highchartsOptions.series, { name: serie.name });
@@ -715,7 +986,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
         let newOpts = Object.assign({}, this.highchartsOptions);
         newOpts.series = tmp;
-        console.log(newOpts);
+        // console.log(newOpts);
         this.chart.update(newOpts, false, true);
     }
 
@@ -731,21 +1002,24 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         this.chart.series.forEach((s) => s.remove());
 
         this.data.forEach((serie: UbiDataChartSerie) => {
-            const newDataPoints: UbiDataChartPointForXRange[] = serie.data as UbiDataChartPointForXRange[];
+            let newDataPoints: UbiDataChartPointForXRange[] = serie.data as UbiDataChartPointForXRange[];
 
             let segmentData: any = {
                 name: this.translate.instant('APP.COMMON.STATE'),
                 borderColor: '#aaa',
                 borderWidth: 1,
                 borderRadius: 3,
+                // linecap: 'square',
+                step: 'center',
                 tooltip: {
+                    // enabled: true,
                     // ref: https://api.highcharts.com/highcharts/series.xrange.tooltip.pointFormatter
                     // ref: https://api.highcharts.com/class-reference/Highcharts
                     pointFormatter: function () {
                         try {
                             // console.log(this);
                             const stateLabel = this.series.name;
-                            const yValue = this.custom.y;
+                            const yValue = (<any>this).custom.y;
                             const color = this.color;
 
                             let convertedValue: any = yValue;
@@ -760,7 +1034,16 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     },
                 },
                 data: [],
+                // events: {
+                //     click: function (e) {
+                //         console.log(e);
+                //     }
+                // }
             };
+
+            // console.warn('newDataPoints:', newDataPoints);
+
+            // newDataPoints = newDataPoints.splice(0, 20); // fixme: for debug, remove later
 
             // 数据分段
             for (let i = 0; i < newDataPoints.length; i++) {
@@ -790,6 +1073,9 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 }
             }
             this.chart.addSeries(segmentData);
+
+            // xrange 任何时候都支持tooltip，不显示crosshair
+            this.chart.tooltip.update({ enabled: true });
         });
     }
 
@@ -837,7 +1123,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     states: {
                         hover: {
                             lineWidthPlus: 0
-                        }
+                        },
                     },
                     tooltip: {
                         // ref: https://api.highcharts.com/highcharts/series.line.tooltip.pointFormat
@@ -873,13 +1159,20 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     private updateExtra() {
         this.ngZone.onStable.pipe(take(1)).subscribe(() => {
-            const pointsToAdd = [];
+
+            if (this.chartType == UbiFeedsChartType.XRange || this.chartType == UbiFeedsChartType.XRangeReversedColor) {
+                // 如果是xrange, do nothing
+                return;
+            }
+
+            const pointsToAdd: Highcharts.SeriesFlagsDataOptions[] = [];
             const decimalPlace = this.determineDecimalPlace();
             const upperLowerBoundScale: number = 0.35;
             const diff = this.maxPoint ? this.maxPoint.y - this.minPoint.y : 0; // 有max就肯定有min，所以只要判断max
 
             if (this.minPoint) {
                 const minPoint = {
+
                     x: this.minPoint.x,
                     y: this.minPoint.y,
                     color: '#0f0',
@@ -966,6 +1259,17 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 this.chart.addSeries({
                     type: 'flags',
                     data: pointsToAdd,
+                    enableMouseTracking: false,
+                    fillColor: 'rgba(255,255,255,0.3)',
+                    y: -35,
+                    shape: 'flag',
+                    stackDistance: 30, // 两个flags重叠时的间距
+                    states: {
+                        inactive: {
+                            opacity: 1, // 取消hover chart时，最大最小flags的透明化
+                        }
+                    }
+                    // stackDistance: 20,
                 }, false);
             } else {
                 // DO NOT show markers
@@ -982,6 +1286,13 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     ngOnDestroy(): void {
         this.highchartsAfterInit$.unsubscribe();
+
+        this.customEmitter.unsubscribe();
     }
 
+
+
+    ngAfterContentInit(): void {
+        // this.setupSharedMouseeEvent();
+    }
 }

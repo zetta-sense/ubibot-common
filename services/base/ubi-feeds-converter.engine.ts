@@ -192,7 +192,11 @@ export class UbiFeedsConverterEngine {
             const dataConverted: UbiDataChartPoint[] = [];
             let lastPointXRange: UbiDataChartPointForXRange;
             if (chartType === UbiFeedsChartType.XRange || chartType === UbiFeedsChartType.XRangeReversedColor) {
+
                 let pointXRange: UbiDataChartPointForXRange;
+
+                let lastX = null;
+
                 for (let j = 0; j < data.length; j++) {
                     const point: UbiDataChartPoint = data[j];
 
@@ -206,6 +210,20 @@ export class UbiFeedsConverterEngine {
                     //     dataConverted.push(tmp);
                     // }
                     // tag-end
+
+                    // if (lastX != null) {
+                    //     let segOfXRange = {
+                    //         x: lastX,
+                    //         x2: point.x,
+                    //         y: point.y,
+                    //     }
+
+                    //     dataConverted.push(segOfXRange);
+                    // }
+
+                    // lastX = point.x;
+
+
 
                     if (lastPointXRange && point.y == lastPointXRange.y) {
                         pointXRange.x2 = point.x;
@@ -227,6 +245,10 @@ export class UbiFeedsConverterEngine {
                         lastPointXRange = pointXRange;
                     }
 
+
+
+
+
                     // tag: debug, 后null值测试 -->
                     // if (j == data.length - 1) {
                     //     let tmp = {
@@ -241,6 +263,7 @@ export class UbiFeedsConverterEngine {
 
                 // replace with converted data
                 pack.series[0].data = dataConverted;
+                // console.warn('converted:', dataConverted);
 
                 pack.sum = undefined;
                 pack.avg = undefined;

@@ -3,4 +3,13 @@
     // margin: 24px;
     padding: 24px;
     width: 100%;
+    position: relative;
+
+    .current-value {
+        display: inline-block;
+        right: 10px;
+        top: 6px;
+        position: absolute;
+        color: #3880ff;
+    }
 }
