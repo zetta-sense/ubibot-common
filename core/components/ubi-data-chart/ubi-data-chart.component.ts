@@ -18,6 +18,7 @@ import { UbiChannelFieldViewOption, DecimalPlaceType } from '../../../entities/u
 import { UbiBasePair } from '../../../../../app/base/ubi-base-pair.interface';
 import { UbiClass, UbiSubscription } from '../../decorators/ubi-class.decorator';
 import { EnumAppConstant } from '../../../enums/enum-app-constant.enum';
+import { UbiDatePipe } from '../../../../../app/pipes/ubi-date.pipe';
 
 // ref: https://github.com/highcharts/highcharts-angular#theme
 NoDataToDisplay(Highcharts);
@@ -145,7 +146,8 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
     EnumSerieColors = ['#e00', '#0e0', '#00e', '#ee0', '#e0e', '#0ee', '#7e0', '#70e', '#07e', '#0e7', '#e07', '#e70'];
 
-    currentCrosshairValue: string;
+    currentCrosshairX: string;
+    currentCrosshairY: string;
 
     @UbiSubscription()
     touchmove$ = new Subject<Event>();
@@ -416,6 +418,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         private translate: TranslateService,
         private ngZone: NgZone,
         private elementRef: ElementRef,
+        private ubiDatePipe: UbiDatePipe,
     ) {
         // tag: 只能放在这个阶段，不能在初始化后
         this.updateTheme();
@@ -434,11 +437,22 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 // console.log('recv customEmitter event:', this.containerId);
                 if (e.code == EnumAppConstant.EVENT_UBI_CHART_UPDATE_CURRENT_VALUE) {
                     this.ngZone.run(() => {
-                        if (this.valueFormatter) {
-                            const convertedValue = this.valueFormatter(e.param);
-                            this.currentCrosshairValue = `${convertedValue} ${this.unit}`;
-                        } else {
-                            this.currentCrosshairValue = `${e.param} ${this.unit}`;
+                        const point = e.param;
+
+                        if (point != null) {
+                            const x = point.x;
+                            const y = point.y;
+
+                            if (this.valueFormatter) {
+                                const convertedValue = this.valueFormatter(y);
+                                this.currentCrosshairY = `${convertedValue} ${this.unit}`;
+                            } else {
+                                this.currentCrosshairY = `${y} ${this.unit}`;
+                            }
+
+                            if (this.dateFormat) {
+                                this.currentCrosshairX = this.ubiDatePipe.transform(x, 'time', null, this.timezone);
+                            }
                         }
                     });
                 }
@@ -453,8 +467,6 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             this.updateTimezone();
             // this.chart.update
 
-            // FIXME: remove later
-            // (<any>window).a = chart;
         });
 
     }
@@ -572,7 +584,15 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
                             let customEmitter = (<any>chart).customEmitter as EventEmitter<UbiDataChartInternalEvent>;
                             if (customEmitter) {
-                                customEmitter.emit(new UbiDataChartInternalEvent(EnumAppConstant.EVENT_UBI_CHART_UPDATE_CURRENT_VALUE, point.y));
+                                const ev = new UbiDataChartInternalEvent(
+                                    EnumAppConstant.EVENT_UBI_CHART_UPDATE_CURRENT_VALUE,
+                                    {
+                                        y: point.y,
+                                        x: point.x,
+                                    }
+                                );
+
+                                customEmitter.emit(ev);
                             }
 
                             // hoverTimeData.data.push(point);
@@ -585,7 +605,14 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 // 通知自己更新currentCrosshair value
                 let customEmitter = (<any>target.series.chart).customEmitter as EventEmitter<UbiDataChartInternalEvent>;
                 if (customEmitter) {
-                    customEmitter.emit(new UbiDataChartInternalEvent(EnumAppConstant.EVENT_UBI_CHART_UPDATE_CURRENT_VALUE, target.y));
+                    const ev = new UbiDataChartInternalEvent(
+                        EnumAppConstant.EVENT_UBI_CHART_UPDATE_CURRENT_VALUE,
+                        {
+                            y: target.y,
+                            x: target.x,
+                        }
+                    );
+                    customEmitter.emit(ev);
                 }
 
                 // let pointEvent = this.series.chart.pointer.normalize(originalEvent);

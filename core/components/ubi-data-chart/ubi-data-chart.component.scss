@@ -4,6 +4,7 @@
     padding: 24px;
     width: 100%;
     position: relative;
+    text-align: right;
 
     .current-value {
         display: inline-block;
@@ -11,5 +12,10 @@
         top: 6px;
         position: absolute;
         color: #3880ff;
+
+        .current-x {
+            color: #777;
+            font-size: 11px;
+        }
     }
 }

@@ -174,6 +174,17 @@ export enum UbiChannelFieldDefScaleType {
      */
     RS485_CO2_PROBE_HUMIDITY = '52',
 
+
+    /**
+     * PH值
+     */
+    EXT_PH = '70',
+
+    /**
+     * EC值（电解质）
+     */
+    EXT_EC = '71',
+
 }
 
 export enum UbiChannelFieldDefScaleTypeGroup {
@@ -199,7 +210,11 @@ export function GenerateScaleTypeGroupMap(scaleTypeKeys: string[]): UbiChannelFi
     if (!scaleTypeKeys) return {};
 
     const map: UbiChannelFieldDefScaleTypeGroupMap = {};
-    scaleTypeKeys.forEach((typeKey: string) => {
+    scaleTypeKeys.filter(k => {
+        // 特殊的 vfield 和保留除外
+        return UbiChannelFieldDefScaleType[k] != UbiChannelFieldDefScaleType.UNKNOWN
+            && UbiChannelFieldDefScaleType[k] != UbiChannelFieldDefScaleType.VFIELD;
+    }).forEach((typeKey: string) => {
         const groupKey = WhichGroupOfScaleType(typeKey);
         map[groupKey] = map[groupKey] || [];
         map[groupKey].push(typeKey);

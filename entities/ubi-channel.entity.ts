@@ -247,6 +247,9 @@ export abstract class UbiChannel {
             || productId === EnumBasicProductId.GS1_AL2G1RS
             || productId === EnumBasicProductId.GS1_AL4G1RS
             || productId === EnumBasicProductId.GS1_PL4G1RS
+            // gs2
+            || productId === EnumBasicProductId.GS2_EL2G
+            || productId === EnumBasicProductId.GS2_EL4G
             // sp1
             || productId === EnumBasicProductId.SP1_4G) {
             return true;
@@ -268,7 +271,7 @@ export abstract class UbiChannel {
      */
     static IsSimAutoSupported(productId: string): boolean {
         const simSupported = UbiChannel.IsSimSupported(productId);
-        if (this.IsFamilySP1(productId) || this.IsFamilyMS1(productId)) {
+        if (this.IsFamilySP1(productId)) {
             return false;
         };
         return simSupported;
@@ -437,6 +440,27 @@ export abstract class UbiChannel {
 
     isFamilyGS1(): boolean {
         return UbiChannel.IsFamilyGS1(this.product_id);
+    }
+
+    /**
+     * 判断是否为gs2系列
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsFamilyGS2(productId: string): boolean {
+        if (productId === EnumBasicProductId.GS2_EL ||
+            productId === EnumBasicProductId.GS2_EL2G ||
+            productId === EnumBasicProductId.GS2_EL4G) {
+            return true;
+        }
+        return false;
+    }
+
+    isFamilyGS2(): boolean {
+        return UbiChannel.IsFamilyGS2(this.product_id);
     }
 
 
