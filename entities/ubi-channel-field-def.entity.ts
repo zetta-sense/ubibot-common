@@ -341,6 +341,15 @@ export class UbiChannelFieldDef {
      */
     scaleType: UbiChannelFieldDefScaleType;
 
+
+    /**
+     * For custom data. eg. scaleType == 'vfield'
+     *
+     * @type {string}
+     * @memberof UbiChannelFieldDef
+     */
+    custom?: string;
+
     constructor() {
 
     }

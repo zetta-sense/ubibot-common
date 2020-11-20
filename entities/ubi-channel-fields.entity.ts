@@ -63,6 +63,7 @@ export class UbiChannelFields<T extends UbiChannelFieldDef> extends Array<T> {
         // console.log(`Converting channel ${channel.channel_id}...`);
         const vconfig: UbiChannelVConfig = UbiChannelVConfig.FromString(channel.vconfig);
 
+        // 解析内置field
         Object.keys(channel).forEach((key) => {
             if (UbiChannelFieldDef.IsFieldPrefix(key)) {
                 const fieldDef: UbiChannelFieldDef = new UbiChannelFieldDef();
@@ -80,6 +81,7 @@ export class UbiChannelFields<T extends UbiChannelFieldDef> extends Array<T> {
             }
         });
 
+        // 解析vfield
         channel.virtualFields.forEach((vField: UbiChannelVirtualFieldLike) => {
             const fieldDef: UbiChannelFieldDef = new UbiChannelFieldDef();
             const key = vField.field_name;
@@ -93,6 +95,7 @@ export class UbiChannelFields<T extends UbiChannelFieldDef> extends Array<T> {
 
             // fieldDef.scaleType = UbiChannelFieldDefScaleType;
             fieldDef.scaleType = UbiChannelFieldDefScaleType.VFIELD;
+            fieldDef.custom = vField.field_unit;
 
             ret.push(fieldDef);
         });

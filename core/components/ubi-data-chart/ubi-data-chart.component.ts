@@ -174,6 +174,8 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         chart: {
             // type: 'line', // ngOnInit根据pack的chartType初始化此项
             animation: false,
+            marginLeft: 48, // 左侧label预留足够的空间，保证各个图之间的x轴垂直对齐
+            marginRight: 10,
             // events: {
             //     load: function () {
             //         let seriesGroup = (<any>this).seriesGroup;
@@ -276,7 +278,8 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             title: {
                 text: null,// remove side label - Values
             },
-            labels: {},
+            labels: {
+            },
         },
         lang: {
             noData: "",
@@ -489,6 +492,8 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             // ref: https://api.highcharts.com/highcharts/yAxis.labels.rotation
             opts.yAxis.categories = [`${this.translate.instant('APP.COMMON.STATE')}`]; // yAxis的label
             opts.yAxis.labels.rotation = -90;
+
+            // opts.yAxis.left = 300;
 
             opts.yAxis.crosshair = false;
             opts.xAxis.crosshair = false;
