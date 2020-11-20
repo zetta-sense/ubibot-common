@@ -48,4 +48,7 @@ export enum EnumProductProfileFeature {
     ModSen = 'mod:sen',
     ModDE_SW_S = 'mod:de_sw_s',
 
+    // patch 2020-11-20
+    SyncRS485_IS = 'sync:rs485_is',
+
 }

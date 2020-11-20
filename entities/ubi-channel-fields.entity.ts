@@ -32,13 +32,18 @@ export class UbiChannelFields<T extends UbiChannelFieldDef> extends Array<T> {
      * @returns {UbiChannelFieldDef[]}
      * @memberof UbiChannelFields
      */
-    getEnabledFieldDefs(): UbiChannelFieldDef[] {
-        const ret = [];
+    getEnabledFieldDefs(includeVField: boolean = true): UbiChannelFieldDef[] {
+        let ret: UbiChannelFieldDef[] = [];
         this.forEach((item) => {
             if (item.enabled) {
                 ret.push(item);
             }
         });
+
+        if (!includeVField) { // 不包含vfield时滤掉
+            ret = ret.filter(x => x.scaleType != UbiChannelFieldDefScaleType.VFIELD);
+        }
+
         return ret;
     }
 

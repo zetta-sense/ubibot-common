@@ -777,4 +777,27 @@ export class RemoteChannelService {
             })
         );
     }
+
+
+    listVFields(channelId: string): Observable<UbiChannelVirtualFieldLike[]> {
+        if (!channelId) throw new UbiError('Channel ID is required for this API!');
+
+        let url = `${this.ubibotCommonConfig.EndPoint}/channel_virtual_fields/${channelId}/rules`;
+        return combineLatest(
+            this.http.get(url),
+            this.get(channelId),
+        ).pipe(
+            switchMap(([resp, channel]: any[]) => {
+                const ret = _.map(resp.rules, (raw) => {
+                    return new UbiRule(raw, channel);
+                });
+                return of(ret);
+            }),
+            // 根据文档, zipAll的source必须是一个observable of observables / ..., 所以map的时候必须通过of返回
+            // ref: https://github.com/ReactiveX/rxjs/issues/1677
+            // zipAll<UbiRule>(),
+            // tap((x) => console.log(x)),
+            // mergeAll(),
+        );
+    }
 }

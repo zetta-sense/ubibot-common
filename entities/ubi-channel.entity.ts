@@ -82,16 +82,16 @@ export interface UbiChannelTriggeringRule {
 }
 
 export interface UbiChannelVirtualFieldLike {
-    channel_id: string,
-    created_at: string,
-    field_label: string,
-    field_name: string,
-    field_status: string,
-    field_unit: string,
-    source_function: string,
-    updated_at: string,
-    user_id: string,
-    virtual_id: string,
+    channel_id?: string,
+    created_at?: string,
+    field_label?: string,
+    field_name?: string,
+    field_status?: string,
+    field_unit?: string,
+    source_function?: string,
+    updated_at?: string,
+    user_id?: string,
+    virtual_id?: string,
 }
 
 

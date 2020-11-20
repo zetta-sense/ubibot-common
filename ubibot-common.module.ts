@@ -24,6 +24,7 @@ import { RemoteLogsService } from './remote/remote-logs.service';
 import { UbibotSupportedLanguagesService } from './providers/ubibot-supported-languages.service';
 import { RemoteGroupService } from './remote/remote-group.service';
 import { RemoteSchedulerService } from './remote/remote-scheduler.service';
+import { RemoteVFieldService } from './remote/remote-vfield.service';
 
 export const UBIBOT_COMMON_CONFIGURATION = new InjectionToken<any>('UBIBOT_COMMON_CONFIGURATION');
 
@@ -67,6 +68,7 @@ export function HttpLoaderFactory(http: HttpClient, opts: any) {
         RemoteLogsService,
         RemoteGroupService,
         RemoteSchedulerService,
+        RemoteVFieldService,
         DatePipe,
         // init dep
         {

@@ -366,6 +366,8 @@ export class UbiUtilsService {
                     let owner = (<any>ubiServerError).owner;
                     ret = `${this.parseError(new UbiError(EnumAppError.DEVICE_ATTACHED_BY_OTHERS,
                         { account: this.ubiUserDisplayPipe.transform(owner) }))}`;
+                } else if (ubiServerError.errorCode == 'max_virtual_fields_per_channel_reached') {
+                    ret = `${this.parseError(new UbiError(EnumAppError.VFIELD_PER_CHANNEL_EXCEEDS_LIMIT))}`;
                 } else if (ubiServerError.errorCode == 'invalid_activation_code') {
                     ret = `${this.parseError(new UbiError(EnumAppError.INVALID_ACTIVATION_CODE))}`;
                 } else if (ubiServerError.errorCode == 'username_exist') {
@@ -395,7 +397,7 @@ export class UbiUtilsService {
                 } else if (ubiServerError.errorCode == null) {
                     ret = `${this.parseError(new UbiError(EnumAppError.SOMETHING_WRONG_WITH_MOBILE))}`;
                 } else {
-                    ret = `server: ${ubiServerError.desp}`;
+                    ret = `server: ${ubiServerError.desp || ubiServerError.errorCode}`;
                 }
             } else {
                 ret = this.parseError(new UbiError(EnumAppError.NETWORK_ERROR));

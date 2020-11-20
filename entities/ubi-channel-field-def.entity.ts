@@ -185,6 +185,16 @@ export enum UbiChannelFieldDefScaleType {
      */
     EXT_EC = '71',
 
+    /**
+     * 乙烯
+     */
+    EXT_C2H4 = '72',
+
+    /**
+     * 氧气
+     */
+    EXT_O2 = '73',
+
 }
 
 export enum UbiChannelFieldDefScaleTypeGroup {
