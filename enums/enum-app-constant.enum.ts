@@ -12,6 +12,8 @@ export enum EnumAppConstant {
 
     EVENT_UBI_CHANGE_LANGUAGE = 'ubi::ubi_change_language',
 
+    EVENT_UBI_RESET_VIRTUAL_SCROLL = 'ubi::ubi_reset_virtual_scroll',
+
     EVENT_UBI_CHART_UPDATE_CURRENT_VALUE = 'ubi::ubi_chart_update_current_value',
 
     DIALOG_LOADING_SINGLETON_ID = 'ubi_dialog_loading_singleton',
