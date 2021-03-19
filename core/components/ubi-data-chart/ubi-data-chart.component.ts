@@ -1197,16 +1197,17 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 return;
             }
 
-            const pointsToAdd: Highcharts.SeriesFlagsDataOptions[] = [];
             const decimalPlace = this.determineDecimalPlace();
             const upperLowerBoundScale: number = 0.35;
             const diff = this.maxPoint ? this.maxPoint.y - this.minPoint.y : 0; // 有max就肯定有min，所以只要判断max
 
+            let minPoint = null;
             if (this.minPoint) {
-                const minPoint = {
-
+                minPoint = {
                     x: this.minPoint.x,
+                    // x: 1616135834000,
                     y: this.minPoint.y,
+                    // y: 20.6,
                     color: '#0f0',
                     style: {
                         fontSize: `${MARKUP_FONT_SIZE}px`,
@@ -1217,11 +1218,13 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                 // 一般flags都在上方，不需要扩大y轴lower范围
                 (this.highchartsOptions.yAxis as any).min = this.minPoint.y;
 
-                pointsToAdd.push(minPoint);
+                // console.log('为啥你不出来');
+                // console.log(minPoint);
             }
 
+            let maxPoint = null;
             if (this.maxPoint) {
-                const maxPoint = {
+                maxPoint = {
                     x: this.maxPoint.x,
                     y: this.maxPoint.y,
                     color: '#f00',
@@ -1233,8 +1236,6 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
                 // 扩大y轴upper范围，如果min==max则取1，让y轴位于0-1
                 (this.highchartsOptions.yAxis as any).max = this.maxPoint.y + Math.abs((diff * upperLowerBoundScale || 1));
-
-                pointsToAdd.push(maxPoint);
             }
 
             // 画平均线
@@ -1279,21 +1280,41 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             }
             // console.log(this.highchartsOptions);
 
-            // 排序
-            pointsToAdd.sort((a, b) => a.x - b.x);
-
             // clear max/min
             let flags = this.chart.series.filter(s => s.type == 'flags');
             flags.forEach(s => s.remove());
 
-            // 画 max/min
-            if (!this.hideMarkers) {
+            // tag: 由于2021-03-19反馈发现有时候min不显示，原因未知，所以需要j将max/min分开两个serie
+            // 画 max
+            if (!this.hideMarkers && maxPoint) {
                 this.chart.addSeries({
                     type: 'flags',
-                    data: pointsToAdd,
+                    // data: pointsToAdd,
+                    data: [maxPoint],
                     enableMouseTracking: false,
                     fillColor: 'rgba(255,255,255,0.3)',
                     y: -35,
+                    shape: 'flag',
+                    stackDistance: 30, // 两个flags重叠时的间距
+                    states: {
+                        inactive: {
+                            opacity: 1, // 取消hover chart时，最大最小flags的透明化
+                        }
+                    }
+                    // stackDistance: 20,
+                }, false);
+            } else {
+                // DO NOT show markers
+            }
+
+            // 画 min
+            if (!this.hideMarkers && minPoint) {
+                this.chart.addSeries({
+                    type: 'flags',
+                    data: [minPoint],
+                    enableMouseTracking: false,
+                    fillColor: 'rgba(255,255,255,0.3)',
+                    y: -55,
                     shape: 'flag',
                     stackDistance: 30, // 两个flags重叠时的间距
                     states: {
