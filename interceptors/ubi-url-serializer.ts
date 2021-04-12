@@ -27,7 +27,6 @@ export class UbiUrlSerializer implements UrlSerializer {
     private _defaultUrlSerializer: DefaultUrlSerializer = new DefaultUrlSerializer();
 
     parse(url: string): UrlTree {
-        console.log(1122);
         // Encode "+" to "%2B"
         url = url.replace(/\+/gi, '%2B');
         // Use the default serializer.
@@ -35,7 +34,6 @@ export class UbiUrlSerializer implements UrlSerializer {
     }
 
     serialize(tree: UrlTree): string {
-        console.log(3344);
         return this._defaultUrlSerializer.serialize(tree).replace(/\+/gi, '%2B');
     }
 }
