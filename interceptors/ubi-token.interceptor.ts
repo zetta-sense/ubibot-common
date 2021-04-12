@@ -28,7 +28,8 @@ export class UbiTokenInterceptor implements HttpInterceptor {
                 Authorization: `Bearer ${this.authService.token()}`
             },
             setParams: {
-                token_id: `${this.authService.token()}`
+                token_id: `${this.authService.token()}`,
+                __portal: 'app', // add a portal flag to let server identify it
             }
         });
 
