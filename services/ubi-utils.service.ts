@@ -31,6 +31,8 @@ export declare type IFuncHideLoading = () => Promise<any>;
 export declare type IFuncSnack = (msg: string) => Promise<any>;
 export declare type IFuncPrompt = (msg: string, opts: any) => Promise<any>;
 export declare type IFuncConfirm = (msg: string, opts: any) => Promise<any>;
+export declare type IFunctionBoolean = () => boolean;
+export declare type IFunctionVoid = () => Promise<any>;
 
 export interface UbibotUtilsDialogAgent {
     alert: IFuncAlert;
@@ -40,6 +42,8 @@ export interface UbibotUtilsDialogAgent {
     snack: IFuncSnack;
     prompt: IFuncPrompt;
     confirm: IFuncConfirm;
+    closeAllDialogs: IFunctionVoid;
+    hasAnyPopupWindow: IFunctionBoolean;
 
     promptPhone?: IFuncPrompt;
     promptEmail?: IFuncPrompt;
@@ -101,6 +105,8 @@ export class UbiUtilsService {
                 },
                 confirm: (...args) => Promise.resolve(),
                 prompt: (...args) => Promise.resolve(),
+                closeAllDialogs: () => Promise.resolve(),
+                hasAnyPopupWindow: () => false,
             };
         }
     }
@@ -499,6 +505,15 @@ export class UbiUtilsService {
         }
 
         this.utilsDialogAgent.error(msgShow).then(() => null);
+    }
+
+    closeAllDialogs(): Promise<any> {
+        this.utilsDialogAgent.closeAllDialogs();
+        return Promise.resolve();
+    }
+
+    hasAnyPopupWindow(): boolean {
+        return this.utilsDialogAgent.hasAnyPopupWindow();
     }
 
     alert(msg: string, opts: any = {}): Promise<any> {
