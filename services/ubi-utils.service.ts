@@ -384,7 +384,7 @@ export class UbiUtilsService {
                     ret = `${this.parseError(new UbiError(EnumAppError.MOBILE_EXISTED))}`;
                 } else if (ubiServerError.errorCode == 'request_too_fast'
                     && ubiServerError.desp == 'please wait another 60 seconds') {
-                    ret = `${this.parseError(new UbiError(EnumAppError.SEND_SMS_CODE_COOLDOWN))}`;
+                    ret = `${this.parseError(new UbiError(EnumAppError.TOO_MANY_REQUESTS))}`;
                 } else if (ubiServerError.errorCode == 'invalid_code'
                     && ubiServerError.desp == 'sms_code is not correct') {
                     ret = `${this.parseError(new UbiError(EnumAppError.INVALID_SMS_CODE))}`;
@@ -647,7 +647,7 @@ export class UbiUtilsService {
         let ret: string;
         if (UbiChannel.IsFamilyUrban(productId)) {
             ret = serial.slice(1, 5);
-        } else if (UbiChannel.IsFamilyMS1(productId)) {
+        } else if (UbiChannel.IsFamilyMS1(productId)) { // deprecated
             ret = serial.slice(1, 5);
         }
         return ret;

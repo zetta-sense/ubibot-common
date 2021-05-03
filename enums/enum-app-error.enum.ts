@@ -40,7 +40,7 @@ export enum EnumAppError {
     INVALID_ACTIVATION_CODE = '1412',
     USERNAME_EXISTED = '1413',
     EMAIL_EXISTED = '1414',
-    SEND_SMS_CODE_COOLDOWN = '1415',
+    TOO_MANY_REQUESTS = '1415', // 由于验证码发送频繁和操作频繁的errorCode/desp一样，所以共用
     INVALID_SMS_CODE = '1416', // 手机验证码
     MOBILE_EXISTED = '1417',
     INVALID_SHARE_SELF = '1418',
@@ -65,6 +65,7 @@ export enum EnumAppError {
     RULE_NOT_RESOLVED = '1486',
     SCHEDULER_NOT_RESOLVED = '1487',
     PRODUCT_PROFILES_NOT_RESOLVED = '1488',
+    SERVER_ERROR_429 = '1489', // too many requests
 
     SERVICE_NOT_AVAILABLE = '2000', // 一般内部使用，不需要翻译
     UNKNOWN_TYPE = '2001', // 一般内部使用，不需要翻译

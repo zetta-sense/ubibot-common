@@ -17,8 +17,10 @@ import { UbibotCommonConfigService } from '../providers/ubibot-common-config.ser
 @Injectable()
 export class UbiTokenInterceptor implements HttpInterceptor {
 
-    constructor(private authService: UbiAuthService,
-        private ubibotCommonConfig: UbibotCommonConfigService) {
+    constructor(
+        private authService: UbiAuthService,
+        private ubibotCommonConfig: UbibotCommonConfigService,
+    ) {
     }
 
 
@@ -60,7 +62,13 @@ export class UbiTokenInterceptor implements HttpInterceptor {
                         ) {
                             this.authService.logout();
                             return throwError(new UbiError(EnumAppError.SERVER_FORCED_LOGOUT));
-                        }
+                        } /*else if (err.status === 429) {
+                            // status: 429, statusText: "Too Many Requests"
+                            setTimeout(() => {
+                                window.alert(`Server: code=${err.status}, msg=${err.statusText} \nPlease try again later.`);
+                            });
+                            return throwError(new UbiError(EnumAppError.SERVER_ERROR_429));
+                        }*/
                     }
 
                     if (err instanceof TimeoutError) {
