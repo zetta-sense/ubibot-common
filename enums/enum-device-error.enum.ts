@@ -20,6 +20,8 @@ export enum UbiDeviceErrorCode {
     CELLULAR_CGATT_FAILED = 404, // CGATT 开启失败
     CELLULAR_QIACT_FAILED = 405, // QIACT 开启失败
 
+    SEARCHING_MOBILE_NETWORK = 4100, // 正在入网
+
     // 30x
     WIFI_REASON_UNSPECIFIED = 301,
 
