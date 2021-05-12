@@ -13,14 +13,21 @@ import { UbiAuthService } from "../services/ubi-auth.service";
 import { UbiError } from '../errors/UbiError';
 import { EnumAppError } from '../enums/enum-app-error.enum';
 import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
+import { UbiAppPlatformService } from '../../../app/services/ubi-app-platform.service';
 
 @Injectable()
 export class UbiTokenInterceptor implements HttpInterceptor {
 
+    appVersion: string = 'N/A';
+
     constructor(
         private authService: UbiAuthService,
         private ubibotCommonConfig: UbibotCommonConfigService,
+        private ubiPlatform: UbiAppPlatformService,
     ) {
+        this.ubiPlatform.getAppVersion().subscribe((v) => {
+            this.appVersion = v;
+        });
     }
 
 
@@ -32,6 +39,7 @@ export class UbiTokenInterceptor implements HttpInterceptor {
             setParams: {
                 token_id: `${this.authService.token()}`,
                 __portal: 'app', // add a portal flag to let server identify it
+                __portal_ver: `${this.appVersion}`,
             }
         });
 
