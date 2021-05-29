@@ -465,7 +465,7 @@ export abstract class UbiChannel {
 
 
     /**
-     * 判断是否为sp1系列
+     * 判断是否为sp1系列，目前包括sp1 / sp1-4g
      *
      * @static
      * @param {string} productId

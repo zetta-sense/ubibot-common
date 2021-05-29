@@ -60,6 +60,10 @@ export class UbiTree<T> {
         return this.findNodeByPredicate(predicate, this.root);
     }
 
+    findByPredicateAt(predicate: (node: UbiTreeNode<T>) => boolean, node: UbiTreeNode<T>) {
+        return this.findNodeByPredicate(predicate, node);
+    }
+
     private findNodeByPredicate(predicate: (node: UbiTreeNode<T>) => boolean, node: UbiTreeNode<T>, depth: number = 0): UbiTreeNode<T> {
         if (predicate(node)) return node;
 
