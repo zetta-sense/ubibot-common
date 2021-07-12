@@ -7,8 +7,9 @@
     text-align: right;
 
     .current-value {
+        text-align: left;
         display: inline-block;
-        right: 10px;
+        left: 10px;
         top: 6px;
         position: absolute;
         color: #3880ff;
@@ -18,5 +19,4 @@
             font-size: 11px;
         }
     }
-
 }
