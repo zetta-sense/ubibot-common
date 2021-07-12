@@ -8,6 +8,8 @@ export interface UbiFeedPack {
     index?: number; // 仅用于排序
     visible?: boolean;
 
+    truncated?: boolean;
+
     key: string, // field1, ...
     title: string,
     field: UbiChannelFieldDef,
@@ -31,8 +33,17 @@ export interface UbiFeedPack {
 
 export enum UbiFeedsChartType {
     Line = 'line',
+
+    /**
+     * 一般用于开关，1显绿色
+     */
     XRange = 'xrange',
+
+    /**
+     * 一般用于人感，0显绿色
+     */
     XRangeReversedColor = 'xrange2',
+
     Fusion = 'fusion',
 }
 
@@ -104,6 +115,8 @@ export class UbiFeedsConverterEngine {
                 index: i,
                 visible: true,
 
+                truncated: resp.is_truncated,
+
                 key: fieldKey,
                 field: field,
                 title: fieldName,
@@ -154,16 +167,24 @@ export class UbiFeedsConverterEngine {
             // asc sort
             data.sort((a, b) => a.x - b.x);
 
-            const first = _.first(data);
+            const first: UbiDataChartPoint = _.first(data);
             // console.log(!!start, !_.find(data, { x: start }), (!first || first.x > start));
-            // tag: 插入开始点
+            // tag: 插入开始点，即根据查询时的starttime插入对应时间的开始点 (以确保轴跨度的一致)
             if (!isNaN(start) && !_.find(data, { x: start }) && (!first || first.x > start) && data.length) {
                 // console.log('adding first point');
                 data.unshift({ x: start, y: null });
             }
 
-            const last = _.last(data);
-            // tag: 插入结束点
+            // tag: 如果数据截断，插入截断点 (用于阻止点状态的延续，如XRange类)
+            if (pack.truncated) {
+                let lastTruncatedPoint: UbiDataChartPoint = _.last(data);
+                if (lastTruncatedPoint && lastTruncatedPoint.x < end) { // 最后一个点小于查询的endtime时添加截断点，让截断点到endtime部分显示为空数据段
+                    data.push({ x: lastTruncatedPoint.x + 1, y: null });
+                }
+            }
+
+            const last: UbiDataChartPoint = _.last(data);
+            // tag: 插入结束点，即根据查询时的endtime插入对应时间的结束点 (以确保轴跨度的一致)
             if (!isNaN(end) && !_.find(data, { x: end }) && (!last || last.x < end) && data.length) {
                 // console.log('adding last point');
                 data.push({ x: end, y: null });
