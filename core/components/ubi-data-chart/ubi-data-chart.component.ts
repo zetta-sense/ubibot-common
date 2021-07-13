@@ -354,7 +354,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     @Input() chartType: UbiFeedsChartType;
 
     /**
-     * Paint max if not null.
+     * Paint max y point if not null.
      *
      * @type {UbiDataChartPoint}
      * @memberof UbiDataChartComponent
@@ -363,7 +363,7 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
 
     /**
-     * Paint min if not null.
+     * Paint min y point if not null.
      *
      * @type {UbiDataChartPoint}
      * @memberof UbiDataChartComponent
@@ -380,6 +380,22 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
     @Input() average: number;
 
     @Input() dateFormat: string;
+
+    /**
+     * X-axis start.
+     *
+     * @type {Date}
+     * @memberof UbiDataChartComponent
+     */
+    @Input() dateFrom: Date;
+
+    /**
+     * X-axis end.
+     *
+     * @type {Date}
+     * @memberof UbiDataChartComponent
+     */
+    @Input() dateTo: Date;
 
     @Input() hideMarkers: boolean;
 
@@ -1022,6 +1038,20 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
         this.chart.update(newOpts, false, true);
     }
 
+    private convertDateToMinX(dateFrom: Date, dateTo: Date): number {
+        let duration = dateTo.getTime() - dateFrom.getTime();
+        let delta = Math.round(duration * 0.01);
+        let v = dateFrom.getTime() - delta;
+        return v;
+    }
+
+    private convertDateToMaxX(dateFrom: Date, dateTo: Date): number {
+        let duration = dateTo.getTime() - dateFrom.getTime();
+        let delta = Math.round(duration * 0.01);
+        let v = dateTo.getTime() + delta;
+        return v;
+    }
+
     /**
      * 用于开关/人感状态的画图xrange/xrange2
      *
@@ -1077,6 +1107,18 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
             // newDataPoints = newDataPoints.splice(0, 20); // fixme: for debug, remove later
 
+            // 设置x轴的跨度
+            if (this.dateFrom != null && !isNaN(this.dateFrom.getTime())
+                && this.dateTo != null && !isNaN(this.dateTo.getTime())) {
+                (this.highchartsOptions.xAxis as any).min = this.convertDateToMinX(this.dateFrom, this.dateTo);
+                (this.highchartsOptions.xAxis as any).max = this.convertDateToMaxX(this.dateFrom, this.dateTo);
+            }
+
+            let plotBands: Highcharts.AxisPlotBandsOptions[] = this.searchPlotBandsForXRangeLike(newDataPoints);
+            if (plotBands != null && plotBands.length) {
+                (this.highchartsOptions.xAxis as any).plotBands = plotBands;
+            }
+
             // 数据分段
             for (let i = 0; i < newDataPoints.length; i++) {
                 const segment: UbiDataChartPointForXRange = newDataPoints[i];
@@ -1098,11 +1140,11 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
                     segmentData.data.push(segmentForHighchart);
                 }
 
-                if (i == 0) {
-                    (this.highchartsOptions.xAxis as any).min = segment.x;
-                } else if (i == newDataPoints.length - 1) {
-                    (this.highchartsOptions.xAxis as any).max = segment.x2;
-                }
+                // if (i == 0) {
+                //     (this.highchartsOptions.xAxis as any).min = this.dateFrom ? this.dateFrom.getTime() : segment.x;
+                // } else if (i == newDataPoints.length - 1) {
+                //     (this.highchartsOptions.xAxis as any).max = this.dateTo ? this.dateTo.getTime() : segment.x2;
+                // }
             }
             this.chart.addSeries(segmentData);
 
@@ -1110,7 +1152,6 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
             this.chart.tooltip.update({ enabled: true });
         });
     }
-
 
     /**
      * 用于一般线段型单数据画图（温度等）
@@ -1123,6 +1164,18 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
         this.data.forEach((serie: UbiDataChartSerie) => {
             let existedSerie: any = _.find(this.highchartsOptions.series, { name: serie.name });
+
+            // 设置x轴的跨度
+            if (this.dateFrom != null && !isNaN(this.dateFrom.getTime())
+                && this.dateTo != null && !isNaN(this.dateTo.getTime())) {
+                (this.highchartsOptions.xAxis as any).min = this.convertDateToMinX(this.dateFrom, this.dateTo);
+                (this.highchartsOptions.xAxis as any).max = this.convertDateToMaxX(this.dateFrom, this.dateTo);
+            }
+
+            let plotBands: Highcharts.AxisPlotBandsOptions[] = this.searchPlotBands(serie.data, this.dateFrom, this.dateTo);
+            if (plotBands != null && plotBands.length) {
+                (this.highchartsOptions.xAxis as any).plotBands = plotBands;
+            }
 
             if (!serie.data) {
                 console.warn('Serie.data should not be null.');
@@ -1180,6 +1233,52 @@ export class UbiDataChartComponent implements OnInit, AfterViewInit, OnDestroy, 
 
             }
         });
+    }
+
+    private searchPlotBandsForXRangeLike(segments: UbiDataChartPointForXRange[]): Highcharts.AxisPlotBandsOptions[] {
+        let ret = [];
+
+        for (let i = 0; i < segments.length; i++) {
+            let segment = segments[i];
+            if (segment.y == null) {
+                let plotBand: Highcharts.AxisPlotBandsOptions = {
+                    from: segment.x,
+                    to: segment.x2,
+                    // color: 'grey',
+                };
+                ret.push(plotBand);
+            }
+        }
+
+        // console.log('----> PlotBands:');
+        // console.log(ret);
+
+        return ret;
+    }
+
+
+    private searchPlotBands(points: UbiDataChartPoint[], dateFrom: Date, dateTo: Date): Highcharts.AxisPlotBandsOptions[] {
+        let ret = [];
+
+        for (let i = 0; i < points.length; i++) {
+            let point = points[i];
+            if (point.y == null) {
+                let prevIdx = i - 1;
+                let nextIdx = i + 1;
+
+                let prevPoint = points[prevIdx];
+                let nextPoint = points[nextIdx];
+
+                let plotBand: Highcharts.AxisPlotBandsOptions = {
+                    from: prevPoint ? prevPoint.x : dateFrom.getTime(),
+                    to: nextPoint ? nextPoint.x : dateTo.getTime(),
+                    // color: 'grey',
+                };
+                ret.push(plotBand);
+            }
+        }
+
+        return ret;
     }
 
     private determineDecimalPlace(): number {

@@ -167,15 +167,16 @@ export class UbiFeedsConverterEngine {
             // asc sort
             data.sort((a, b) => a.x - b.x);
 
-            const first: UbiDataChartPoint = _.first(data);
-            // console.log(!!start, !_.find(data, { x: start }), (!first || first.x > start));
-            // tag: 插入开始点，即根据查询时的starttime插入对应时间的开始点 (以确保轴跨度的一致)
-            if (!isNaN(start) && !_.find(data, { x: start }) && (!first || first.x > start) && data.length) {
-                // console.log('adding first point');
-                data.unshift({ x: start, y: null });
-            }
+            // tag: Deprecated
+            // const first: UbiDataChartPoint = _.first(data);
+            // // console.log(!!start, !_.find(data, { x: start }), (!first || first.x > start));
+            // // tag: 插入开始点，即根据查询时的starttime插入对应时间的开始点 (以确保轴跨度的一致)
+            // if (!isNaN(start) && !_.find(data, { x: start }) && (!first || first.x > start) && data.length) {
+            //     // console.log('adding first point');
+            //     data.unshift({ x: start, y: null });
+            // }
 
-            // tag: 如果数据截断，插入截断点 (用于阻止点状态的延续，如XRange类)
+            // tag: 如果数据截断，插入截断点 (用于标记截断位置)
             if (pack.truncated) {
                 let lastTruncatedPoint: UbiDataChartPoint = _.last(data);
                 if (lastTruncatedPoint && lastTruncatedPoint.x < end) { // 最后一个点小于查询的endtime时添加截断点，让截断点到endtime部分显示为空数据段
@@ -183,12 +184,13 @@ export class UbiFeedsConverterEngine {
                 }
             }
 
-            const last: UbiDataChartPoint = _.last(data);
-            // tag: 插入结束点，即根据查询时的endtime插入对应时间的结束点 (以确保轴跨度的一致)
-            if (!isNaN(end) && !_.find(data, { x: end }) && (!last || last.x < end) && data.length) {
-                // console.log('adding last point');
-                data.push({ x: end, y: null });
-            }
+            // tag: Deprecated
+            // const last: UbiDataChartPoint = _.last(data);
+            // // tag: 插入结束点，即根据查询时的endtime插入对应时间的结束点 (以确保轴跨度的一致)
+            // if (!isNaN(end) && !_.find(data, { x: end }) && (!last || last.x < end) && data.length) {
+            //     // console.log('adding last point');
+            //     data.push({ x: end, y: null });
+            // }
 
 
             const dataFiltered = _.filter(data, (o: UbiDataChartPoint) => o.y != null); // 去除y空值点
@@ -211,9 +213,8 @@ export class UbiFeedsConverterEngine {
             // console.log(data);
 
             const dataConverted: UbiDataChartPoint[] = [];
-            let lastPointXRange: UbiDataChartPointForXRange;
             if (chartType === UbiFeedsChartType.XRange || chartType === UbiFeedsChartType.XRangeReversedColor) {
-
+                let lastPointXRange: UbiDataChartPointForXRange;
                 let pointXRange: UbiDataChartPointForXRange;
 
                 let lastX = null;
@@ -249,10 +250,12 @@ export class UbiFeedsConverterEngine {
                     if (lastPointXRange && point.y == lastPointXRange.y) {
                         pointXRange.x2 = point.x;
                     } else {
+                        let x2 = end; // 初始化segment时，默认延续到查询的endtime，在读取下一个point时再更新这个x2
+
                         pointXRange = {
                             // x: lastPoint ? lastPoint.x : point.x,
                             x: point.x,
-                            x2: point.x,
+                            x2: x2,
                             y: point.y,
                         };
                         dataConverted.push(pointXRange);
@@ -286,6 +289,7 @@ export class UbiFeedsConverterEngine {
                 pack.series[0].data = dataConverted;
                 // console.warn('converted:', dataConverted);
 
+                // 因为xrange没有下述属性，reset to undefined
                 pack.sum = undefined;
                 pack.avg = undefined;
                 pack.maxPoint = undefined;
