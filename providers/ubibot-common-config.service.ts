@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 import { DecimalPlaceType } from '../entities/ubi-channel-field-view-option.entity';
+import { AppConfig } from '../../../environments/environment';
 
 @Injectable()
 export class UbibotCommonConfigService {
 
-    public DeployAgent = 'cn'; // cn,io,putfarm
+    public DeployAgent = `${AppConfig.DeployAgent}`; // cn,io,putfarm
     public NoSVGLogoAnimation = false;
 
     public EnableServiceFCM = true;
 
     public LogoFile = 'assets/logo.png';
     public LogoFileLogin = 'assets/images/login-logo-ubibot.png';
+    public LogoFileLoading = 'assets/images/loading-ubibot.gif';
 
     public readonly DatabaseVersion = 1;
     public readonly DatabaseName = 'UbiDatabase';
@@ -155,10 +157,13 @@ export class UbibotCommonConfigService {
             this.TermsLink = this._TermsLink;
         }
 
-        if (this.DeployAgent !== 'cn' && this.DeployAgent !== 'io') {
-            this.LogoFile = `assets/images/agent-logo/${this.DeployAgent}/icon.png`;
+        // 目前target就两个 ubibot / iot-console
+        if (AppConfig.Target == 'iot-console') {
+            this.LogoFile = `assets/images/agent/iot/logo.png`;
+            this.LogoFileLogin = `assets/images/agent/iot/login-logo.png`;
+            this.LogoFileLoading = `assets/images/agent/iot/loading.gif`;
             this.NoSVGLogoAnimation = true;
-        } else {
+        } else { // as 'ubibot'
             this.NoSVGLogoAnimation = false;
         }
 
@@ -168,7 +173,8 @@ export class UbibotCommonConfigService {
             this.DefaultDateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
             this.DefaultTempScale = 'celsius';
         } else {
-            // tag: 一定要带有else，因为constructor的时候可能已经将它设置为false，后续更新为非cn时再将无法设为true
+            this.PreferredLanguage = 'en-GB';
+            // tag: 一定要带有else，因为constructor的时候可能已经将它设置为false
             this.EnableServiceFCM = true;
             this.DefaultDateTimeFormat = 'MM/dd/yyyy HH:mm:ss';
             this.DefaultTempScale = 'fahrenheit';
@@ -178,6 +184,7 @@ export class UbibotCommonConfigService {
             this.PreferredLanguage = 'en-GB';
         }
 
+        // tag: Deprecated
         if (this.DeployAgent === 'putfarm') {
             this.PreferredLanguage = 'ja-JP';
         }
