@@ -287,7 +287,12 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     static IsAlertBuzzerSupported(productId: string): boolean {
-        return true;
+        if (UbiChannel.IsFamilyGS1(productId)
+            || UbiChannel.IsFamilyGS2(productId)
+            || UbiChannel.IsFamilyWS1P(productId)) {
+            return true;
+        }
+        return false;
     }
 
     isAlertBuzzerSupported() {
@@ -303,7 +308,8 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     static IsAlertSoundLightSupported(productId: string): boolean {
-        if (UbiChannel.IsFamilyGS1(productId)) {
+        if (UbiChannel.IsFamilyGS1(productId)
+            || UbiChannel.IsFamilyGS2(productId)) {
             return true;
         }
         return false;
@@ -311,6 +317,26 @@ export abstract class UbiChannel {
 
     isAlertSoundLightSupported() {
         return UbiChannel.IsAlertSoundLightSupported(this.product_id);
+    }
+
+    /**
+     * 是否支持触发开关报警
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsAlertSetStateSupported(productId: string): boolean {
+        if (UbiChannel.IsFamilySP1(productId)
+            || UbiChannel.IsFamilyCB1(productId)) {
+            return true;
+        }
+        return false;
+    }
+
+    isAlertSetStateSupported() {
+        return UbiChannel.IsAlertSetStateSupported(this.product_id);
     }
 
     /**
@@ -443,7 +469,8 @@ export abstract class UbiChannel {
         if (productId === EnumBasicProductId.WS1P ||
             productId === EnumBasicProductId.WS1PA ||
             productId === EnumBasicProductId.WS1P2G ||
-            productId === EnumBasicProductId.WS1P4G) {
+            productId === EnumBasicProductId.WS1P4G ||
+            productId === EnumBasicProductId.WS1PC) {
             return true;
         }
         return false;
@@ -498,6 +525,16 @@ export abstract class UbiChannel {
         return UbiChannel.IsFamilyGS2(this.product_id);
     }
 
+    static IsFamilyCB1(productId: string): boolean {
+        if (productId === EnumBasicProductId.CB1) {
+            return true;
+        }
+        return false;
+    }
+
+    isFamilyCB1(): boolean {
+        return UbiChannel.IsFamilyCB1(this.product_id);
+    }
 
     /**
      * 判断是否为sp1系列，目前包括sp1 / sp1-4g
@@ -624,7 +661,11 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     isSupportRuleCommand(): boolean {
-        return this.isFamilyWS1P() || this.isFamilyGS1();
+        return this.isFamilyWS1P()
+            || this.isFamilyGS1()
+            || this.isFamilyGS2()
+            || this.isFamilySP1()
+            || this.isFamilyCB1();
     }
 
     /**
