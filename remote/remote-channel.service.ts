@@ -80,6 +80,8 @@ export enum UbiFeedType {
 @Injectable()
 export class RemoteChannelService {
 
+    static channelsCache: UbiChannel[];
+
     constructor(
         private http: HttpClient,
         private datePipe: DatePipe,
@@ -91,17 +93,25 @@ export class RemoteChannelService {
      * Get my channels.
      * 任何时候remote service都只返回实体，不返回dao，由于要保证dao的稳定单一，dao应该交由resolver或其它处理器创建
      *
+     * @param {boolean} [fromCache=false] 是否使用缓存channels，若缓存为null则调用远程, 默认false
      * @returns {Observable<UbiChannel[]>}
      * @memberof RemoteChannelService
      */
-    list(): Observable<UbiChannel[]> {
+    list(fromCache: boolean = false): Observable<UbiChannel[]> {
         let url = `${this.ubibotCommonConfig.EndPoint}/channels`;
-        return this.http.get(url).pipe(
-            // map((resp: any) => resp.channels),
-            concatMap((resp: any) => {
-                return of(this.extractChannels(resp));
-            }),
-        );//.subscribe(resp => resp)
+
+        if (fromCache && RemoteChannelService.channelsCache != null) {
+            return of(RemoteChannelService.channelsCache);
+        } else {
+            return this.http.get(url).pipe(
+                // map((resp: any) => resp.channels),
+                concatMap((resp: any) => {
+                    let ret = this.extractChannels(resp);
+                    RemoteChannelService.channelsCache = ret;
+                    return of(ret);
+                }),
+            );//.subscribe(resp => resp)
+        }
     }
 
     /**

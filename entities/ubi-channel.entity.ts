@@ -279,6 +279,41 @@ export abstract class UbiChannel {
     }
 
     /**
+     * 是否支持蜂鸣器报警
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsAlertBuzzerSupported(productId: string): boolean {
+        return true;
+    }
+
+    isAlertBuzzerSupported() {
+        return UbiChannel.IsAlertBuzzerSupported(this.product_id);
+    }
+
+    /**
+     * 是否支持声光报警
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsAlertSoundLightSupported(productId: string): boolean {
+        if (UbiChannel.IsFamilyGS1(productId)) {
+            return true;
+        }
+        return false;
+    }
+
+    isAlertSoundLightSupported() {
+        return UbiChannel.IsAlertSoundLightSupported(this.product_id);
+    }
+
+    /**
      *
      * 是否支持震动传感
      *

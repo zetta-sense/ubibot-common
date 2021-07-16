@@ -48,6 +48,9 @@ export interface UbibotUtilsDialogAgent {
     promptPhone?: IFuncPrompt;
     promptEmail?: IFuncPrompt;
     promptOption?: IFuncPrompt;
+
+    promptAlertOfCommand?: IFuncPrompt;
+    promptMyChannels?: IFuncPrompt;
 }
 
 export interface UbiQRCodeResult {
@@ -530,6 +533,14 @@ export class UbiUtilsService {
 
     promptPhone(msg: string, opts: any = {}): Promise<any> {
         return this.utilsDialogAgent.promptPhone(msg, opts);
+    }
+
+    promptAlertOfCommand(msg: string, opts: any = {}): Promise<any> {
+        return this.utilsDialogAgent.promptAlertOfCommand(msg, opts);
+    }
+
+    promptMyChannels(msg: string, opts: any = {}): Promise<any> {
+        return this.utilsDialogAgent.promptMyChannels(msg, opts);
     }
 
     promptEmail(msg: string, opts: any = {}): Promise<any> {
