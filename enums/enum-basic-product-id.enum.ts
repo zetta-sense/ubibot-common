@@ -1,6 +1,9 @@
 export enum EnumBasicProductId {
     WS1 = 'ubibot-ws1',
     WS1_CN = 'ubibot-ws1-cn',
+    WS1A = 'ubibot-ws1a', // 2021-09-11
+    WS1A_CN = 'ubibot-ws1a-cn', // 2021-09-11
+
     WS1P = 'ubibot-ws1p',
     WS1PC = 'ubibot-ws1pc', // 2021-07-17
 
@@ -13,6 +16,11 @@ export enum EnumBasicProductId {
     GS1_AL2G1RS = 'ubibot-gs1-al2g1rs',
     GS1_AL4G1RS = 'ubibot-gs1-al4g1rs',
     GS1_PL4G1RS = 'ubibot-gs1-pl4g1rs',
+
+    GS1_AETH1RS_1DS = 'ubibot-gs1-aeth1rs-1ds', // 2021-09-11
+    GS1_AL2G1RS_1DS = 'ubibot-gs1-al2g1rs-1ds', // 2021-09-11
+    GS1_AL4G1RS_1DS = 'ubibot-gs1-al4g1rs-1ds', // 2021-09-11
+    GS1_PL4G1RS_1DS = 'ubibot-gs1-pl4g1rs-1ds', // 2021-09-11
 
     GS2_EL = 'ubibot-gs2-el',
     GS2_EL2G = 'ubibot-gs2-el2g',

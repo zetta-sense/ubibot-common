@@ -446,7 +446,11 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     static IsFamilyWS1(productId: string): boolean {
-        if (productId === EnumBasicProductId.WS1 || productId === EnumBasicProductId.WS1_CN) {
+        if (productId === EnumBasicProductId.WS1
+            || productId === EnumBasicProductId.WS1_CN
+            || productId === EnumBasicProductId.WS1A
+            || productId === EnumBasicProductId.WS1A_CN
+        ) {
             return true;
         }
         return false;
@@ -456,6 +460,27 @@ export abstract class UbiChannel {
         return UbiChannel.IsFamilyWS1(this.product_id);
     }
 
+    /**
+     * 子分支Family WS1A
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsSubFamilyWS1A(productId: string): boolean {
+        if (this.IsFamilyWS1(productId)
+            && (productId === EnumBasicProductId.WS1A
+                || productId === EnumBasicProductId.WS1A_CN
+            )) {
+            return true;
+        }
+        return false;
+    }
+
+    isSubFamilyWS1A(): boolean {
+        return UbiChannel.IsSubFamilyWS1A(this.product_id);
+    }
 
     /**
      * 判断是否为ws1p系列
@@ -490,11 +515,16 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     static IsFamilyGS1(productId: string): boolean {
-        if (productId === EnumBasicProductId.GS1_A ||
-            productId === EnumBasicProductId.GS1_AETH1RS ||
-            productId === EnumBasicProductId.GS1_AL2G1RS ||
-            productId === EnumBasicProductId.GS1_AL4G1RS ||
-            productId === EnumBasicProductId.GS1_PL4G1RS) {
+        if (productId === EnumBasicProductId.GS1_A
+            || productId === EnumBasicProductId.GS1_AETH1RS
+            || productId === EnumBasicProductId.GS1_AL2G1RS
+            || productId === EnumBasicProductId.GS1_AL4G1RS
+            || productId === EnumBasicProductId.GS1_PL4G1RS
+            || productId === EnumBasicProductId.GS1_AETH1RS_1DS
+            || productId === EnumBasicProductId.GS1_AL2G1RS_1DS
+            || productId === EnumBasicProductId.GS1_AL4G1RS_1DS
+            || productId === EnumBasicProductId.GS1_PL4G1RS_1DS
+        ) {
             return true;
         }
         return false;
