@@ -247,6 +247,9 @@ export abstract class UbiChannel {
             || productId === EnumBasicProductId.GS1_AL2G1RS
             || productId === EnumBasicProductId.GS1_AL4G1RS
             || productId === EnumBasicProductId.GS1_PL4G1RS
+            || productId === EnumBasicProductId.GS1_AL2G1RS_1DS
+            || productId === EnumBasicProductId.GS1_AL4G1RS_1DS
+            || productId === EnumBasicProductId.GS1_PL4G1RS_1DS
             // gs2
             || productId === EnumBasicProductId.GS2_EL2G
             || productId === EnumBasicProductId.GS2_EL4G
@@ -361,6 +364,7 @@ export abstract class UbiChannel {
 
     static IsEthSupported(productId: string): boolean {
         if (productId === EnumBasicProductId.GS1_AETH1RS
+            || productId === EnumBasicProductId.GS1_AETH1RS_1DS
             || productId === EnumBasicProductId.MS1
             || productId === EnumBasicProductId.MS1P) {
             return true;
