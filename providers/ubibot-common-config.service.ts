@@ -196,6 +196,10 @@ export class UbibotCommonConfigService {
         return this.DeployAgent === 'cn';
     }
 
+    isUbibotApp(): boolean {
+        return AppConfig.Target == 'ubibot';
+    }
+
     getMqttEndPoint(): string {
         return this.EndPoint.replace(/(https|http):\/\/(api|api-cdn)\./, 'ws://mqtt.') + ':8083/mqtt';
     }
