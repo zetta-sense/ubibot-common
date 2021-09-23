@@ -389,7 +389,10 @@ export class UbiUtilsService {
                     && ubiServerError.desp == 'please wait another 60 seconds') {
                     ret = `${this.parseError(new UbiError(EnumAppError.TOO_MANY_REQUESTS))}`;
                 } else if (ubiServerError.errorCode == 'invalid_code'
-                    && ubiServerError.desp == 'sms_code is not correct') {
+                    && (
+                        ubiServerError.desp == 'sms_code is not correct'
+                        || ubiServerError.desp == 'sms_code is not correct or mobile number not match'
+                    )) {
                     ret = `${this.parseError(new UbiError(EnumAppError.INVALID_SMS_CODE))}`;
                 } else if (ubiServerError.errorCode == 'permission_denied'
                     && ubiServerError.desp == 'invalid user_id or password') {
