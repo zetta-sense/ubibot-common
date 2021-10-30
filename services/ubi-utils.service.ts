@@ -146,6 +146,11 @@ export class UbiUtilsService {
         return `last_login_username-${this.commonConfigService.DeployAgent}`;
     }
 
+    private getStorageKeyLastHost() {
+        // 不需要区分agent
+        return `last_host`;
+    }
+
     private getStorageKeyCurrentAgent() {
         return `currentAgent`;
     }
@@ -271,6 +276,14 @@ export class UbiUtilsService {
         }
     }
 
+    saveLastHost(saveKey?: string) {
+        if (saveKey) {
+            this.ubiStorage.save(this.getStorageKeyLastHost(), saveKey);
+        } else {
+            this.ubiStorage.remove(this.getStorageKeyLastHost());
+        }
+    }
+
     saveCurrentAgent() {
         const agent = this.commonConfigService.DeployAgent;
         this.ubiStorage.save(this.getStorageKeyCurrentAgent(), agent);
@@ -318,6 +331,10 @@ export class UbiUtilsService {
 
     getLastLogin() {
         return this.ubiStorage.get(this.getStorageKeyLastLogin()) || '';
+    }
+
+    getLastHost() {
+        return this.ubiStorage.get(this.getStorageKeyLastHost()) || '';
     }
 
 

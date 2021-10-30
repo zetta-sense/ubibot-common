@@ -72,7 +72,7 @@ export class UbiTrimDirective {
      */
     @HostListener("change", ["$event.type", "$event.target.value"])
     onBlur(event: string, value: string): void {
-        console.log('it change...');
+        // console.log('it change...');
 
         // console.log(this);
 

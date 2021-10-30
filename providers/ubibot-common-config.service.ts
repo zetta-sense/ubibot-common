@@ -6,6 +6,7 @@ import { AppConfig } from '../../../environments/environment';
 @Injectable()
 export class UbibotCommonConfigService {
 
+    public Private = AppConfig.Private == true;
     public DeployAgent = `${AppConfig.DeployAgent}`; // cn,io,putfarm
     public NoSVGLogoAnimation = false;
 
@@ -139,57 +140,80 @@ export class UbibotCommonConfigService {
 
     /**
      * If DeployAgent is modified, it must call update() to update config.
+     *
+     * @param {string} [customEndPoint] 公网时不填，私有化时填写目标host以更新endpoint相关
+     * @memberof UbibotCommonConfigService
      */
-    update() {
-        let ioAgentList = [
-            'io',
-            'putfarm'
-        ];
+    update(customEndPoint?: string) {
 
         // tag: 判断使用哪个server
-        if (ioAgentList.indexOf(this.DeployAgent) !== -1) {
-            this.EndPoint = this._EndPoint.replace(/\.cn/, '.com');
-            this.WebLinkAboutUs = this._WebLinkAboutUs.replace(/\.cn/, '.com');
-            this.TermsLink = this._TermsLink.replace(/\.cn/, '.com');
-        } else {
-            this.EndPoint = this._EndPoint;
-            this.WebLinkAboutUs = this._WebLinkAboutUs;
-            this.TermsLink = this._TermsLink;
+        if (customEndPoint != null) { // 私有化
+            if (/^(http|https):/.test(customEndPoint)) { // host with http/https protocol
+                this.EndPoint = `${customEndPoint}`.replace(/[\/]+$/, '');
+                this.WebLinkAboutUs = this._WebLinkAboutUs.replace(/\.cn/, '.com'); // 没必要处理, 以com作为默认
+                this.TermsLink = this._TermsLink.replace(/\.cn/, '.com'); // 没必要处理, 以com作为默认
+            } else { // host without http/https protocol, use http as default
+                this.EndPoint = `http://${customEndPoint}`.replace(/[\/]+$/, '');
+                // this.EndPoint = this._EndPoint.replace(/:\/\/.+\//, `://${customEndPoint}/`);//.replace(/^https:/, 'http:');
+                this.WebLinkAboutUs = this._WebLinkAboutUs.replace(/\.cn/, '.com'); // 没必要处理, 以com作为默认
+                this.TermsLink = this._TermsLink.replace(/\.cn/, '.com'); // 没必要处理, 以com作为默认
+            }
+        } else { // 公网ubibot
+            let ioAgentList = [
+                'io',
+                'putfarm'
+            ];
+
+            if (ioAgentList.indexOf(this.DeployAgent) !== -1) { // io
+                this.EndPoint = this._EndPoint.replace(/\.cn/, '.com');
+                this.WebLinkAboutUs = this._WebLinkAboutUs.replace(/\.cn/, '.com');
+                this.TermsLink = this._TermsLink.replace(/\.cn/, '.com');
+            } else { // cn
+                this.EndPoint = this._EndPoint;
+                this.WebLinkAboutUs = this._WebLinkAboutUs;
+                this.TermsLink = this._TermsLink;
+            }
+
+            // 目前target就两个 ubibot / iot-console
+            if (AppConfig.Target == 'iot-console') {
+                this.LogoFile = `assets/images/agent/iot/logo.png`;
+                this.LogoFileLogin = `assets/images/agent/iot/login-logo.png`;
+                this.LogoFileLoading = `assets/images/agent/iot/loading.gif`;
+                this.NoSVGLogoAnimation = true;
+            } else { // as 'ubibot'
+                this.NoSVGLogoAnimation = false;
+            }
+
+            if (this.DeployAgent === 'cn') {
+                this.PreferredLanguage = 'zh-CN';
+                this.EnableServiceFCM = false;
+                this.DefaultDateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
+                this.DefaultTempScale = 'celsius';
+            } else {
+                this.PreferredLanguage = 'en-GB';
+                // tag: 一定要带有else，因为constructor的时候可能已经将它设置为false
+                this.EnableServiceFCM = true;
+                this.DefaultDateTimeFormat = 'MM/dd/yyyy HH:mm:ss';
+                this.DefaultTempScale = 'fahrenheit';
+            }
+
+            if (this.DeployAgent === 'io') {
+                this.PreferredLanguage = 'en-GB';
+            }
+
+            // tag: Deprecated
+            if (this.DeployAgent === 'putfarm') {
+                this.PreferredLanguage = 'ja-JP';
+            }
         }
 
-        // 目前target就两个 ubibot / iot-console
-        if (AppConfig.Target == 'iot-console') {
-            this.LogoFile = `assets/images/agent/iot/logo.png`;
-            this.LogoFileLogin = `assets/images/agent/iot/login-logo.png`;
-            this.LogoFileLoading = `assets/images/agent/iot/loading.gif`;
-            this.NoSVGLogoAnimation = true;
-        } else { // as 'ubibot'
-            this.NoSVGLogoAnimation = false;
-        }
 
-        if (this.DeployAgent === 'cn') {
-            this.PreferredLanguage = 'zh-CN';
-            this.EnableServiceFCM = false;
-            this.DefaultDateTimeFormat = 'yyyy-MM-dd HH:mm:ss';
-            this.DefaultTempScale = 'celsius';
-        } else {
-            this.PreferredLanguage = 'en-GB';
-            // tag: 一定要带有else，因为constructor的时候可能已经将它设置为false
-            this.EnableServiceFCM = true;
-            this.DefaultDateTimeFormat = 'MM/dd/yyyy HH:mm:ss';
-            this.DefaultTempScale = 'fahrenheit';
-        }
-
-        if (this.DeployAgent === 'io') {
-            this.PreferredLanguage = 'en-GB';
-        }
-
-        // tag: Deprecated
-        if (this.DeployAgent === 'putfarm') {
-            this.PreferredLanguage = 'ja-JP';
-        }
 
         // console.log('-------> ', this.DeployAgent, this.PreferredLanguage);
+    }
+
+    isPrivate() {
+        return this.Private;
     }
 
     isServeCN() {
@@ -201,6 +225,10 @@ export class UbibotCommonConfigService {
     }
 
     getMqttEndPoint(): string {
-        return this.EndPoint.replace(/(https|http):\/\/(api|api-cdn)\./, 'ws://mqtt.') + ':8083/mqtt';
+        if (this.isPrivate()) {
+            return this.EndPoint.replace(/(https|http):\/\//, 'ws://') + ':8083/mqtt';
+        } else {
+            return this.EndPoint.replace(/(https|http):\/\/(api|api-cdn)\./, 'ws://mqtt.') + ':8083/mqtt';
+        }
     }
 }
