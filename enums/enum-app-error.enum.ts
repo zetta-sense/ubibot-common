@@ -3,6 +3,7 @@ export enum EnumAppError {
 
     DEVICE_COMMUNICATE_EXCEPTION = '100', // communicate error
     DEVICE_RESPONSE_PARSING_ERROR = '101', // response parsing error
+    AP_MODE_NETWORK_CHANGED = '102', // 移动设备与设备ap连接在中途产生了变更
     MALFORMED_JSON = '501', // malformed JSON
     FILE_NOT_EXIST = '502', // file not exist
     MALFORMED_XML = '503', // malformed XML

@@ -33,6 +33,9 @@ export class UbiChannelAvatarComponent implements OnInit, OnChanges {
     rounded = false;
 
     @Input()
+    bordered = false;
+
+    @Input()
     channel: UbiChannel;
 
     @Input()

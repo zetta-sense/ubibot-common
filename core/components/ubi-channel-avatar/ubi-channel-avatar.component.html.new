@@ -1,0 +1,54 @@
+<!-- Generated template for the MeAvatarComponent component -->
+<span class="avatar-small"
+      [ngClass]="{'grayscale': !channel?.isOnline()}"
+      [ngStyle]="{'width.px': size, 'height.px': size}">
+
+    <!-- <img class=""
+         [ngClass]="{'rounded': rounded}"
+         ubi-lazy-img
+         default-src="assets/img-empty.png"
+         [data-src]="avatarImage | resourceUrl: size : true"> -->
+
+    <!-- tag: 既然目前使用了virtualScroll，也就没必要使用ubi-lazy-img，因此comment掉来提高performance -->
+    <img class=""
+         [ngClass]="{'rounded': rounded, 'bordered': bordered}"
+         src="assets/img-empty.png"
+         [src]="avatarImage | resourceUrl: size : true">
+
+    <div class="status-bar vertical"
+         [ngClass]="{
+             'right': statusPosition === 'right',
+             'left': statusPosition === 'left'
+            }"
+         *ngIf="!hideStatus">
+
+        <span class="status-icon"
+              *ngIf="channel?.hasSSID()">
+            <fa-icon [icon]="iconWiFi"></fa-icon>
+        </span>
+
+        <span class="status-icon"
+              *ngIf="channel?.hasICCID()">
+            <fa-icon [icon]="iconGSM"></fa-icon>
+        </span>
+
+        <span class="status-icon"
+              *ngIf="channel?.isUsbWorking()">
+            <fa-icon [icon]="iconUSB"></fa-icon>
+        </span>
+
+        <!-- <i class="material-icons status-icon"
+           *ngIf="channel?.hasSSID()">
+            network_wifi
+        </i>
+        <i class="material-icons status-icon"
+           *ngIf="channel?.hasICCID()">
+            network_cell
+        </i>
+        <i class="material-icons status-icon"
+           *ngIf="channel?.isUsbWorking()">
+            usb
+        </i> -->
+    </div>
+</span>
+<!-- <span style="display: none;">{{avatarImage | resourceUrl: size : true}}</span> -->

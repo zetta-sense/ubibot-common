@@ -1,0 +1,87 @@
+:host(ubi-channel-avatar) {
+    // text-align: center;
+    // position: relative;
+    display: contents;
+
+    .avatar-small {
+        vertical-align: text-bottom;
+        display: inline-block;
+        box-sizing: content-box;
+        position: relative;
+
+        img {
+            // background-color: transparent;
+            background-color: #f0f0f0; // 不取全白
+            //border-radius: 50%;
+            width: 100%;
+            min-height: 100%;
+        }
+
+        img.rounded {
+            border-radius: 100%;
+            vertical-align: bottom;
+        }
+
+        img.bordered {
+            border: 1px solid #ccc;
+            box-shadow: #aaa 1px 2px 4px;
+        }
+    }
+
+    .status-bar.horizontal {
+        text-align: right;
+        white-space: nowrap;
+        position: absolute;
+        bottom: -4px;
+        right: 0;
+        // background: rgba(255, 255, 255, 0.75);
+        width: 100%;
+    }
+
+    .status-bar.vertical {
+        white-space: nowrap;
+        position: absolute;
+        top: 0;
+        // background: rgba(255, 255, 255, 0.75);
+        height: 100%;
+        display: flex;
+        flex-flow: column;
+    }
+
+    .status-bar.vertical.left {
+        left: 0;
+    }
+
+    .status-bar.vertical.right {
+        right: 0;
+    }
+
+    .status-icon {
+        // font-size: 16px;
+        // color: var(--ubi-icon-success);
+        vertical-align: middle;
+        text-shadow: 1px 1px 2px rgba(127, 127, 127, 0.5);
+
+        color: var(--ubi-icon-success);
+        background: #fff;
+        border-radius: 50%;
+        padding: 2px;
+        font-size: 10px;
+        box-shadow: 1px 1px 1px #777;
+
+        width: 18px;
+        height: 18px;
+
+        margin-bottom: 4px;
+
+        display: flex;
+        align-items: center; // v
+        justify-content: center; // h
+    }
+
+    .grayscale {
+        -webkit-filter: grayscale(100%);
+        -moz-filter: grayscale(100%);
+        filter: grayscale(100%);
+    }
+}
