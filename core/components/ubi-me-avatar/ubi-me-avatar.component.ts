@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, HostBinding, OnChanges, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, HostBinding, OnChanges, OnDestroy, NgZone } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import { EnumAppConstant } from '../../../enums/enum-app-constant.enum';
 import { UbiAuthService } from '../../../services/ubi-auth.service';
@@ -29,20 +29,34 @@ export class UbiMeAvatarComponent implements OnInit, OnDestroy, OnChanges {
     @HostBinding('style.width') componentWidth;
     @HostBinding('style.height') componentHeight;
 
-    me: any;
+    private me: any;
+    avatarLink: string;
 
     subscription: Subscription;
 
     constructor(
         private authService: UbiAuthService,
         private ubiEvent: UbiEventService,
+        private ngZone: NgZone,
     ) {
         this.me = authService.me();
+        this.updateAvatarLink();
 
         this.subscription = this.ubiEvent.on(EnumAppConstant.EVENT_UBI_AVATAR_UPDATED, (data) => {
-            console.log('ubi-me-avatar on event EVENT_UBI_AVATAR_UPDATED');
-            this.me = authService.me();
+            this.ngZone.run(() => {
+                console.log('ubi-me-avatar on event EVENT_UBI_AVATAR_UPDATED');
+                this.me = authService.me();
+                this.updateAvatarLink();
+            });
         });
+    }
+
+    private updateAvatarLink() {
+        if (this.me && this.me.account) {
+            this.avatarLink = this.me.account.avatar_base;
+        } else {
+            this.avatarLink = null;
+        }
     }
 
 
