@@ -1,5 +1,8 @@
-import { Component, Input, OnInit, HostBinding, OnChanges } from '@angular/core';
+import { Component, Input, OnInit, HostBinding, OnChanges, OnDestroy } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
+import { EnumAppConstant } from '../../../enums/enum-app-constant.enum';
 import { UbiAuthService } from '../../../services/ubi-auth.service';
+import { UbiEventService } from '../../../services/ubi-event.service';
 
 /**
  * Generated class for the MeAvatarComponent component.
@@ -12,7 +15,7 @@ import { UbiAuthService } from '../../../services/ubi-auth.service';
     templateUrl: 'ubi-me-avatar.component.html',
     styleUrls: ['ubi-me-avatar.component.scss']
 })
-export class UbiMeAvatarComponent implements OnInit, OnChanges {
+export class UbiMeAvatarComponent implements OnInit, OnDestroy, OnChanges {
 
     @Input()
     size = 32;
@@ -28,8 +31,18 @@ export class UbiMeAvatarComponent implements OnInit, OnChanges {
 
     me: any;
 
-    constructor(private authService: UbiAuthService) {
+    subscription: Subscription;
+
+    constructor(
+        private authService: UbiAuthService,
+        private ubiEvent: UbiEventService,
+    ) {
         this.me = authService.me();
+
+        this.subscription = this.ubiEvent.on(EnumAppConstant.EVENT_UBI_AVATAR_UPDATED, (data) => {
+            console.log('ubi-me-avatar on event EVENT_UBI_AVATAR_UPDATED');
+            this.me = authService.me();
+        });
     }
 
 
@@ -37,6 +50,12 @@ export class UbiMeAvatarComponent implements OnInit, OnChanges {
         // console.log('ngOnInit MeAvatarComponent');
         //
         // console.log(`logoForEmpty=${this.logoForEmpty}`);
+    }
+
+    ngOnDestroy() {
+        console.log('UbiMeAvatarComponent destroyed...');
+
+        this.subscription.unsubscribe();
     }
 
     ngOnChanges() {
