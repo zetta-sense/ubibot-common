@@ -1,4 +1,4 @@
-import {Pipe, PipeTransform, InjectionToken, Inject, Optional} from '@angular/core';
+import { Pipe, PipeTransform, InjectionToken, Inject, Optional } from '@angular/core';
 import { UbibotCommonConfigService } from '../../providers/ubibot-common-config.service';
 
 export const UBIBOT_RESOURCE_URL_CONFIG = new InjectionToken<UbibotResourceUrilConfig>('UBIBOT_RESOURCE_URL_CONFIG');
@@ -20,7 +20,7 @@ export class ResourceUrlPipe implements PipeTransform {
         @Optional() @Inject(UBIBOT_RESOURCE_URL_CONFIG) private config: UbibotResourceUrilConfig) {
         // console.log('ResourceUrlPipe init...');
 
-        if(!config) {
+        if (!config) {
             this.config = {
                 defaultEmptyFile: 'assets/img-empty.png',
                 defaultLogoFile: 'assets/logo.png',
@@ -34,10 +34,11 @@ export class ResourceUrlPipe implements PipeTransform {
     transform(input: string, size: number = 32, useLogoIfEmpty: boolean = true) {
         try {
             if (input && input.length) {
-                let url = `${this.ubibotCommonConfig.EndPoint}/images/resize?url=${input}&w=${size}&h=${size}`;
+                let res = size * 8;
+                let url = `${this.ubibotCommonConfig.EndPoint}/images/resize?url=${input}&w=${res}&h=${res}`;
                 return url;
             } else {
-                let { defaultEmptyFile, defaultLogoFile} = this.config;
+                let { defaultEmptyFile, defaultLogoFile } = this.config;
 
                 // 优先配置文件，因为配置文件可以通过build脚本更新
                 return useLogoIfEmpty ? (this.ubibotCommonConfig.LogoFile || defaultLogoFile) : defaultEmptyFile;
