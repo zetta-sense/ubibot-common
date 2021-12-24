@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+ * 一旦有新加，要注意channel-settings.component.html添加相应项
+ *
+ * @export
+ * @enum {number}
+ */
 export enum EnumProductProfileFeature {
     ExMqtt = 'ex:mqtt',
 
