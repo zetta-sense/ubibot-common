@@ -144,7 +144,7 @@ export enum UbiChannelFieldDefScaleType {
     HUMAN_DETECTION_PULSE = '22',
 
     /**
-     * 外接RS485光照
+     * 外接RS485光照/pt100光照
      */
     RS485_EXT_BRIGHTNESS = '23',
 
