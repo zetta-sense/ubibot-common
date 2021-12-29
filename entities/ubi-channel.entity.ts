@@ -243,6 +243,8 @@ export abstract class UbiChannel {
             // 不含ws1p wifi版
             || productId === EnumBasicProductId.WS1P2G
             || productId === EnumBasicProductId.WS1P4G
+            // esp32 ws1pb
+            || productId === EnumBasicProductId.WS1PB4G
             // 不含gs1 wifi/eth版
             || productId === EnumBasicProductId.GS1_AL2G1RS
             || productId === EnumBasicProductId.GS1_AL4G1RS
@@ -499,6 +501,12 @@ export abstract class UbiChannel {
             productId === EnumBasicProductId.WS1PA ||
             productId === EnumBasicProductId.WS1P2G ||
             productId === EnumBasicProductId.WS1P4G ||
+            // ws1pb
+            productId === EnumBasicProductId.WS1PB ||
+            productId === EnumBasicProductId.WS1PB4G ||
+            // ws1pc1
+            productId === EnumBasicProductId.WS1PC1 ||
+            // ws1pc
             productId === EnumBasicProductId.WS1PC) {
             return true;
         }

@@ -7,6 +7,11 @@ export enum EnumBasicProductId {
     WS1P = 'ubibot-ws1p',
     WS1PC = 'ubibot-ws1pc', // 2021-07-17
 
+    WS1PB = 'ubibot-ws1pb', // 2021-12-30
+    WS1PB4G = 'ubibot-ws1pb4g',
+
+    WS1PC1 = 'ubibot-ws1pc1', // 2021-12-30
+
     WS1PA = 'ubibot-ws1pa',
     WS1P2G = 'ubibot-ws1p2g',
     WS1P4G = 'ubibot-ws1p4g',
