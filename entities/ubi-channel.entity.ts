@@ -489,6 +489,28 @@ export abstract class UbiChannel {
     }
 
     /**
+     * 子分支Family WS1Pro-B
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsSubFamilyWS1ProB(productId: string): boolean {
+        if (this.IsFamilyWS1P(productId)
+            && (productId === EnumBasicProductId.WS1PB
+                || productId === EnumBasicProductId.WS1PB4G
+            )) {
+            return true;
+        }
+        return false;
+    }
+
+    isSubFamilyWS1ProB(): boolean {
+        return UbiChannel.IsSubFamilyWS1ProB(this.product_id);
+    }
+
+    /**
      * 判断是否为ws1p系列
      *
      * @static
@@ -634,6 +656,26 @@ export abstract class UbiChannel {
 
     isFamilyMS1P(): boolean {
         return UbiChannel.IsFamilyMS1P(this.product_id);
+    }
+
+    /**
+     * 是否支持蓝牙配置模式
+     *
+     * @static
+     * @param {string} productId
+     * @returns {boolean}
+     * @memberof UbiChannel
+     */
+    static IsSupportBluetoothSetup(productId: string): boolean {
+        return this.IsFamilySP1(productId)
+            || this.IsFamilyMS1(productId)
+            || this.IsFamilyMS1P(productId)
+            || this.IsSubFamilyWS1A(productId)
+            || this.IsSubFamilyWS1ProB(productId);
+    }
+
+    isSupportBluetoothSetup(): boolean {
+        return UbiChannel.IsSupportBluetoothSetup(this.product_id);
     }
 
     /**
