@@ -21,10 +21,11 @@ import { UbiLanguageDef, UbibotSupportedLanguagesService } from '../providers/ub
 import { UbiStorageService } from './ubi-storage.service';
 import { UbiFeedsConverterEngine, UbiFeedPack } from './base/ubi-feeds-converter.engine';
 import { DecimalPlaceType } from '../entities/ubi-channel-field-view-option.entity';
+import { SafeHtml } from '@angular/platform-browser';
 
 export const UBIBOT_UTILS_DIALOG_AGENT = new InjectionToken<UbibotUtilsDialogAgent>('UBIBOT_UTILS_DIALOG_AGENT');
 
-export declare type IFuncAlert = (msg: string, opts: any) => Promise<any>;
+export declare type IFuncAlert = (msg: string | SafeHtml, opts: any) => Promise<any>;
 export declare type IFuncError = (msg: string) => Promise<any>;
 export declare type IFuncShowLoading = (msg: string) => Promise<any>;
 export declare type IFuncHideLoading = () => Promise<any>;
@@ -539,7 +540,7 @@ export class UbiUtilsService {
         return this.utilsDialogAgent.hasAnyPopupWindow();
     }
 
-    alert(msg: string, opts: any = {}): Promise<any> {
+    alert(msg: string | SafeHtml, opts: any = {}): Promise<any> {
         return this.utilsDialogAgent.alert(msg, opts);
     }
 
