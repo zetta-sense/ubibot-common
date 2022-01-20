@@ -81,6 +81,17 @@ export interface UbiChannelTriggeringRule {
     rule_name: string,
 }
 
+/**
+ * 通过app赋值channel后的实体
+ *
+ * @export
+ * @interface UbiChannelTriggeringRuleExtended
+ * @extends {UbiChannelTriggeringRule}
+ */
+export interface UbiChannelTriggeringRuleExtended extends UbiChannelTriggeringRule {
+    channel: UbiChannel;
+}
+
 export interface UbiChannelVirtualFieldLike {
     channel_id?: string,
     created_at?: string,
