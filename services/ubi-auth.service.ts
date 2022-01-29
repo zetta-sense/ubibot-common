@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, from, of } from 'rxjs';
 import { UbiStorageService } from './ubi-storage.service';
 import { switchMap } from 'rxjs/operators';
+import { UbiAccountInfo } from '../entities/ubi-account-info.entity';
 
 export const UBIBOT_AUTH_CONFIGURATION = new InjectionToken<UbiAuthConfig>('UBIBOT_AUTH_CONFIGURATION');
 export interface UbiAuthConfig {
@@ -14,27 +15,7 @@ export interface UbiAuthConfig {
 }
 
 export interface UbiMe {
-    account: {
-        user_id: string;
-
-        username: string;
-
-        mobile: string;
-        email: string;
-
-        email_status: string; // live,pending
-        mobile_status: string; // live,pending
-
-        balance: string;
-        timezone: string;
-        last_login_ip: string;
-
-        avatar_base: string;
-
-        backup_ip: string;
-
-        [key: string]: any;
-    };
+    account: UbiAccountInfo
 
     [key: string]: any;
 }

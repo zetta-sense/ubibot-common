@@ -7,6 +7,7 @@ import { UbiExtraPreference } from '../entities/ubi-extra-preference.entity';
 import { UbiError } from '../errors/UbiError';
 import * as lz from 'lz-string';
 import { UbiStorageService } from '../services/ubi-storage.service';
+import { UbiAccountInfo } from '../entities/ubi-account-info.entity';
 
 export interface UbiMessage {
     body: string;
@@ -86,7 +87,7 @@ export class RemoteAccountService {
 
     me(): Promise<any> {
         let url = `${this.ubibotCommonConfig.EndPoint}/accounts/view`;
-        return this.http.get(url).toPromise();
+        return this.http.get(url).pipe().toPromise();
     }
 
     bindDeviceToken(token: string): Promise<any> {
