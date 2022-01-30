@@ -22,6 +22,7 @@ import { UbiStorageService } from './ubi-storage.service';
 import { UbiFeedsConverterEngine, UbiFeedPack } from './base/ubi-feeds-converter.engine';
 import { DecimalPlaceType } from '../entities/ubi-channel-field-view-option.entity';
 import { SafeHtml } from '@angular/platform-browser';
+import { UbiDeviceErrorCode } from '../enums/enum-device-error.enum';
 
 export const UBIBOT_UTILS_DIALOG_AGENT = new InjectionToken<UbibotUtilsDialogAgent>('UBIBOT_UTILS_DIALOG_AGENT');
 
@@ -382,6 +383,7 @@ export class UbiUtilsService {
         let ret = 'Unknown Error';
 
         if (err && !(err instanceof UbiError) && err.name == 'HttpErrorResponse') {
+            // 一般是服务器返回的错误
             if (err && (<any>err).error) {
                 let ubiServerError: UbiServerResponseError = (<any>err).error;
 
@@ -433,8 +435,59 @@ export class UbiUtilsService {
                 ret = this.parseError(new UbiError(EnumAppError.NETWORK_ERROR));
             }
         } else if (err instanceof UbiError) {
-            ret = this.translate.instant(`ERROR.${err.message}`, err.params || argsObj);
-            ret = `${err.message} - ${ret}`;
+            // 一般是app内部或设备返回的错误
+
+            let appCode = err.message;
+            let transKey = `ERROR.${err.message}`;
+            let translated = this.translate.instant(transKey, err.params || argsObj);
+
+            if (appCode == EnumAppError.DEVICE_RETURN_ERROR) {
+                let devCode = (err.params || {}).code; // build error时保证code是string
+                let devTransKey = `DEVICE-CODE.${devCode}`;
+                let devTranslated = this.translate.instant(devTransKey, { code: devCode });
+
+                if (devTransKey == devTranslated) { // translation not found
+                    if (parseInt(devCode) < 10000000) { // tag: legacy的代号处理
+                        let legacyTransKey = `ERROR.`;
+                        switch (devCode) {
+                            case UbiDeviceErrorCode.CELLULAR_SIM_CHECK_FAILED:
+                                legacyTransKey += EnumAppError.DEVICE_RETURN_ERROR_CELLULAR_SIM_CHECK_FAILED;
+                                break;
+                            case UbiDeviceErrorCode.WIFI_REASON_NO_AP_FOUND:
+                                legacyTransKey += EnumAppError.DEVICE_RETURN_ERROR_AP_NOT_FOUND;
+                                break;
+                            case UbiDeviceErrorCode.WIFI_REASON_AUTH_FAIL:
+                                legacyTransKey += EnumAppError.DEVICE_RETURN_ERROR_AP_AUTH_FAILED;
+                                break;
+                            case UbiDeviceErrorCode.WIFI_REASON_CONNECTION_FAIL:
+                                legacyTransKey += EnumAppError.DEVICE_RETURN_ERROR_AP_CONN_FAILED;
+                                break;
+                            case UbiDeviceErrorCode.ETH_CABLE_FAILED:
+                                legacyTransKey += EnumAppError.DEVICE_RETURN_ERROR_ETH_CABLE_FAILED;
+                                break;
+                            case UbiDeviceErrorCode.ETH_IP_FAILED:
+                                legacyTransKey += EnumAppError.DEVICE_RETURN_ERROR_ETH_IP_FAILED;
+                                break;
+                            case UbiDeviceErrorCode.SEARCHING_MOBILE_NETWORK:
+                                legacyTransKey += EnumAppError.DEVICE_RETURN_ERROR_SEARCHING_MOBILE_NETWORK;
+                                break;
+                            default:
+                                legacyTransKey += EnumAppError.DEVICE_RETURN_ERROR;
+                                break;
+                        }
+                        ret = this.translate.instant(legacyTransKey, { code: devCode });
+                    } else { // v2 未找到对应代号翻译时处理
+                        ret = translated; // 默认的505语句 - 设备返回错误 xxx
+                    }
+                } else {
+                    // 正常的v2翻译
+                    ret = `[${devCode}] ${devTranslated}`; // 这里采用方括号, 代表这是设备返回的代号
+                }
+            } else if (translated != transKey) {
+                ret = `${err.message} - ${translated}`;
+            } else {
+                ret = `${err.message} - (Undefined)`;
+            }
         } else if (err) {
             if (err.message) {
                 ret = `${ret}: ${err.message}`;
@@ -580,7 +633,7 @@ export class UbiUtilsService {
         return ToUTF8Array(str);
     }
 
-    FromUTF8Array(resp): string {
+    FromUTF8Array(resp: number[] | ArrayBuffer): string {
         return FromUTF8Array(resp);
     }
 

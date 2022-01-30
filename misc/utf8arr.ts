@@ -31,6 +31,6 @@ export function ToUTF8Array(str: string): Uint8Array {
     return Uint8Array.from(utf8);
 }
 
-export function FromUTF8Array(resp): string {
+export function FromUTF8Array(resp: number[] | ArrayBuffer): string {
     return String.fromCharCode.apply(null, new Uint8Array(resp));
 }

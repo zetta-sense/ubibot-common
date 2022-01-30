@@ -1,4 +1,5 @@
 export enum EnumDeviceCommand {
+
     ReadProduct     = 'ReadProduct',
     CheckSensors    = 'CheckSensors',
     CheckModule     = 'CheckModule',
@@ -14,6 +15,8 @@ export enum EnumDeviceCommand {
     ReadMetaData    = 'ReadMetaData',
     ReadData        = 'ReadData',
 
+    // added for v2
+    CheckProtocol = 'CheckProtocol',
 
 
     // urban 命令

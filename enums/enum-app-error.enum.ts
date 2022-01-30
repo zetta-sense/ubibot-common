@@ -99,10 +99,13 @@ export enum EnumAppError {
     BLE_COMMAND_UNSUPPORT = '8927', // ble_command 值不在支持的范围
     BLE_COMMAND_BAD_PARAMETERS = '8928', // ble_command 参数不足
     BLE_MTU_FAILED = '8929', // request MTU failed
-    BLE_EMPTY_RESPONSE = '8930', // empty response
     BLE_DEVICE_EXPECTED_SERVICE_NOT_FOUND = '8931', // 该蓝牙设备未发现期望的可用服务，例如蓝牙打印机没有暴露预定的服务uuid
     BLE_DEVICE_UNKNOWN_ERROR = '8932', // ble返回未知的错误
     BLE_PRINTER_RESPONSE_TIMEOUT = '8933', // ble printer响应超时
+    BLE_LEGACY_UNSUPPORT_MULTI_CMDS = '8934', // legacy协议不支持发送多于一个命令
+    BLE_EMPTY_RESPONSE = '8940', // empty response
+    BLE_EMPTY_REQUEST = '8941', // empty request
+    BLE_CHECK_PROTOCOL_TIMEOUT = '8942', // check protocol 超时
 
     PARAMETER_SCHEDULER_S_REPEAT_EMPTY = '12001',
 
