@@ -4,6 +4,7 @@ export enum EnumAppError {
     DEVICE_COMMUNICATE_EXCEPTION = '100', // communicate error
     DEVICE_RESPONSE_PARSING_ERROR = '101', // response parsing error
     AP_MODE_NETWORK_CHANGED = '102', // 移动设备与设备ap连接在中途产生了变更
+    AP_MODE_NETWORK_PING_FAILED = '103', // 一般只有ios出现，就是local network permission，这个必须通过局域网的out traffic触发，（如果能联网即使是out triffic到路由器的网关也无法触发）
     MALFORMED_JSON = '501', // malformed JSON
     FILE_NOT_EXIST = '502', // file not exist
     MALFORMED_XML = '503', // malformed XML
