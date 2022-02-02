@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { UbibotCommonConfigService } from '../providers/ubibot-common-config.service';
-import { Observable, of, from, combineLatest, race } from 'rxjs';
-import { map, switchMap, mergeAll, combineAll, concatMap, tap, zipAll, withLatestFrom, take, takeLast } from 'rxjs/operators';
+import { Observable, of, from, combineLatest, race, timer, EMPTY, throwError } from 'rxjs';
+import { map, switchMap, mergeAll, combineAll, concatMap, tap, zipAll, withLatestFrom, take, takeLast, retry, retryWhen, catchError, delay, timeout } from 'rxjs/operators';
 import { UbiError } from '../errors/UbiError';
 
 
@@ -47,12 +47,23 @@ export class RemoteUtilitiesService {
         );
     }
 
+    /**
+     * 通过服务器获取本地IP
+     *
+     * 最多尝试30秒，每个请求每2秒一次，因此在无网络下，会等待较长时间才throwError
+     *
+     * @returns {Observable<string>}
+     * @memberof RemoteUtilitiesService
+     */
     getIPCountry(): Observable<string> {
         return race(
-            this.getIPCountryCN(),
-            this.getIPCountryIO(),
+            // 注意这里一定要分开每个observable独立一个retry，否则如果在race的pipe中只要有一个raise error，都会立即触发complete并retry
+            this.getIPCountryCN().pipe(retryWhen(() => timer(2000, 2000))),
+            this.getIPCountryIO().pipe(retryWhen(() => timer(2000, 2000))),
         ).pipe(
-            switchMap((country: string) => {
+            // retryWhen((errs) => errs.pipe(delay(1000), take(30), concatMap(es => throwError(es)))),
+            timeout(30 * 1000),
+            concatMap((country: string) => {
                 return of(country);
             }),
         );
