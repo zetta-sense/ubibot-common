@@ -771,7 +771,11 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     isOwnerOf(user_id: string): boolean {
-        return this.user_id === user_id;
+        // user_id 必须是 view 单个channel才有
+        // list时则通过share_id来判断, 因为只有分享的设备才有share_id
+        let condition_1 = this.user_id == null && this.share_id == null;
+        let condition_2 = this.user_id == user_id;
+        return condition_1 || condition_2;
     }
 
 }
