@@ -750,17 +750,17 @@ export abstract class UbiChannel {
     }
 
     /**
-     * 是否支持设备报警
+     * 是否支持报警报警
+     *
+     * 理论上都支持命令报警，具体由target设备再决定是否支持该类型，因此这个function一般都应返回true
+     *
+     * 目前保留此function以应对以后有不想支持的设备
      *
      * @returns {boolean}
      * @memberof UbiChannel
      */
     isSupportRuleCommand(): boolean {
-        return this.isFamilyWS1P()
-            || this.isFamilyGS1()
-            || this.isFamilyGS2()
-            || this.isFamilySP1()
-            || this.isFamilyCB1();
+        return true;
     }
 
     /**
