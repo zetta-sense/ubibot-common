@@ -260,6 +260,8 @@ export function FindScaleTypeKeyByValue(value: UbiChannelFieldDefScaleType): str
 /**
  * Classify scale type to group via scale type key input.
  *
+ * 注意是enum的key，必须利用FindScaleTypeKeyByValue转换scaleType值为scaleTypeKey
+ *
  * @export
  * @param {string} scaleTypeKey
  * @returns {UbiChannelFieldDefScaleTypeGroup}
@@ -356,6 +358,20 @@ export class UbiChannelFieldDef {
 
     isSwitchStateLike(): boolean {
         if (this.scaleType == UbiChannelFieldDefScaleType.SWITCH_STATE) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 是否温度类型的field
+     *
+     * @returns {boolean}
+     * @memberof UbiChannelFieldDef
+     */
+    isTemperatureLike(): boolean {
+        const scaleTypeKey = FindScaleTypeKeyByValue(this.scaleType);
+        if (WhichGroupOfScaleType(scaleTypeKey) == UbiChannelFieldDefScaleTypeGroup.Temperature) {
             return true;
         }
         return false;
