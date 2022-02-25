@@ -9,6 +9,7 @@ import { UbiChannelVConfig } from "./ubi-channel-vconfig.entity";
 import { UbiChannelVPref, UbiChannelVPrefFieldProperties } from "./ubi-channel-vpref.entity";
 import { UbiChannelCalibrate } from "./ubi-channel-calibrate.entity";
 import { UbiSensorsMapping } from "./ubi-sensors-mapping.entity";
+import { UbiAlexaConfig } from './ubi-alexa-config.entity';
 
 export interface UbiValueOptions {
     tempScale?: UbiExtraPreferenceTempScale,
@@ -931,6 +932,12 @@ export class UbiChannelDAO extends UbiChannel {
         return this.caliParsed;
     }
 
+    /**
+     * Stable parsed data.
+     *
+     * @returns {UbiChannelVPrefFieldProperties[]}
+     * @memberof UbiChannelDAO
+     */
     getUserPreferredFields(): UbiChannelVPrefFieldProperties[] {
         const vpref = this.getParsedVPref();
         return vpref.fields;
@@ -939,6 +946,22 @@ export class UbiChannelDAO extends UbiChannel {
     setUserPreferredFields(newPreferredFields: UbiChannelVPrefFieldProperties[]): void {
         const vpref = this.getParsedVPref();
         vpref.fields = newPreferredFields;
+    }
+
+    /**
+     * Stable parsed data.
+     *
+     * @returns {UbiAlexaConfig}
+     * @memberof UbiChannelDAO
+     */
+    getAlexaConfig(): UbiAlexaConfig {
+        const vpref = this.getParsedVPref();
+        return vpref.alexa;
+    }
+
+    setAlexaConfig(alexaConfig: UbiAlexaConfig): void {
+        const vpref = this.getParsedVPref();
+        vpref.alexa = alexaConfig;
     }
 
     isSensorsSyncFinished(): boolean {

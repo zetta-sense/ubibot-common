@@ -1,9 +1,11 @@
 import { UbiEntity, UbiPersistent } from "../core/decorators/ubi-entity.decorator";
+import { UbiAlexaConfig } from './ubi-alexa-config.entity';
 
 export interface UbiChannelVPref {
     v: number; // 版本
     fields: UbiChannelVPrefFieldProperties[];
     // [key: string]: any;
+    alexa: UbiAlexaConfig,
 }
 
 /**
@@ -18,7 +20,7 @@ export interface UbiChannelVPrefFieldProperties {
     visible: boolean; // 用户自定义，默认应为true
 }
 
-export const CURRENT_VPREF_VERSION = 1;
+export const CURRENT_VPREF_VERSION = 2;
 
 /**
  * Field 1 ~ N with {VConfigItem}
@@ -31,6 +33,7 @@ export class UbiChannelVPref {
 
     @UbiPersistent() v: number; // 版本
     @UbiPersistent() fields: UbiChannelVPrefFieldProperties[];
+    @UbiPersistent() alexa: UbiAlexaConfig;
 
     static FromString(rawStr: string): UbiChannelVPref {
 
