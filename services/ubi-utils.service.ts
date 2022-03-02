@@ -165,9 +165,10 @@ export class UbiUtilsService {
         return `last_fcm_token`;
     }
 
-    // saveReportLocal(report: UbiReport) {
-    //
-    // }
+    private getStorageKeyAppIntro() {
+        return `ubi_app_intro`;
+    }
+
 
     resetLanguage(preferred?: string) {
         // const lang = this.commonConfigService.PreferredLanguage;
@@ -289,6 +290,20 @@ export class UbiUtilsService {
     saveCurrentAgent() {
         const agent = this.commonConfigService.DeployAgent;
         this.ubiStorage.save(this.getStorageKeyCurrentAgent(), agent);
+    }
+
+    getAppIntro(): { [key: string]: any } {
+        let ret = {};
+        let txt = this.ubiStorage.get(this.getStorageKeyAppIntro());
+        try { ret = JSON.parse(txt) || {}; } catch { }
+        return ret;
+    }
+
+    saveAppIntro(obj: { [key: string]: any }): void {
+        try {
+            obj = obj || {};
+            this.ubiStorage.save(this.getStorageKeyAppIntro(), JSON.stringify(obj));
+        } catch { }
     }
 
 

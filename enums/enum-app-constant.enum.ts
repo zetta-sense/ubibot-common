@@ -37,6 +37,10 @@ export enum EnumAppConstant {
     STORAGE_BLE_LAST_PRINTER = 'ubi_ble_last_printer',
 }
 
+export enum EnumAppIntroKey {
+    CHANNEL_INFO = 'channel_info',
+    ACCOUNT_SETTINGS = 'account_settings',
+}
 
 
 

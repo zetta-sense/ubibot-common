@@ -1,4 +1,5 @@
 import { UbiEntity, UbiPersistent } from "../core/decorators/ubi-entity.decorator";
+import { EnumAppIntroKey } from '../enums/enum-app-constant.enum';
 import { UbiChannelFieldViewOption, UbiChannelFieldViewOptionInterface } from './ubi-channel-field-view-option.entity';
 
 
