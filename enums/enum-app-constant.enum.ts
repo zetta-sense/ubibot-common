@@ -40,7 +40,9 @@ export enum EnumAppConstant {
 export enum EnumAppIntroKey {
     CHANNEL_INFO = 'channel_info',
     ME = 'me',
+    CHANNELS = 'channels',
     ACCOUNT_SETTINGS = 'account_settings',
+    ASK_TO_SET_TEMP_SCALE = 'ask_to_set_temp_scale',
 }
 
 
