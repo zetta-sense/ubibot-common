@@ -34,7 +34,7 @@ export enum EnumProductProfileFeature {
     SyncRS485_CO2 = 'sync:rs485_co2',
 
     SyncPH = 'sync:ph',
-    SyncEC = 'sync:ec',
+    SyncEC = 'sync:ec', // @deprecated
     SyncGPS = 'sync:gps',
 
 

@@ -17,7 +17,8 @@ import { EnumBasicProductId } from "../enums/enum-basic-product-id.enum";
 import { UbiSensorProfile } from "./ubi-sensor-profile.entity";
 
 export class UbiProfileTable {
-
+    private payloadVersion: number;
+    private mqttEndpoint: string;
     private productProfiles: { [key: string]: UbiProductProfile };
     private sensorProfiles: { [key: string]: UbiSensorProfile };
 
@@ -30,6 +31,10 @@ export class UbiProfileTable {
      * @memberof UbiProfileTable
      */
     constructor(raw: any) {
+
+        this.payloadVersion = raw['payload-version'];
+        this.mqttEndpoint = raw['mqtt-endpoint'];
+
         // init product profiles
         this.productProfiles = {};
         try {
@@ -78,4 +83,13 @@ export class UbiProfileTable {
     getAllSensorProfiles(): UbiSensorProfile[] {
         return Object.values(this.sensorProfiles);
     }
+
+    getVersion(): number {
+        return this.payloadVersion;
+    }
+
+    getMqttEndpoint(): string {
+        return this.mqttEndpoint;
+    }
+
 }
