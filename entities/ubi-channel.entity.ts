@@ -691,6 +691,22 @@ export abstract class UbiChannel {
     }
 
     /**
+     * sp1/sp1_4g/ms1/ms1p的蓝牙模式都强制为legacy
+     * @param productId
+     * @returns
+     */
+    static IsBLELegacyModeOnly(productId: string): boolean {
+        if (productId == EnumBasicProductId.SP1
+            || productId == EnumBasicProductId.SP1_4G
+            || productId == EnumBasicProductId.MS1
+            || productId == EnumBasicProductId.MS1P
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 目前除ws1p外的能支持rs的型号都应该能自动检测
      *
      * 2019-11-05 取消gs1系列的auto
