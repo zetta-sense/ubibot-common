@@ -268,7 +268,9 @@ export abstract class UbiChannel {
             || productId === EnumBasicProductId.GS2_EL2G
             || productId === EnumBasicProductId.GS2_EL4G
             // sp1
-            || productId === EnumBasicProductId.SP1_4G) {
+            || productId === EnumBasicProductId.SP1_4G
+            || productId === EnumBasicProductId.SP1A_4G
+        ) {
             return true;
         }
         return false;
@@ -379,8 +381,9 @@ export abstract class UbiChannel {
     static IsEthSupported(productId: string): boolean {
         if (productId === EnumBasicProductId.GS1_AETH1RS
             || productId === EnumBasicProductId.GS1_AETH1RS_1DS
-            || productId === EnumBasicProductId.MS1
-            || productId === EnumBasicProductId.MS1P) {
+            || UbiChannel.IsFamilyMS1(productId)
+            || UbiChannel.IsFamilyMS1P(productId)
+        ) {
             return true;
         }
         return false;
@@ -399,7 +402,6 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     static IsWifiSupported(productId: string): boolean {
-        // return productId !== EnumBasicProductId.SP1;
         return true;
     }
 
@@ -622,7 +624,9 @@ export abstract class UbiChannel {
      */
     static IsFamilySP1(productId: string): boolean {
         if (productId === EnumBasicProductId.SP1
-            || productId === EnumBasicProductId.SP1_4G) {
+            || productId === EnumBasicProductId.SP1_4G
+            || productId === EnumBasicProductId.SP1A
+            || productId === EnumBasicProductId.SP1A_4G) {
             return true;
         }
         return false;
@@ -641,7 +645,9 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     static IsFamilyMS1(productId: string): boolean {
-        if (productId === EnumBasicProductId.MS1) {
+        if (productId === EnumBasicProductId.MS1
+            || productId == EnumBasicProductId.MS1A
+        ) {
             return true;
         }
         return false;
@@ -660,7 +666,9 @@ export abstract class UbiChannel {
      * @memberof UbiChannel
      */
     static IsFamilyMS1P(productId: string): boolean {
-        if (productId === EnumBasicProductId.MS1P) {
+        if (productId === EnumBasicProductId.MS1P
+            || productId == EnumBasicProductId.MS1PA
+        ) {
             return true;
         }
         return false;

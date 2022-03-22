@@ -31,11 +31,17 @@ export enum EnumBasicProductId {
     GS2_EL2G = 'ubibot-gs2-el2g',
     GS2_EL4G = 'ubibot-gs2-el4g',
 
+    // sp1带有后缀a代表固件使用新协议
     SP1 = 'ubibot-sp1',
     SP1_4G = 'ubibot-sp1-4g',
+    SP1A = 'ubibot-sp1a',
+    SP1A_4G = 'ubibot-sp1a-4g',
 
+    // ms1及ms1p带有后缀a代表固件使用新协议
     MS1 = 'ubibot-ms1',
     MS1P = 'ubibot-ms1p',
+    MS1A = 'ubibot-ms1a',
+    MS1PA = 'ubibot-ms1pa',
 
     // ---- 2021-07-17
     CB1 = 'ubibot-cb1',

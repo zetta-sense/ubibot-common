@@ -23,9 +23,9 @@ export enum UbiDeviceErrorCode {
     SEARCHING_MOBILE_NETWORK = '4100', // 正在入网
 
     // 30x
-    WIFI_REASON_UNSPECIFIED = '301',
+    ACTIVATE_FAILED = '301',
 
-    WIFI_REASON_AUTH_EXPIRE = '302',
+    ACTIVATE_DATA_ERROR = '302',
 
     WIFI_REASON_AUTH_LEAVE = '303',
 

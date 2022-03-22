@@ -471,6 +471,10 @@ export class UbiUtilsService {
                             case UbiDeviceErrorCode.WIFI_REASON_NO_AP_FOUND:
                                 legacyTransKey += EnumAppError.DEVICE_RETURN_ERROR_AP_NOT_FOUND;
                                 break;
+                            case UbiDeviceErrorCode.ACTIVATE_FAILED:
+                            case UbiDeviceErrorCode.ACTIVATE_DATA_ERROR:
+                                legacyTransKey += EnumAppError.DEVICE_RETURN_ERROR;
+                                break;
                             case UbiDeviceErrorCode.WIFI_REASON_AUTH_FAIL:
                                 legacyTransKey += EnumAppError.DEVICE_RETURN_ERROR_AP_AUTH_FAILED;
                                 break;
