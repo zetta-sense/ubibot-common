@@ -739,10 +739,16 @@ export class UbiUtilsService {
                 }
 
                 let part3 = serial.substring(0, 5);
-                ret = `${part1}-${part2}-${part3}`;
+                // ret = `${part1}-${part2}-${part3}`;
+                return part3; // 根据2022-03-25讨论，只需要蓝牙名含有序列号前5位的就进行连接
             } catch (e) {
                 ret = `CAN NOT RECOGNIZE - ${productId}`;
             }
+        } else {
+            try {
+                let part3 = serial.substring(0, 5);
+                return part3;
+            } catch { }
         }
         return ret;
     }
