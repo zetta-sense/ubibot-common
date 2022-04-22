@@ -47,11 +47,11 @@ export enum EnumProductProfileFeature {
     SyncSW_E = 'sync:sw_e',
     SyncSW_PC = 'sync:sw_pc',
     SyncSW_ON = 'sync:sw_on',
-    SyncSenCycle = 'sync:sen_cycle',
-    SyncSenRes = 'sync:sen_res',
+    SyncSen = 'sync:sen#ms',
+    SyncSenCycle = 'sync:sen_cycle#ms',
+    SyncSenRes = 'sync:sen_res#ms',
     SyncSenSta = 'sync:sen_sta',
 
-    ModSen = 'mod:sen',
     ModDE_SW_S = 'mod:de_sw_s',
 
     // patch 2020-11-20
