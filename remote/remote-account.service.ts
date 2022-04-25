@@ -572,4 +572,19 @@ export class RemoteAccountService {
             })
         );
     }
+
+
+    checkOauthAlexa(): Observable<boolean> {
+        let url = `${this.ubibotCommonConfig.EndPoint}/accounts/oauth/check/alexa`;
+
+        return this.http.get(url).pipe(
+            map((resp) => {
+                if (resp['exist_oauth'] === true) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }),
+        );
+    }
 }
